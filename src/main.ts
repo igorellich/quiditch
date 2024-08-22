@@ -1,13 +1,16 @@
 import './style.css'
 
-import RAPIER, { RigidBody, Vector, Vector2 } from '@dimforge/rapier2d';
+import RAPIER, { EventQueue, RigidBody, Vector2 } from '@dimforge/rapier2d';
 import * as THREE from 'three'
-import { PlaneGeometry, MeshBasicMaterial, AmbientLight, Mesh, ConeGeometry } from 'three'
+import { PlaneGeometry, MeshBasicMaterial, AmbientLight, Mesh } from 'three'
 
 import SimpleScene from './components/SimpleScene';
 import { createCircleBuffer32Array } from './tools';
 import { RingGates } from './components/RingGates';
 import { RapierDebugRenderer } from './utils/debugRenderer';
+import { PhysicsMeshArgs } from './components/PhysicsMesh';
+import { CollisionGroups } from './constants';
+import { CharacterArgs, CharacterController } from './components/CharacterController';
 
 
 
@@ -37,13 +40,6 @@ scene.add(ground)
 const light = new AmbientLight()
 scene.add(light)
 
-const characterMesh = new Mesh(new ConeGeometry(0.2, 2, 16), new MeshBasicMaterial({
-  color: 'black'
-}));
-
-characterMesh.position.x = -3;
-characterMesh.position.z = debugObj.z;
-scene.add(characterMesh);
 
 
 
@@ -52,28 +48,32 @@ scene.add(characterMesh);
 scene.gui.add(debugObj, 'rotateSpeed').min(0.01).max(0.1).step(0.01)
 scene.gui.add(debugObj, 'speed').min(0.01).max(0.1).step(0.01)
 
-let rotation = 0.0;
-let speed = 0.0;
+
+const charArgs:CharacterArgs={
+  rotationSpeed:0,
+  speed:0
+}
+
 document.addEventListener('keydown', (e) => {
   if (e.key === 'a') {
-    rotation = debugObj.rotateSpeed;
+    charArgs.rotationSpeed = debugObj.rotateSpeed;
   }
   if (e.key === 'd') {
-    rotation = -debugObj.rotateSpeed;
+    charArgs.rotationSpeed = -debugObj.rotateSpeed;
   }
   if (e.key === 'w') {
-    speed = debugObj.speed;
+    charArgs.speed = debugObj.speed;
   }
   if (e.key === 's') {
-    speed = -debugObj.speed;
+    charArgs.speed = -debugObj.speed;
   }
 })
 document.addEventListener('keyup', (e) => {
   if (e.key === 'a' || e.key === 'd') {
-    rotation = 0.0
+    charArgs.rotationSpeed = 0.0
   }
   if (e.key === 'w' || e.key === 's') {
-    speed = 0.0
+    charArgs.speed = 0.0
   }
 })
 
@@ -84,8 +84,9 @@ document.addEventListener('keyup', (e) => {
 
 
 let gravity = { x: 0.0, y: 0.0 };
-let world = new RAPIER.World(gravity);
 
+let world = new RAPIER.World(gravity);
+const eventQueue = new EventQueue(true);
 // Create the ground
 let groundBodyDesc = RAPIER.RigidBodyDesc.fixed();
 let groundBody = world.createRigidBody(groundBodyDesc);
@@ -118,81 +119,42 @@ cubeMesh.position.z = debugObj.z;
 scene.add(cubeMesh)
 const cubeBody = world.createRigidBody(RAPIER.RigidBodyDesc.dynamic().setCcdEnabled(true).setTranslation(3, 0).setCanSleep(false))
 
-const cubeShape = RAPIER.ColliderDesc.ball(0.3).setMass(0.5).setRestitution(1.1);
-const collider = world.createCollider(cubeShape, cubeBody)
+const ballColliderDesc = RAPIER.ColliderDesc.ball(0.3).setMass(0.5).setRestitution(1.1).setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS)
+const collider = world.createCollider(ballColliderDesc, cubeBody)
 dynamicBodies.push([cubeMesh, cubeBody])
 
 
-
-//const stats = new Stats()
-//document.body.appendChild(stats.dom)
-
-
-// Character.
-let characterDesc =
-  RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(0, 0);
-let characterBody = world.createRigidBody(characterDesc);
-let characterColliderDesc = RAPIER.ColliderDesc.ball(0.4);
-let characterCollider = world.createCollider(
-  characterColliderDesc,
-  characterBody,
-);
-
-let characterController = world.createCharacterController(0.1);
 scene.camera.position.z = 15
 scene.camera.rotation.x = Math.PI/6
 scene.camera.position.y = -13
 
 scene.start()
-//stats.update()
 
+const character = new CharacterController(
+  {
+    scene,
+    world,
+    zHeight: debugObj.z,
+    collisionFilterGroups: [CollisionGroups.wall, CollisionGroups.gates],
+    collisionMemberGroups: [CollisionGroups.character]
+  },
+  charArgs)
 //joint
 let params = RAPIER.JointData.revolute({ x: 0.8, y: 0.0 }, { x: 0.1, y: 0.0 });
-let joint = world.createImpulseJoint(params, characterBody, cubeBody, true);
+let joint = world.createImpulseJoint(params, character.body as RigidBody, cubeBody, true);
 (joint as RAPIER.RevoluteImpulseJoint).configureMotorVelocity(5.0, 0.0);
-const updateCharacter = () => {
-  const velocity = characterBody.linvel();
-  //console.log(velocity)
 
-  characterBody.setRotation(characterBody.rotation() + rotation, false);
-  const directionVector = new RAPIER.Vector2(
-    -Math.sin(characterBody.rotation()) * speed,
-    Math.cos(characterBody.rotation()) * speed
-  )
-
-  //console.log(rotation)
-
-  characterController.computeColliderMovement(characterCollider,
-    directionVector
-  );
-
-  const movement = characterController.computedMovement();
-  characterController.setApplyImpulsesToDynamicBodies(true)
-  const newPos = characterBody.translation();
-  newPos.x += movement.x;
-  newPos.y += movement.y;
-  characterBody.setNextKinematicTranslation(newPos);
-  //console.log("character.translation",characterBody.translation())
-  characterMesh.position.x = characterBody.translation().x;
-  characterMesh.position.y = characterBody.translation().y;
-  characterMesh.rotation.z = characterBody.rotation();
-}
 
 scene.addUpdateHandler((elapsedTime, delta) => {
 
 
   world.timestep = Math.min(delta, 0.1)
-
-  updateCharacter()
-
-  // //const eventQueue = new RAPIER.EventQueue(true);
-  // eventQueue.drainCollisionEvents((h1, h2, stared)=>{
-  //     console.log(h1)
-  // })
-  world.step()
-
-
-
+  
+  character.update()
+  world.step(eventQueue)
+  eventQueue.drainContactForceEvents((evt)=>{
+    console.log(evt)
+})
 
   for (let i = 0;  i < dynamicBodies.length; i++) {
     try {
@@ -252,6 +214,7 @@ scene.addUpdateHandler((elapsedTime, delta) => {
       console.error(ex);
     }
   }
+  debugRenderer.update()
 })
 
 const spawnball = (pos: { x: number, y: number }, angle: number) => {
@@ -265,13 +228,13 @@ const spawnball = (pos: { x: number, y: number }, angle: number) => {
 
   
   const spawnPos: RAPIER.Vector2 = { x: pos.x - Math.sin(angle)*2, y: pos.y + Math.cos(angle)*2 }
-  console.log(angle, Math.sin(angle), Math.cos(angle), spawnPos)
+  //console.log(angle, Math.sin(angle), Math.cos(angle), spawnPos)
   let ballBody = world.createRigidBody(ballBodyDesc)
   ballBody.setTranslation(spawnPos, true)
   //console.log(spawnPos)
   const ballColliderDesc = RAPIER.ColliderDesc.ball(0.1).setMass(0.2).setRestitution(0.7);
-  world.createCollider(ballColliderDesc, ballBody);
-  //console.log(collider.setActiveEvents(RAPIER.ActiveEvents.COLLISION_EVENTS))
+  world.createCollider(ballColliderDesc, ballBody).setActiveEvents(RAPIER.ActiveEvents.CONTACT_FORCE_EVENTS);
+
 
   dynamicBodies.push([mesh, ballBody])
   const impules = { x: -Math.sin(angle) * 5, y: Math.cos(angle) * 5 };
@@ -280,14 +243,19 @@ const spawnball = (pos: { x: number, y: number }, angle: number) => {
 }
 document.addEventListener('keypress', (e) => {
   if (e.key === ' ') {
-    spawnball(characterBody.translation(), characterBody.rotation())
+    spawnball((character.body as RigidBody).translation(), (character.body as RigidBody).rotation())
   }
 })
-const gates = new RingGates(scene,world,debugObj.z,{x:0,y:4,z:0}, undefined,1.5);
-const gates1 = new RingGates(scene,world,debugObj.z,{x:5,y:4,z:0}, undefined,1);
-const gates2 = new RingGates(scene,world,debugObj.z,{x:-5,y:4,z:0},undefined,1);
 
-const debugRenderer = new RapierDebugRenderer(scene,world);
-scene.addUpdateHandler(()=>{
-  debugRenderer.update()
-})
+const gateArgs:PhysicsMeshArgs = {
+  scene,
+  world,
+  zHeight:debugObj.z,
+  collisionMemberGroups:[CollisionGroups.gates],
+  collisionFilterGroups:[CollisionGroups.ball,CollisionGroups.character],
+}
+const gates = new RingGates({...gateArgs,translation:{x:0,y:4,z:0}},1.5);
+const gates1 = new RingGates({...gateArgs,translation:{x:5,y:4,z:0}}, 1);
+const gates2 = new RingGates({...gateArgs,translation:{x:-5,y:4,z:0}}, 1);
+
+const debugRenderer = new RapierDebugRenderer(scene,world, debugObj.z);

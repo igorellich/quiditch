@@ -1,10 +1,14 @@
-import { World } from "@dimforge/rapier2d";
-import { PhysicsMesh, Vector } from "./PhysicsMesh";
+import RAPIER from "@dimforge/rapier2d";
+import { PhysicsMesh, PhysicsMeshArgs } from "./PhysicsMesh";
 import {MeshBasicMaterial, Group, TorusGeometry, Mesh, CylinderGeometry, Scene} from 'three'
+
 export class RingGates extends PhysicsMesh{
+    public update(): void {
+        
+    }
     private readonly _ringRadius: number;
-    constructor(scene: Scene, world: World, zHeight: number =1, translation:Vector= {x:0, y:0, z:0}, rotation: Vector= {x:0, y:0, z:0}, radius: number){
-        super(scene,world,zHeight,translation,rotation);
+    constructor(argsObj: PhysicsMeshArgs, radius: number){
+        super(argsObj);
         this._ringRadius = radius;
         
     }
@@ -15,8 +19,8 @@ export class RingGates extends PhysicsMesh{
         const gates = new Group();
        
         const ringHeight = -this._ringRadius+this._zHeight;
-        const ringGeom = new TorusGeometry(this._ringRadius,0.1*this._zHeight,12,48);
-        //TODO add debug UI
+        const ringGeom = new TorusGeometry(this._ringRadius,0.1*this._ringRadius,12,48);
+        // thee js part
         const ringMesh = new Mesh(ringGeom,material);
         ringMesh.position.z = this._ringRadius+ringHeight;
         ringMesh.rotation.x = -Math.PI/2;
@@ -27,6 +31,30 @@ export class RingGates extends PhysicsMesh{
         gates.add(ringMesh,basementMesh)
         gates.position.set(this._translation.x,this._translation.y, this._translation.z);
         this._scene.add(gates);
+        this.mesh = gates;
+        //rapier part
+
+        const ringBodyDesc =RAPIER.RigidBodyDesc.fixed().setCcdEnabled(true).setCanSleep(false) 
+
+        const rightBorderBody = this._world.createRigidBody(ringBodyDesc);
+        rightBorderBody.setTranslation({x:this._translation.x+this._ringRadius, y:this._translation.y}, true) 
+        const leftBorderBody = this._world.createRigidBody(ringBodyDesc);
+        leftBorderBody.setTranslation({x:this._translation.x - this._ringRadius, y:this._translation.y}, true) 
+
+        const middleBody = this._world.createRigidBody(ringBodyDesc);
+        middleBody.setTranslation(this._translation, true);
+        this.body = middleBody;
+        const middleColliderDesc = RAPIER.ColliderDesc.cuboid(this._ringRadius, 0.2).setSensor(true).setActiveEvents(RAPIER.ActiveEvents.CONTACT_FORCE_EVENTS); 
+        const borderColliderDesc = RAPIER.ColliderDesc.cuboid(0.1, 0.1).setRestitution(1.1);
+
+        const leftcollider = this._world.createCollider(borderColliderDesc, leftBorderBody)
+        const rightcollider = this._world.createCollider(borderColliderDesc, rightBorderBody)
+        
+        const middleCollider = this._world.createCollider(middleColliderDesc, middleBody).setCollisionGroups(this._filterGroups)
+
+
+
+
         
     }
     
