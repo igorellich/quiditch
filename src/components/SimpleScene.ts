@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import Stats from 'three/examples/jsm/libs/stats.module'
 import GUI from 'lil-gui'
-
+const stats = new Stats()
 export default class SimpleScene extends THREE.Scene {
 
 
@@ -9,27 +10,28 @@ export default class SimpleScene extends THREE.Scene {
 
     public readonly camera: THREE.PerspectiveCamera;
 
-    private updateHandlers: ((elapsedTime:number, delta: number) => void)[] = [];
+    private updateHandlers: ((elapsedTime: number, delta: number) => void)[] = [];
 
-    private _clock:THREE.Clock = new THREE.Clock();
+    private _clock: THREE.Clock = new THREE.Clock();
 
-    public readonly gui:GUI = new GUI({
-        width:300,
-        title:"Nice"
+    public readonly gui: GUI = new GUI({
+        width: 300,
+        title: "Nice"
     });
-    public readonly sizes:{
-        width:number,
+    public readonly sizes: {
+        width: number,
         height: number
     } = {
-        width:window.innerWidth,
-        height: window.innerHeight
-    }
+            width: window.innerWidth,
+            height: window.innerHeight
+        }
 
     public constructor(canvas: HTMLCanvasElement) {
         super();
 
         //this.background = new THREE.Color(0x777777);   
-
+        
+        document.body.appendChild(stats.dom)
         window.addEventListener('resize', () => {
             this.sizes.height = window.innerHeight;
             this.sizes.width = window.innerWidth;
@@ -56,20 +58,21 @@ export default class SimpleScene extends THREE.Scene {
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
             antialias: true,
-            alpha:true
+            alpha: true
         });
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-        this.renderer.setSize(this.sizes.width, this.sizes.height);      
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.renderer.setSize(this.sizes.width, this.sizes.height);
 
-            const controls = new OrbitControls(this.camera, this.renderer.domElement);
-            controls.enableDamping = true;
+        const controls = new OrbitControls(this.camera, this.renderer.domElement);
+        controls.enableDamping = true;
     }
 
-    public addUpdateHandler(handler: (elapsedTime:number, delta: number) => void) {
+    public addUpdateHandler(handler: (elapsedTime: number, delta: number) => void) {
         this.updateHandlers.push(handler);
     }
     prevTime = 0;
     private draw() {
+        stats.update()
         const elapsedTime = this._clock.getElapsedTime()
         const delta = elapsedTime - this.prevTime;
         this.prevTime = elapsedTime;
@@ -79,7 +82,7 @@ export default class SimpleScene extends THREE.Scene {
         }
 
         this.renderer.render(this, this.camera);
-    }   
+    }
 
     public start() {
         this._clock = new THREE.Clock();
@@ -87,7 +90,7 @@ export default class SimpleScene extends THREE.Scene {
     }
 
     public stop() {
-        
+
         this.renderer.setAnimationLoop(null);
     }
 }

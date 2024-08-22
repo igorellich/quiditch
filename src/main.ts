@@ -6,6 +6,8 @@ import { PlaneGeometry, MeshBasicMaterial, AmbientLight, Mesh, ConeGeometry } fr
 
 import SimpleScene from './components/SimpleScene';
 import { createCircleBuffer32Array } from './tools';
+import { RingGates } from './components/RingGates';
+import { RapierDebugRenderer } from './utils/debugRenderer';
 
 
 
@@ -14,17 +16,21 @@ const canvas = document.querySelector("#app") as HTMLCanvasElement;
 const scene = new SimpleScene(canvas)
 
 
-
+const debugObj = {
+  rotateSpeed: 0.05,
+  speed: 0.05, 
+  z: 3
+}
 
 
 const planeGeom = new PlaneGeometry(35, 35);
 const material = new MeshBasicMaterial({
   color: 'green',
-  side:2
+  side:2,
 })
 
 const ground = new Mesh(planeGeom, material);
-ground.position.z  =0;
+ground.position.z=0;
 scene.add(ground)
 
 
@@ -36,15 +42,12 @@ const characterMesh = new Mesh(new ConeGeometry(0.2, 2, 16), new MeshBasicMateri
 }));
 
 characterMesh.position.x = -3;
-characterMesh.position.z = 1;
+characterMesh.position.z = debugObj.z;
 scene.add(characterMesh);
 
 
 
-const debugObj = {
-  rotateSpeed: 0.05,
-  speed: 0.05
-}
+
 
 scene.gui.add(debugObj, 'rotateSpeed').min(0.01).max(0.1).step(0.01)
 scene.gui.add(debugObj, 'speed').min(0.01).max(0.1).step(0.01)
@@ -90,7 +93,7 @@ const polyLine = createCircleBuffer32Array(10,10000);
 world.createCollider(RAPIER.ColliderDesc.polyline(polyLine.verticies),groundBody);
 
 const wallMaterial = new MeshBasicMaterial({
-  color: 'red',
+  color: 'brown',
   side: THREE.DoubleSide
 })
 
@@ -111,12 +114,12 @@ const cubeGeom = new THREE.SphereGeometry(0.3)
 const cubeMesh = new THREE.Mesh(cubeGeom, new THREE.MeshBasicMaterial({
   color: 'orange'
 }))
-cubeMesh.position.z = 1;
+cubeMesh.position.z = debugObj.z;
 scene.add(cubeMesh)
 const cubeBody = world.createRigidBody(RAPIER.RigidBodyDesc.dynamic().setCcdEnabled(true).setTranslation(3, 0).setCanSleep(false))
 
 const cubeShape = RAPIER.ColliderDesc.ball(0.3).setMass(0.5).setRestitution(1.1);
-world.createCollider(cubeShape, cubeBody)
+const collider = world.createCollider(cubeShape, cubeBody)
 dynamicBodies.push([cubeMesh, cubeBody])
 
 
@@ -136,7 +139,10 @@ let characterCollider = world.createCollider(
 );
 
 let characterController = world.createCharacterController(0.1);
-scene.camera.position.z = 10
+scene.camera.position.z = 15
+scene.camera.rotation.x = Math.PI/6
+scene.camera.position.y = -13
+
 scene.start()
 //stats.update()
 
@@ -191,7 +197,7 @@ scene.addUpdateHandler((elapsedTime, delta) => {
   for (let i = 0;  i < dynamicBodies.length; i++) {
     try {
       const body = dynamicBodies[i][1];
-      const newPhysicsPosition = new THREE.Vector3(body.translation().x, body.translation().y, 1);
+      const newPhysicsPosition = new THREE.Vector3(body.translation().x, body.translation().y, debugObj.z);
       dynamicBodies[i][0].position.copy(newPhysicsPosition)
       dynamicBodies[i][0].rotation.z = dynamicBodies[i][1].rotation();
       const origin:Vector2 = body.translation() as Vector2;
@@ -252,7 +258,7 @@ const spawnball = (pos: { x: number, y: number }, angle: number) => {
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.2), new THREE.MeshBasicMaterial({
     color: "purple"
   }));
-  mesh.position.z = 1;
+  mesh.position.z = debugObj.z;
   scene.add(mesh)
   // Create the body
   let ballBodyDesc = RAPIER.RigidBodyDesc.dynamic().setLinearDamping(0.1).setCcdEnabled(true);
@@ -277,5 +283,11 @@ document.addEventListener('keypress', (e) => {
     spawnball(characterBody.translation(), characterBody.rotation())
   }
 })
+const gates = new RingGates(scene,world,debugObj.z,{x:0,y:4,z:0}, undefined,1.5);
+const gates1 = new RingGates(scene,world,debugObj.z,{x:5,y:4,z:0}, undefined,1);
+const gates2 = new RingGates(scene,world,debugObj.z,{x:-5,y:4,z:0},undefined,1);
 
-
+const debugRenderer = new RapierDebugRenderer(scene,world);
+scene.addUpdateHandler(()=>{
+  debugRenderer.update()
+})
