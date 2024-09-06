@@ -1,4 +1,4 @@
-import { BoxGeometry, Clock, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { SceneManager, Size } from "../../../engine/base/SceneManager"
 import { ICollisionManager } from "../../../engine/base/ICollisionManager";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -14,9 +14,9 @@ export class ThreeSceneManager extends SceneManager{
 
     private readonly _camera: PerspectiveCamera;
 
-    constructor(size:Size, canvas: HTMLCanvasElement, collisionManager?:ICollisionManager){
+    constructor(size:Size, canvas: HTMLCanvasElement, scene: Scene,collisionManager?:ICollisionManager){
         super(size, collisionManager);
-        this._scene = new Scene();
+        this._scene = scene;
         this._renderer = new WebGLRenderer({
             canvas: canvas,
             antialias: true,
@@ -30,16 +30,7 @@ export class ThreeSceneManager extends SceneManager{
        
         // this._camera.position.z = 15
         // this._camera.rotation.x = Math.PI / 6
-         this._camera.position.z = -13
-
-
-         ///TEST
-        const geom = new BoxGeometry(3, 3, 3);
-        const mesh = new Mesh(geom, new MeshBasicMaterial({
-            color: "red"
-        }))
-        mesh.position.x = 5
-        this._scene.add(mesh)
+         this._camera.position.z = -13       
 
         const controls = new OrbitControls(this._camera, this._renderer.domElement);
         controls.enableDamping = true;

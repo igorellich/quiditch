@@ -17,8 +17,8 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new ThreeBasedMesh(mesh);
     }
     private _createPlayerMesh():Mesh{
-        return new Mesh(new BoxGeometry(2, 6, 16), new MeshBasicMaterial({
-            color: 'red'
+        return new Mesh(new ConeGeometry(0.2, 2, 16), new MeshBasicMaterial({
+            color: 'black'
         }));
     }
     
