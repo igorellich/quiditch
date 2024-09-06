@@ -10,9 +10,6 @@ export class RingGates extends PhysicsMesh{
     constructor(argsObj: PhysicsMeshArgs, radius: number){
         super(argsObj);
         this._ringRadius = radius;
-        
-    }
-    protected _build(): void {
         const material = new MeshBasicMaterial({
             color:'gold'
         });
@@ -34,7 +31,7 @@ export class RingGates extends PhysicsMesh{
         this.mesh = gates;
         //rapier part
 
-        const ringBodyDesc =RAPIER.RigidBodyDesc.fixed().setCcdEnabled(true).setCanSleep(false) 
+        const ringBodyDesc = RAPIER.RigidBodyDesc.fixed().setCcdEnabled(true).setCanSleep(false) 
 
         const rightBorderBody = this._world.createRigidBody(ringBodyDesc);
         rightBorderBody.setTranslation({x:this._translation.x+this._ringRadius, y:this._translation.y}, true) 
@@ -44,18 +41,16 @@ export class RingGates extends PhysicsMesh{
         const middleBody = this._world.createRigidBody(ringBodyDesc);
         middleBody.setTranslation(this._translation, true);
         this.body = middleBody;
-        const middleColliderDesc = RAPIER.ColliderDesc.cuboid(this._ringRadius, 0.2).setSensor(true).setActiveEvents(RAPIER.ActiveEvents.CONTACT_FORCE_EVENTS); 
+        const middleColliderDesc = RAPIER.ColliderDesc.cuboid(this._ringRadius, 0.2).setActiveEvents(RAPIER.ActiveEvents.CONTACT_FORCE_EVENTS); 
         const borderColliderDesc = RAPIER.ColliderDesc.cuboid(0.1, 0.1).setRestitution(1.1);
 
         const leftcollider = this._world.createCollider(borderColliderDesc, leftBorderBody)
         const rightcollider = this._world.createCollider(borderColliderDesc, rightBorderBody)
         
-        const middleCollider = this._world.createCollider(middleColliderDesc, middleBody).setCollisionGroups(this._filterGroups)
-
-
-
-
-        
+        const middleCollider = this._world.createCollider(middleColliderDesc, middleBody);
+        middleCollider.setCollisionGroups(this._filterGroups)
+        middleCollider.setSensor(true);
     }
+
     
 }

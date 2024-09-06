@@ -22,13 +22,10 @@ export abstract class PhysicsMesh {
         this._translation = argsObj.translation||{x:0,y:0,z:0};
         this._rotation = argsObj.rotation || {x:0, y:0, z:0};
         this._filterGroups = interactionGroups(argsObj.collisionMemberGroups||[],argsObj.collisionFilterGroups||[]);
-        setTimeout(() => {
-            this._build();
-        }, 50)
-
+      
     }
     public abstract update(): void;
-    protected abstract _build(): void;
+   
 }
 export class Vector {
     public x: number = 0;

@@ -135,14 +135,17 @@ const character = new CharacterController(
     scene,
     world,
     zHeight: debugObj.z,
-    collisionFilterGroups: [CollisionGroups.wall, CollisionGroups.gates],
+    collisionFilterGroups: [
+      CollisionGroups.wall,
+      CollisionGroups.gates
+    ],
     collisionMemberGroups: [CollisionGroups.character]
   },
   charArgs)
 //joint
-let params = RAPIER.JointData.revolute({ x: 0.8, y: 0.0 }, { x: 0.1, y: 0.0 });
-let joint = world.createImpulseJoint(params, character.body as RigidBody, cubeBody, true);
-(joint as RAPIER.RevoluteImpulseJoint).configureMotorVelocity(5.0, 0.0);
+// let params = RAPIER.JointData.revolute({ x: 0.8, y: 0.0 }, { x: 0.1, y: 0.0 });
+// let joint = world.createImpulseJoint(params, character.body as RigidBody, cubeBody, true);
+// (joint as RAPIER.RevoluteImpulseJoint).configureMotorVelocity(5.0, 0.0);
 
 
 scene.addUpdateHandler((elapsedTime, delta) => {
