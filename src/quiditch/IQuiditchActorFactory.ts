@@ -1,4 +1,5 @@
 
 export interface IQuiditchFactory<T>{
-    createPlayer():Promise<T>
+    createPlayer():Promise<T>;
+    createBall():Promise<T>
 }

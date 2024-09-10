@@ -1,4 +1,4 @@
-import { GameInputActions, KeyboardInputMap } from "../../constants";
+import { GameInputActions, KeyboardInputMap } from "../../quiditch/constants";
 import { InputController } from "./BaseInput";
 
 

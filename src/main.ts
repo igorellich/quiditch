@@ -4,7 +4,7 @@ import RAPIER from '@dimforge/rapier2d';
 
 import SimpleScene from './components/SimpleScene';
 import { RapierDebugRenderer } from './utils/debugRenderer';
-import { CollisionGroups, GameInputActions } from './constants';
+import { CollisionGroups, GameInputActions } from './quiditch/constants';
 import { Character } from './components/character/Character';
 import { InputController } from './engine/controls/BaseInput';
 import { KeyboardInputController } from './engine/controls/KeyboardInput';

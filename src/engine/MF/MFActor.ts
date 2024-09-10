@@ -4,16 +4,20 @@ import { IBody } from "./IBody";
 import { IMesh } from "./IMesh";
 
 export class MFActor extends Actor{
+    public async setCollisions<TCollision>(memberGroups: TCollision[], filterGroups: TCollision[]): Promise<void> {
+        this._body.setCollisions(memberGroups, filterGroups)
+    }
     
     
     private readonly _body:IBody;
     private readonly _mesh:IMesh;
-    public constructor(body:IBody, mesh:IMesh){
-        super();
+    public constructor(body:IBody, mesh:IMesh, speed:number, rotationSpeed:number){
+        super(speed, rotationSpeed);
         this._mesh = mesh;
         this._body = body;
     }
-    public async update(): Promise<void> {
+    public async tick(elapsedTime: number, deltaTime: number): Promise<void> {
+        this._body.tick(elapsedTime, deltaTime);
         const position = await this._body.getPosition();
         this._mesh.setPosition(position.x, position.y);
 

@@ -1,6 +1,6 @@
 import { Mesh } from "three";
-import { IMesh } from "../../../engine/MF/IMesh";
-import { Vector2d } from "../../../engine/base/Vector2d";
+import { IMesh } from "../IMesh";
+import { Vector2d } from "../../base/Vector2d";
 
 export class ThreeBasedMesh implements IMesh{
 

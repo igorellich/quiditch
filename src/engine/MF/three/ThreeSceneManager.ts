@@ -1,6 +1,6 @@
 import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
-import { SceneManager, Size } from "../../../engine/base/SceneManager"
-import { ICollisionManager } from "../../../engine/base/ICollisionManager";
+import { SceneManager, Size } from "../../base/SceneManager"
+import { ICollisionManager } from "../../base/ICollisionManager";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 export class ThreeSceneManager extends SceneManager{
@@ -63,7 +63,7 @@ export class ThreeSceneManager extends SceneManager{
     }
     public startTime(): void {
         this._clock = new Clock();
-        this._renderer.setAnimationLoop(this.updateActors.bind(this));
+        this._renderer.setAnimationLoop(this.tick.bind(this));
     }
     public stopTime(): void {
         this._renderer.setAnimationLoop(null);

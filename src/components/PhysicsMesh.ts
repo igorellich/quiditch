@@ -1,6 +1,6 @@
 import RAPIER, { RigidBody, World } from "@dimforge/rapier2d";
 import { Object3D, Vector2 } from "three";
-import { CollisionGroups } from "../constants";
+import { CollisionGroups } from "../quiditch/constants";
 import { interactionGroups } from "../utils/interaction-groups";
 import SimpleScene from "./SimpleScene";
 import { InstanceStore } from "../engine/store/InstanceStore";

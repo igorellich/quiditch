@@ -3,7 +3,7 @@ import RAPIER, { ActiveCollisionTypes } from "@dimforge/rapier2d";
 import { createArenaBuffer32Array } from "../../tools";
 import { PhysicsMesh, PhysicsMeshArgs } from "../PhysicsMesh";
 import { AmbientLight, Mesh, MeshBasicMaterial, PlaneGeometry } from "three";
-import { CollisionGroups } from "../../constants";
+import { CollisionGroups } from "../../quiditch/constants";
 import { RingGates } from "./RingGates";
 
 export class Arena extends PhysicsMesh {

@@ -1,8 +1,9 @@
 import { Actor } from "./Actor";
 import { ICollisionManager } from "./ICollisionManager";
+import { ITickable } from "./ITickable";
 
 export abstract class SceneManager{
-    private readonly _actors: Actor[]=[];
+    private readonly _tickers: ITickable[]=[];
     private _prevTime: number = 0;
     protected _size: Size;
     private readonly _collisionManager?:ICollisionManager;
@@ -16,31 +17,34 @@ export abstract class SceneManager{
     public abstract stopTime():void;
     protected abstract _getElapsedTime():number;
     protected abstract _draw(): void;
-    protected updateActors() {
+    protected tick() {
         const elapsedTime = this._getElapsedTime();
         const deltaTime = elapsedTime - (this._prevTime);
         this._prevTime = elapsedTime;
-        for (const actor of this._actors) {
-            actor.update(elapsedTime, deltaTime);
+        for (const actor of this._tickers) {
+            actor.tick(elapsedTime, deltaTime);
         }
         if(this._collisionManager){
             this._collisionManager.step(deltaTime);
-            const collisions = this._collisionManager.getCollisions(this._actors);
+            const collisions = this._collisionManager.getCollisions(this._tickers);
+            if(collisions.length>0){
+                console.log(collisions);
+            }
         }
         this._draw()
     }
 
-    public addActor(actor: Actor) {
-        if (actor && this._actors.indexOf(actor) < 0) {
-            this._actors.push(actor);
+    public addTickable(tickObject: ITickable) {
+        if (tickObject && this._tickers.indexOf(tickObject) < 0) {
+            this._tickers.push(tickObject);
         }
     }
 
-    public removeActor(actor: Actor) {
+    public removeTickable(actor: Actor) {
         if (actor) {
-            const actorIndex = this._actors.indexOf(actor);
+            const actorIndex = this._tickers.indexOf(actor);
             if (actorIndex >= 0) {
-                this._actors.splice(actorIndex, 1);
+                this._tickers.splice(actorIndex, 1);
             }
         }
     }

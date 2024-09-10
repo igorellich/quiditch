@@ -1,4 +1,4 @@
-import { GameInputActions } from "../../constants";
+import { GameInputActions } from "../../quiditch/constants";
 import { InputController } from "../../engine/controls/BaseInput";
 
 import { Character, CharacterArgs } from "./Character";
