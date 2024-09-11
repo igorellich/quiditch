@@ -2,8 +2,7 @@ import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { SceneManager, Size } from "../../base/SceneManager"
 import { IPhysicsManager } from "../../base/IPhysicsManager";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { Actor } from "../../base/Actor";
-import { Vector2d } from "../../base/Vector2d";
+
 
 export class ThreeSceneManager extends SceneManager{   
    

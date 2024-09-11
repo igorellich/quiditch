@@ -1,8 +1,7 @@
-import { IObject2D } from "./IObject2D";
-import { ITickable } from "./ITickable";
+import { IActor } from "./IActor";
 import { Vector2d } from "./Vector2d";
 
-export abstract class Actor implements IObject2D, ITickable{
+export abstract class Actor implements IActor{
    
     private readonly _speed: number;
 
@@ -20,6 +19,7 @@ export abstract class Actor implements IObject2D, ITickable{
         this._speed = speed;
         this._rotationSpeed = rotationSpeed;
     }
+    
     public abstract  setPosition(x: number, y: number): Promise<void>;
     public abstract  getPosition(): Promise<Vector2d>;
     public abstract  setRotation(rotation: number): Promise<void>;

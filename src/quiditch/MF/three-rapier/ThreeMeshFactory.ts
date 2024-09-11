@@ -28,7 +28,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         }));
     }
     private _createBallrMesh():Mesh{
-        return new Mesh(new SphereGeometry(1,16,8), new MeshBasicMaterial({
+        return new Mesh(new SphereGeometry(0.5,16,32), new MeshBasicMaterial({
             color: 'pink'
         }));
     }
