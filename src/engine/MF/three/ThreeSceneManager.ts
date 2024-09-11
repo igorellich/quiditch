@@ -1,9 +1,11 @@
 import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { SceneManager, Size } from "../../base/SceneManager"
-import { ICollisionManager } from "../../base/ICollisionManager";
+import { IPhysicsManager } from "../../base/IPhysicsManager";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { Actor } from "../../base/Actor";
+import { Vector2d } from "../../base/Vector2d";
 
-export class ThreeSceneManager extends SceneManager{
+export class ThreeSceneManager extends SceneManager{   
    
 
     private readonly _renderer: WebGLRenderer;
@@ -14,7 +16,7 @@ export class ThreeSceneManager extends SceneManager{
 
     private readonly _camera: PerspectiveCamera;
 
-    constructor(size:Size, canvas: HTMLCanvasElement, scene: Scene,collisionManager?:ICollisionManager){
+    constructor(size:Size, canvas: HTMLCanvasElement, scene: Scene,collisionManager?:IPhysicsManager){
         super(size, collisionManager);
         this._scene = scene;
         this._renderer = new WebGLRenderer({

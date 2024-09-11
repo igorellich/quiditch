@@ -8,7 +8,7 @@ import { RapierBasedBody } from "../../../engine/MF/rapier/RapierBasedBody";
 
 export class RapierPlayerController extends ActorController<QuiditchInputActions, Actor>{
     
-    protected _actor: MFActor;
+    
 
     private _speed: number = 0;
 
@@ -45,7 +45,7 @@ export class RapierPlayerController extends ActorController<QuiditchInputActions
        
     }
     public async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-        const body = this._actor.getBody() as RapierBasedBody;
+        const body = (this._actor as MFActor).getBody() as RapierBasedBody;
         const collider = body.getRigidBody().collider(0);
         if (body && this._characterController && collider) {
             const newRotation = await this._actor.getRotation() + this._rotationSpeed;

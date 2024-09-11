@@ -1,13 +1,14 @@
 import { Actor } from "./Actor";
-import { ICollisionManager } from "./ICollisionManager";
+import { IPhysicsManager, RayCastResult } from "./IPhysicsManager";
 import { ITickable } from "./ITickable";
+import { Vector2d } from "./Vector2d";
 
 export abstract class SceneManager{
     private readonly _tickers: ITickable[]=[];
     private _prevTime: number = 0;
     protected _size: Size;
-    private readonly _collisionManager?:ICollisionManager;
-    constructor(size:Size, collisionManager?:ICollisionManager){
+    protected readonly _collisionManager?:IPhysicsManager;
+    constructor(size:Size, collisionManager?:IPhysicsManager){
       
         this._size = size;
         this._collisionManager  =collisionManager;
@@ -17,6 +18,15 @@ export abstract class SceneManager{
     public abstract stopTime():void;
     protected abstract _getElapsedTime():number;
     protected abstract _draw(): void;
+    public async castRay(origin: Vector2d, dir:Vector2d, rayLength: number, sourceActor?: Actor): Promise<RayCastResult>{
+        if(this._collisionManager){
+           return this._collisionManager.castRay(origin, dir, rayLength, sourceActor);
+        }
+        return null;
+    }
+
+
+
     protected tick() {
         const elapsedTime = this._getElapsedTime();
         const deltaTime = elapsedTime - (this._prevTime);
@@ -40,7 +50,7 @@ export abstract class SceneManager{
         }
     }
 
-    public removeTickable(actor: Actor) {
+    public removeTickable(actor: ITickable) {
         if (actor) {
             const actorIndex = this._tickers.indexOf(actor);
             if (actorIndex >= 0) {
@@ -48,6 +58,13 @@ export abstract class SceneManager{
             }
         }
     }
+
+    public getActors():Actor[]{
+        return this._tickers.filter(t=>{
+            return t instanceof Actor;
+        })
+    }
+
 }
 
 

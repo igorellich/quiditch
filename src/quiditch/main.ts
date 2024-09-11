@@ -10,7 +10,7 @@ import { KeyboardInputController } from "../engine/controls/KeyboardInput";
 import { GameInputActions } from "./constants";
 import { RapierPlayerController } from "./MF/three-rapier/RapierPlayerController";
 import { MFActor } from "../engine/MF/MFActor";
-import { RapierCollisionManager } from "../engine/MF/rapier/RapierCollisionManager";
+import { RapierPhysicsManager } from "../engine/MF/rapier/RapierPhysicsManager";
 
 
 let gravity = { x: 0.0, y: 0.0 };
@@ -20,7 +20,7 @@ const scene = new Scene();
 const inputController: InputController<GameInputActions> = new KeyboardInputController({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] });
 
 const canvas = document.querySelector("#app") as HTMLCanvasElement;
-const collisionManager = new RapierCollisionManager(world);
+const collisionManager = new RapierPhysicsManager(world);
 const sceneManager = new ThreeSceneManager({ height: window.innerHeight, width: window.innerWidth }, canvas, scene, collisionManager);
 const bodyFactory = new RapierBodyFactory(world);
 const meshFactory = new ThreeMeshFactory(scene, 2);

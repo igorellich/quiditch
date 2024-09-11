@@ -28,4 +28,5 @@ export abstract class Actor implements IObject2D, ITickable{
     public abstract  tick(elapsedTime:number, deltaTime: number):Promise<void>;
 
     public abstract setCollisions<TCollision>(memberGroups:TCollision[], filterGroup:TCollision[]):Promise<void>;
+      
 }

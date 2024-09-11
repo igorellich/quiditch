@@ -1,15 +1,37 @@
-import { EventQueue, World } from "@dimforge/rapier2d";
+import { EventQueue, QueryFilterFlags, Ray, World } from "@dimforge/rapier2d";
 import { Actor } from "../../base/Actor";
-import { ICollisionManager } from "../../base/ICollisionManager";
+import { IPhysicsManager, RayCastResult } from "../../base/IPhysicsManager";
 import { Collision } from "../../base/Collision";
 import { MFActor } from "../MFActor";
 import { RapierBasedBody } from "./RapierBasedBody";
+import { Vector2d } from "../../base/Vector2d";
+import { Vector2 } from "three";
 
-export class RapierCollisionManager implements ICollisionManager {
+export class RapierPhysicsManager implements IPhysicsManager {
     private readonly _world: World;
     private _collisionInfos: CollisionInfo[] = [];
     constructor(world: World) {
         this._world = world;
+    }
+    async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: MFActor, targetActors?:MFActor[]): Promise<RayCastResult> {
+        const body = sourceActor.getBody() as RapierBasedBody;
+        const result:RayCastResult={hit:false};
+        const castResult = this._world.castRay(new Ray(origin,dir),rayLength,false,null,null,null,body.getRigidBody());
+        await this._world.bodies.forEach(async body=>{
+
+             if (body === castResult.collider.parent()) {
+                 result.hit = true;
+                 result.instance = targetActors.find(a => (a.getBody() as RapierBasedBody).getRigidBody() === body);
+
+                 const point: Vector2d = {
+                     x: origin.x + dir.x * castResult.timeOfImpact,
+                     y: origin.y + dir.y * castResult.timeOfImpact
+                 };
+                 result.distance = (new Vector2(point.x - origin.x, point.y - origin.y)).length();
+             }
+        })
+        return result;
+        
     }
     step(delta: number): void {
         this._world.timestep = Math.min(delta, 0.1)
