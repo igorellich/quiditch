@@ -6,6 +6,7 @@ import { MFActor } from "../../engine/MF/MFActor";
 import { CollisionGroups } from "../constants";
 import { IActor } from "../../engine/base/IActor";
 import { PlayerActor } from "../components/PlayerActor";
+import { BodyActorDecorator } from "../../engine/MF/BodyActorDecorator";
 
 
 export class MFQuiditchFactory implements IQuiditchFactory<IActor>{
@@ -17,11 +18,12 @@ export class MFQuiditchFactory implements IQuiditchFactory<IActor>{
         this._bodyFactory = bodyFactory;
         this._meshFactory = meshFactory;
     }
-    async createBall(): Promise<IActor> {
+    async createBall(): Promise<BodyActorDecorator> {
         const body = await this._bodyFactory.createBall();
         const mesh = await this._meshFactory.createBall();
         body.setCollisions([CollisionGroups.ball],[CollisionGroups.character,CollisionGroups.gates,CollisionGroups.wall])
-        return new MFActor(body, mesh, 0.2,0.2);
+        const baseActor = new MFActor(body, mesh, 0.2,0.2);
+        return new BodyActorDecorator(baseActor);
     }
     async createPlayer(): Promise<PlayerActor> {
         const body = await this._bodyFactory.createPlayer();
