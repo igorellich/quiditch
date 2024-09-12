@@ -110,7 +110,7 @@ scene.addUpdateHandler((elapsedTime, delta) => {
   })
 
  
-  debugRenderer.update()
+  debugRenderer.tick(elapsedTime, delta)
 })
 
 

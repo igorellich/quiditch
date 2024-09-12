@@ -1,9 +1,10 @@
 import { Actor } from "../base/Actor";
+import { IBodiedActor } from "../base/IBodiedActor";
 import { Vector2d } from "../base/Vector2d";
 import { IBody } from "./IBody";
 import { IMesh } from "./IMesh";
 
-export class MFActor extends Actor{
+export class MFActor extends Actor implements IBodiedActor{
     public async setCollisions<TCollision>(memberGroups: TCollision[], filterGroups: TCollision[]): Promise<void> {
         this._body.setCollisions(memberGroups, filterGroups)
     }

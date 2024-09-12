@@ -1,7 +1,8 @@
 
 import RAPIER from '@dimforge/rapier2d'
 import * as THREE from 'three'
-export class RapierDebugRenderer {
+import { ITickable } from '../engine/base/ITickable'
+export class RapierDebugRenderer implements ITickable {
     mesh
     world
     enabled = true
@@ -15,8 +16,9 @@ export class RapierDebugRenderer {
       this.mesh.frustumCulled = false
       scene.add(this.mesh)
     }
+
   
-    update() {
+    public async tick(elapsedTime: number, deltaTime: number):Promise<void> {
       if (this.enabled) {
         const { vertices, colors } = this.world.debugRender()
         this.mesh.geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 2))

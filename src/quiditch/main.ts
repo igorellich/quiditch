@@ -11,6 +11,7 @@ import { GameInputActions } from "./constants";
 import { RapierPlayerController } from "./MF/three-rapier/RapierPlayerController";
 import { MFActor } from "../engine/MF/MFActor";
 import { RapierPhysicsManager } from "../engine/MF/rapier/RapierPhysicsManager";
+import { RapierDebugRenderer } from "../utils/debugRenderer";
 
 
 let gravity = { x: 0.0, y: 0.0 };
@@ -24,17 +25,20 @@ const collisionManager = new RapierPhysicsManager(world);
 const sceneManager = new ThreeSceneManager({ height: window.innerHeight, width: window.innerWidth }, canvas, scene, collisionManager);
 const bodyFactory = new RapierBodyFactory(world);
 const meshFactory = new ThreeMeshFactory(scene, 2);
-const quiditchFactory = new MFQuiditchFactory(bodyFactory, meshFactory);
+const quiditchFactory = new MFQuiditchFactory(bodyFactory, meshFactory,sceneManager);
 const player = await quiditchFactory.createPlayer();
 
 sceneManager.addTickable(player);
 
 
 const ball = await quiditchFactory.createBall();
-ball.setPosition(2,2);
+ball.setPosition(0,1.5);
 sceneManager.addTickable(ball);
 
-const rapierPlayerController = new RapierPlayerController(player as MFActor, inputController, world);
+const rapierPlayerController = new RapierPlayerController(player, inputController, world);
 sceneManager.addTickable(rapierPlayerController);
 
+
+const debugRenderer = new RapierDebugRenderer(scene, world, 2);
+sceneManager.addTickable(debugRenderer);
 sceneManager.startTime();

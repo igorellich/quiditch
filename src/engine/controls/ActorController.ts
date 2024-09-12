@@ -1,8 +1,9 @@
 import { Actor } from "../base/Actor";
+import { IActor } from "../base/IActor";
 import { ITickable } from "../base/ITickable";
 import { InputController } from "./BaseInput";
 
-export abstract class ActorController<TGameActions, TActor extends Actor> implements ITickable  {
+export abstract class ActorController<TGameActions, TActor extends IActor> implements ITickable  {
 
     protected _actor:TActor;
 

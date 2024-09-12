@@ -1,4 +1,6 @@
 import { Actor } from "./Actor";
+import { IActor } from "./IActor";
+import { IBodiedActor } from "./IBodiedActor";
 import { IPhysicsManager, RayCastResult } from "./IPhysicsManager";
 import { ITickable } from "./ITickable";
 import { Vector2d } from "./Vector2d";
@@ -18,9 +20,9 @@ export abstract class SceneManager{
     public abstract stopTime():void;
     protected abstract _getElapsedTime():number;
     protected abstract _draw(): void;
-    public async castRay(origin: Vector2d, dir:Vector2d, rayLength: number, sourceActor?: Actor): Promise<RayCastResult>{
+    public async castRay(origin: Vector2d, dir:Vector2d, rayLength: number, sourceActor?: IBodiedActor): Promise<RayCastResult>{
         if(this._collisionManager){
-           return this._collisionManager.castRay(origin, dir, rayLength, sourceActor);
+           return this._collisionManager.castRay(origin, dir, rayLength, sourceActor, this.getActors() as IBodiedActor[]);
         }
         return null;
     }
@@ -59,7 +61,7 @@ export abstract class SceneManager{
         }
     }
 
-    public getActors():Actor[]{
+    public getActors():IActor[]{
         return this._tickers.filter(t=>{
             return t instanceof Actor;
         })

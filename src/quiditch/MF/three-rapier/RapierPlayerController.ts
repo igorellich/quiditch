@@ -5,8 +5,9 @@ import { ActorController } from "../../../engine/controls/ActorController";
 import { InputController } from "../../../engine/controls/BaseInput";
 import { GameInputActions as QuiditchInputActions } from "../../constants";
 import { RapierBasedBody } from "../../../engine/MF/rapier/RapierBasedBody";
+import { IBodiedActor } from "../../../engine/base/IBodiedActor";
 
-export class RapierPlayerController extends ActorController<QuiditchInputActions, Actor>{
+export class RapierPlayerController extends ActorController<QuiditchInputActions, IBodiedActor>{
     
     
 
@@ -16,7 +17,7 @@ export class RapierPlayerController extends ActorController<QuiditchInputActions
     private _rotationSpeed: number = 0;
 
     private _characterController: KinematicCharacterController;
-    constructor(actor: MFActor, inputController: InputController<QuiditchInputActions>, world: World) {
+    constructor(actor: IBodiedActor, inputController: InputController<QuiditchInputActions>, world: World) {
         super(actor, inputController);
         this._actor = actor;
         this._characterController = world.createCharacterController(0.1);

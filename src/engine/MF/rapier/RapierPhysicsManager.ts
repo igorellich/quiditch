@@ -13,25 +13,29 @@ export class RapierPhysicsManager implements IPhysicsManager {
     constructor(world: World) {
         this._world = world;
     }
-    async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: MFActor, targetActors?:MFActor[]): Promise<RayCastResult> {
+    async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: MFActor, targetActors?: MFActor[]): Promise<RayCastResult> {
         const body = sourceActor.getBody() as RapierBasedBody;
-        const result:RayCastResult={hit:false};
-        const castResult = this._world.castRay(new Ray(origin,dir),rayLength,false,null,null,null,body.getRigidBody());
-        await this._world.bodies.forEach(async body=>{
+        const result: RayCastResult = { hit: false };
+        //console.log(origin,dir)
+        const castResult = this._world.castRay(new Ray(origin, dir), rayLength, false, undefined,
+        undefined, undefined, body.getRigidBody());
+        if (castResult) {
+            await this._world.bodies.forEach(async body => {
 
-             if (body === castResult.collider.parent()) {
-                 result.hit = true;
-                 result.instance = targetActors.find(a => (a.getBody() as RapierBasedBody).getRigidBody() === body);
+                if (body === castResult.collider.parent()) {
+                    result.hit = true;
+                    result.instance = targetActors.find(a => (a.getBody() as RapierBasedBody).getRigidBody() === body);
 
-                 const point: Vector2d = {
-                     x: origin.x + dir.x * castResult.timeOfImpact,
-                     y: origin.y + dir.y * castResult.timeOfImpact
-                 };
-                 result.distance = (new Vector2(point.x - origin.x, point.y - origin.y)).length();
-             }
-        })
+                    const point: Vector2d = {
+                        x: origin.x + dir.x * castResult.timeOfImpact,
+                        y: origin.y + dir.y * castResult.timeOfImpact
+                    };
+                    result.distance = (new Vector2(point.x - origin.x, point.y - origin.y)).length();
+                }
+            })
+        }
         return result;
-        
+
     }
     step(delta: number): void {
         this._world.timestep = Math.min(delta, 0.1)
