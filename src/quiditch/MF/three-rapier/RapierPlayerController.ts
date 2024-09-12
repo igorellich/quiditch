@@ -35,10 +35,10 @@ export class RapierPlayerController extends ActorController<QuiditchInputActions
                 this._speed = started ? -this._actor.getSpeed() : 0;
                 break;
             case QuiditchInputActions.turnLeft:
-                this._rotationSpeed = started ? -this._actor.getRotationSpeed() : 0;
+                this._rotationSpeed = started ? this._actor.getRotationSpeed() : 0;
                 break;
             case QuiditchInputActions.turnRight:
-                this._rotationSpeed = started ? this._actor.getRotationSpeed() : 0;
+                this._rotationSpeed = started ? -this._actor.getRotationSpeed() : 0;
                 break;
 
 

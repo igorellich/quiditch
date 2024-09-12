@@ -8,6 +8,7 @@ import { IActor } from "../../engine/base/IActor";
 import { PlayerActor } from "../components/PlayerActor";
 import { BodyActorDecorator } from "../../engine/MF/BodyActorDecorator";
 import { SceneManager } from "../../engine/base/SceneManager";
+import { MeshBasedActor } from "../../engine/MF/three/MeshBasedActor";
 
 
 export class MFQuiditchFactory implements IQuiditchFactory<IActor> {
@@ -20,6 +21,10 @@ export class MFQuiditchFactory implements IQuiditchFactory<IActor> {
         this._bodyFactory = bodyFactory;
         this._meshFactory = meshFactory;
         this._sceneManager = sceneManager;
+    }
+    async createPlane(): Promise<IActor> {
+        const mesh = await this._meshFactory.createPlane();
+        return new MeshBasedActor(mesh);
     }
     async createBall(): Promise<BodyActorDecorator> {
         const body = await this._bodyFactory.createBall();

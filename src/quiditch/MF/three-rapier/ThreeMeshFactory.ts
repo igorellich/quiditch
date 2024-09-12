@@ -1,4 +1,4 @@
-import { ConeGeometry, Mesh, MeshBasicMaterial, Scene, SphereGeometry } from "three";
+import { ConeGeometry, Mesh, MeshBasicMaterial, PlaneGeometry, Scene, SphereGeometry } from "three";
 import { IMesh } from "../../../engine/MF/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { ThreeBasedMesh } from "../../../engine/MF/three/ThreeBasedMesh";
@@ -9,6 +9,14 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     constructor(scene:Scene, zHeight: number){
         this._scene = scene;
         this._zHeight = zHeight;
+    }
+    async createPlane(): Promise<IMesh> {
+        const planeMesh = new Mesh(new PlaneGeometry(500, 500, 2), new MeshBasicMaterial({
+            color: 'green'
+        }));
+        this._scene.add(planeMesh);
+        planeMesh.position.z = this._zHeight;
+        return new ThreeBasedMesh(planeMesh);
     }
     async createBall(): Promise<IMesh> {
         const mesh = this._createBallrMesh();

@@ -24,6 +24,7 @@ export class MFActor extends Actor implements IBodiedActor{
 
         const rotation = await this._body.getRotation();
         this._mesh.setRotation(rotation);
+        
     }
 
     public async setPosition(x: number, y: number): Promise<void> {

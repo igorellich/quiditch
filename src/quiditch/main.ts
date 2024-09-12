@@ -1,5 +1,5 @@
 import { World } from "@dimforge/rapier2d";
-import { Scene } from "three";
+import { Scene, Vector2, Vector3 } from "three";
 import { RapierBodyFactory } from "./MF/three-rapier/RapierBodyFactory";
 import { MFQuiditchFactory } from "./MF/MFQuiditchActorFactory";
 import { ThreeMeshFactory } from "./MF/three-rapier/ThreeMeshFactory";
@@ -32,13 +32,27 @@ sceneManager.addTickable(player);
 
 
 const ball = await quiditchFactory.createBall();
-ball.setPosition(0,1.5);
+ball.setPosition(5,5);
 sceneManager.addTickable(ball);
 
 const rapierPlayerController = new RapierPlayerController(player, inputController, world);
 sceneManager.addTickable(rapierPlayerController);
 
+const plane = await quiditchFactory.createPlane();
+sceneManager.addTickable(plane);
 
 const debugRenderer = new RapierDebugRenderer(scene, world, 2);
 sceneManager.addTickable(debugRenderer);
+
+
 sceneManager.startTime();
+document.addEventListener("click",function (event){
+    
+    const rect = canvas.getBoundingClientRect();
+    let viewportDown = new Vector2();
+    viewportDown.x =   ( ( ( event.clientX - rect.left) / rect.width ) * 2 ) - 1;
+    viewportDown.y = - ( ( ( event.clientY - rect.top) / rect.height ) * 2 ) + 1;
+    const res:Vector3= new Vector3(viewportDown.x,viewportDown.y,0);
+    console.log(res.unproject(sceneManager._camera));
+   
+})
