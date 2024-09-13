@@ -1,6 +1,6 @@
 
 import { Vector2 } from "three";
-import { InstanceStore } from "../../engine/store/InstanceStore";
+import { InstanceStore } from "../store/InstanceStore";
 import SimpleScene from "../SimpleScene";
 import { BaseBall } from "../balls/BaseBall";
 import { Character, CharacterArgs } from "../character/Character";

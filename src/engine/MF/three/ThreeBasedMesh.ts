@@ -9,12 +9,15 @@ export class ThreeBasedMesh implements IMesh{
     constructor(mesh:Mesh){
         this._mesh = mesh;
     }
+    public getMesh(){
+        return this._mesh;
+    }
 
     async setPosition(x: number, y: number): Promise<void> {
         this._mesh.position.set(x, y, this._mesh.position.z);
     }
     async getPosition(): Promise<Vector2d> {
-        return this._mesh.position;
+        return new Vector2d(this._mesh.position.x,this._mesh.position.y);
     }
     async setRotation(rotation: number): Promise<void> {
        this._mesh.rotation.z  = rotation;

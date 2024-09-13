@@ -1,6 +1,6 @@
-import { Actor } from "./Actor";
+import { Actor } from "./Actor/Actor";
 import { Collision } from "./Collision";
-import { IBodiedActor } from "./IBodiedActor";
+import { IBodiedActor } from "./Actor/IBodiedActor";
 import { ITickable } from "./ITickable";
 import { Vector2d } from "./Vector2d";
 

@@ -1,4 +1,4 @@
-import { IActor } from "../../base/IActor";
+import { IActor } from "../../base/Actor/IActor";
 import { Vector2d } from "../../base/Vector2d";
 import { IMesh } from "../IMesh";
 
@@ -6,6 +6,13 @@ export class MeshBasedActor implements IActor{
     private readonly _mesh:IMesh
     constructor(mesh:IMesh){
         this._mesh = mesh;
+    }
+    async getDirectionVector(): Promise<Vector2d> {
+        let result: Vector2d = undefined
+
+        result = new Vector2d(-Math.sin(await this.getRotation()),Math.cos(await this.getRotation()));       
+
+        return result;
     }
     getSpeed(): number {
         return 0;
@@ -24,6 +31,9 @@ export class MeshBasedActor implements IActor{
     }
     getRotation(): Promise<number> {
         return this._mesh.getRotation();
+    }
+    getMesh(){
+        return this._mesh;
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
        

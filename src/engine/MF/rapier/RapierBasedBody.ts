@@ -32,7 +32,7 @@ export class RapierBasedBody implements IBody{
 
     }
     async getPosition(): Promise<Vector2d> {
-        return this._rigidBody.translation();
+        return new Vector2d(this._rigidBody.translation().x,this._rigidBody.translation().y);
         
     }
     async setRotation(rotation: number): Promise<void> {

@@ -10,7 +10,7 @@ import { InputController } from './engine/controls/BaseInput';
 import { KeyboardInputController } from './engine/controls/KeyboardInput';
 import { CharacterController } from './components/character/CharactecterController';
 import { ContactBall } from './components/balls/ContactBall';
-import { InstanceStore } from './engine/store/InstanceStore';
+import { InstanceStore } from './components/store/InstanceStore';
 import { AICharacterController } from './components/ai/AICharacterController';
 import { Arena } from './components/arena/Arena';
 

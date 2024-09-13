@@ -1,5 +1,5 @@
 import { RigidBody } from "@dimforge/rapier2d";
-import { PhysicsMesh } from "../../components/PhysicsMesh";
+import { PhysicsMesh } from "../PhysicsMesh";
 import { Mesh } from "three";
 
 export class InstanceStore{

@@ -1,5 +1,5 @@
-import { Actor } from "../base/Actor";
-import { IBodiedActor } from "../base/IBodiedActor";
+import { Actor } from "../base/Actor/Actor";
+import { IBodiedActor } from "../base/Actor/IBodiedActor";
 import { Vector2d } from "../base/Vector2d";
 import { IBody } from "./IBody";
 import { IMesh } from "./IMesh";

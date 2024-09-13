@@ -1,10 +1,13 @@
 import { IActor } from "./IActor";
-import { Vector2d } from "./Vector2d";
+import { Vector2d } from "../Vector2d";
 
 export class ActorDecorator implements IActor {
     protected readonly _baseActor: IActor;
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
+    }
+    getDirectionVector(): Promise<Vector2d> {
+        return this._baseActor.getDirectionVector();
     }
     getSpeed(): number {
         return this._baseActor.getSpeed();

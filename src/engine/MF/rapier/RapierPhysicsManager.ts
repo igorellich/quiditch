@@ -1,5 +1,5 @@
 import { EventQueue, QueryFilterFlags, Ray, World } from "@dimforge/rapier2d";
-import { Actor } from "../../base/Actor";
+import { Actor } from "../../base/Actor/Actor";
 import { IPhysicsManager, RayCastResult } from "../../base/IPhysicsManager";
 import { Collision } from "../../base/Collision";
 import { MFActor } from "../MFActor";
@@ -26,10 +26,10 @@ export class RapierPhysicsManager implements IPhysicsManager {
                     result.hit = true;
                     result.instance = targetActors.find(a => (a.getBody() as RapierBasedBody).getRigidBody() === body);
 
-                    const point: Vector2d = {
-                        x: origin.x + dir.x * castResult.timeOfImpact,
-                        y: origin.y + dir.y * castResult.timeOfImpact
-                    };
+                    const point: Vector2d = new Vector2d(
+                        origin.x + dir.x * castResult.timeOfImpact,
+                        origin.y + dir.y * castResult.timeOfImpact
+                    );
                     result.distance = (new Vector2(point.x - origin.x, point.y - origin.y)).length();
                 }
             })

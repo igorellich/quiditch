@@ -1,5 +1,6 @@
+import { Vector2 } from "three";
 import { IActor } from "./IActor";
-import { Vector2d } from "./Vector2d";
+import { Vector2d } from "../Vector2d";
 
 export abstract class Actor implements IActor{
    
@@ -19,7 +20,16 @@ export abstract class Actor implements IActor{
         this._speed = speed;
         this._rotationSpeed = rotationSpeed;
     }
-    
+    public async getDirectionVector(): Promise<Vector2d | undefined> {
+        let result: Vector2d = undefined
+
+        result = new Vector2d(-Math.sin(await this.getRotation()),Math.cos(await this.getRotation()));       
+
+        return result;
+    }
+
+
+
     public abstract  setPosition(x: number, y: number): Promise<void>;
     public abstract  getPosition(): Promise<Vector2d>;
     public abstract  setRotation(rotation: number): Promise<void>;

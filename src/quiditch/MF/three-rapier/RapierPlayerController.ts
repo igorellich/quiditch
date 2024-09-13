@@ -1,11 +1,11 @@
 import { KinematicCharacterController, QueryFilterFlags, Vector2, World } from "@dimforge/rapier2d";
 import { MFActor } from "../../../engine/MF/MFActor";
-import { Actor } from "../../../engine/base/Actor";
+import { Actor } from "../../../engine/base/Actor/Actor";
 import { ActorController } from "../../../engine/controls/ActorController";
 import { InputController } from "../../../engine/controls/BaseInput";
 import { GameInputActions as QuiditchInputActions } from "../../constants";
 import { RapierBasedBody } from "../../../engine/MF/rapier/RapierBasedBody";
-import { IBodiedActor } from "../../../engine/base/IBodiedActor";
+import { IBodiedActor } from "../../../engine/base/Actor/IBodiedActor";
 
 export class RapierPlayerController extends ActorController<QuiditchInputActions, IBodiedActor>{
     

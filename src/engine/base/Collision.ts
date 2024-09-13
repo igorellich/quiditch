@@ -1,4 +1,4 @@
-import { Actor } from "./Actor";
+import { Actor } from "./Actor/Actor";
 
 export type Collision={
     actorA?:Actor;

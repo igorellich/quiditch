@@ -1,5 +1,4 @@
-import { Actor } from "../base/Actor";
-import { IActor } from "../base/IActor";
+import { IActor } from "../base/Actor/IActor";
 import { ITickable } from "../base/ITickable";
 import { InputController } from "./BaseInput";
 

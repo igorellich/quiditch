@@ -1,6 +1,6 @@
-import { Actor } from "./Actor";
-import { IActor } from "./IActor";
-import { IBodiedActor } from "./IBodiedActor";
+import { Actor } from "./Actor/Actor";
+import { IActor } from "./Actor/IActor";
+import { IBodiedActor } from "./Actor/IBodiedActor";
 import { IPhysicsManager, RayCastResult } from "./IPhysicsManager";
 import { ITickable } from "./ITickable";
 import { Vector2d } from "./Vector2d";

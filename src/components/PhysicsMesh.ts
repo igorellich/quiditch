@@ -3,7 +3,7 @@ import { Object3D, Vector2 } from "three";
 import { CollisionGroups } from "../quiditch/constants";
 import { interactionGroups } from "../utils/interaction-groups";
 import SimpleScene from "./SimpleScene";
-import { InstanceStore } from "../engine/store/InstanceStore";
+import { InstanceStore } from "./store/InstanceStore";
 
 
 export abstract class PhysicsMesh {
