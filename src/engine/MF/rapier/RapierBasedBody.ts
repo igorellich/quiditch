@@ -36,10 +36,13 @@ export class RapierBasedBody implements IBody{
     }
     join(target: IMovable): void {
 
-        let params = JointData.revolute({ x: 7, y: 7 }, { x:0, y: 0  });
+        let params = JointData.fixed({ x: 5, y: 0 }, 0,{ x:0.2, y: 0.0  },0);
         if(!this._jointsMap.get(target)){
-        this._jointsMap.set(target, this._world.createImpulseJoint(params, ((target as IBodiedActor).getBody() as RapierBasedBody)._rigidBody, this._rigidBody, true));
-        //(this._jointsMap.get(target) as RevoluteImpulseJoint).configureMotorVelocity(5.0, 0.0);
+        this._jointsMap.set(target, this._world.createImpulseJoint(params,  this._rigidBody,((target as IBodiedActor).getBody() as RapierBasedBody)._rigidBody, true));
+        
+        
+
+        (this._jointsMap.get(target) as RevoluteImpulseJoint).configureMotorVelocity(5.0, 0.0);
         }
         
     }
@@ -60,7 +63,7 @@ export class RapierBasedBody implements IBody{
         this._rigidBody.applyImpulse(directionVector,true);
     }
     async rotate(right: boolean, delta:number): Promise<void> {
-        const rotatingSpeed = right?-this._rotationSpeed:this._rotationSpeed*delta;
+        const rotatingSpeed = right?-this._rotationSpeed*delta*60:this._rotationSpeed*delta*60;
         const newRotation = await this.getRotation() + rotatingSpeed/2;
         await this.setRotation(newRotation);
     }
