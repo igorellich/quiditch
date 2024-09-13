@@ -20,6 +20,7 @@ export class RapierPhysicsManager implements IPhysicsManager {
         const castResult = this._world.castRay(new Ray(origin, dir), rayLength, false, undefined,
         undefined, undefined, body.getRigidBody());
         if (castResult) {
+            console.log(castResult)
             await this._world.bodies.forEach(async body => {
 
                 if (body === castResult.collider.parent()) {

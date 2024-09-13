@@ -15,19 +15,19 @@ export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
     join(target: IMovable): void {
         this._baseActor.join(target);
     }
-    move(backward: boolean, delta:number): void {
-        this._baseActor.move(backward,delta);
+    move(backward: boolean, delta: number): void {
+        this._baseActor.move(backward, delta);
     }
-    rotate(right: boolean, delta:number): void {
-        this._baseActor.rotate(right,delta);
+    rotate(right: boolean, delta: number): void {
+        this._baseActor.rotate(right, delta);
     }
     getBody(): IBody {
         return (this._baseActor as IBodiedActor).getBody();
     }
     protected async castRay(angleDelta: number, rayLength: number) {
         const dir: Vector2d = new Vector2d(
-            Math.sin(await this.getRotation() + angleDelta),
-            Math.cos(await this.getRotation() + angleDelta));
+            -Math.sin(await this.getRotation() + angleDelta),
+            Math.cos(await this.getRotation() + angleDelta)).normalize();
 
         return this._sceneManager.castRay(await this.getPosition(), dir, rayLength, this)
     }

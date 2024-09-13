@@ -2,6 +2,7 @@ import { ActorController } from "../engine/controls/ActorController";
 import { InputController } from "../engine/controls/BaseInput";
 import { GameInputActions as QuiditchInputActions } from "./constants";
 import { IActor } from "../engine/base/Actor/IActor";
+import { PlayerActor } from "./components/PlayerActor";
 
 export class QuiditchPlayerController extends ActorController<QuiditchInputActions, IActor>{
     
@@ -37,7 +38,8 @@ export class QuiditchPlayerController extends ActorController<QuiditchInputActio
                 this._rotating = started?actionType:null;
                 break;
 
-
+            case QuiditchInputActions.attack:
+                (this._actor as PlayerActor).attack();
         }
        
     }
