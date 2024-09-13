@@ -11,13 +11,18 @@ export class MouseInputController extends InputController<GameInputActions> impl
     private _targetPoint: Vector2d;
 
     private _prevAngle: number;
+    private _rotateAction:GameInputActions;
+    private _moveAction:GameInputActions;
 
     private _rotateIndex: number = 1;
-    constructor(actor: IActor, targetPointGetter: (e: MouseEvent) => Vector2d, sceneManager: SceneManager) {
+    constructor(actor: IActor, targetPointGetter: (e: UIEvent) => Vector2d, sceneManager: SceneManager) {
         super();
         this._actor = actor;
         sceneManager.addTickable(this);
         document.addEventListener('click', (e) => {
+            this._targetPoint = targetPointGetter(e);
+        })
+        document.addEventListener('touchend', (e) => {
             this._targetPoint = targetPointGetter(e);
         })
     }
@@ -35,20 +40,32 @@ export class MouseInputController extends InputController<GameInputActions> impl
             }
 
             this._prevAngle = angle;
-
-            if (angle > 4) {
-                this._onInputChange(this._rotateIndex == 1 ? GameInputActions.turnRight : GameInputActions.turnLeft, true);
+            const distance = actorPosion.distanceTo(this._targetPoint);
+            if (angle > 10 && distance> 0.5) {
+                const rotateAction =  GameInputActions.turnRight;//this._rotateIndex == 1 ? GameInputActions.turnRight : GameInputActions.turnLeft;
+                if(this._rotateAction!==rotateAction){
+                    
+                this._onInputChange(rotateAction, true);
+                this._rotateAction = rotateAction;
+                }
 
             } else {
-                this._onInputChange(this._rotateIndex == 1 ? GameInputActions.turnRight : GameInputActions.turnLeft, false);
+                if (this._rotateAction) {
+                    this._onInputChange(this._rotateAction, false);
 
+                    this._rotateAction = null;
+                }
+                
 
-                const distance = actorPosion.distanceTo(this._targetPoint);
+                if (distance > 0.5 && this._moveAction !== GameInputActions.moveForward) {
 
-                if (distance > 0.5) {
                     this._onInputChange(GameInputActions.moveForward, true);
+                    this._moveAction = GameInputActions.moveForward;
                 } else {
-                    this._onInputChange(GameInputActions.moveForward, false);
+                    if (this._moveAction) {
+                        this._onInputChange(this._moveAction, false);
+                        this._moveAction = null;
+                    }
                 }
             }
 
