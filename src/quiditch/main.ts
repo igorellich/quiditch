@@ -51,9 +51,11 @@ sceneManager.addTickable(debugRenderer);
 const mouseInputController = new MouseInputController(player,(event)=>{
     let result: Vector2d = null;
     const rect = canvas.getBoundingClientRect();
+    const clientX = (event as MouseEvent).clientX||(event as TouchEvent).touches[0].clientX;
+    const clientY = (event as MouseEvent).clientY||(event as TouchEvent).touches[0].clientY;
     let viewportDown = new Vector2();
-    viewportDown.x = (((event.clientX - rect.left) / rect.width) * 2) - 1;
-    viewportDown.y = - (((event.clientY - rect.top) / rect.height) * 2) + 1;
+    viewportDown.x = (((clientX - rect.left) / rect.width) * 2) - 1;
+    viewportDown.y = - (((clientY - rect.top) / rect.height) * 2) + 1;
     const res: Vector3 = new Vector3(viewportDown.x, viewportDown.y, 0);
 
     const mesh = ((plane as MeshBasedActor).getMesh() as ThreeBasedMesh).getMesh();

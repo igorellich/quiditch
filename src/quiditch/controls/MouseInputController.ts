@@ -15,7 +15,7 @@ export class MouseInputController extends InputController<GameInputActions> impl
     private _moveAction:GameInputActions;
 
     private _rotateIndex: number = 1;
-    constructor(actor: IActor, targetPointGetter: (e: UIEvent) => Vector2d, sceneManager: SceneManager) {
+    constructor(actor: IActor, targetPointGetter: (e: MouseEvent|TouchEvent) => Vector2d, sceneManager: SceneManager) {
         super();
         this._actor = actor;
         sceneManager.addTickable(this);
