@@ -1,5 +1,5 @@
 import { World } from "@dimforge/rapier2d";
-import { Raycaster, Scene, Vector2, Vector3 } from "three";
+import { Mesh, MeshBasicMaterial, Raycaster, Scene, SphereGeometry, Vector2, Vector3 } from "three";
 import { RapierBodyFactory } from "./MF/three-rapier/RapierBodyFactory";
 import { MFQuiditchFactory } from "./MF/MFQuiditchActorFactory";
 import { ThreeMeshFactory } from "./MF/three-rapier/ThreeMeshFactory";
@@ -9,7 +9,6 @@ import { InputController } from "../engine/controls/BaseInput";
 import { KeyboardInputController } from "../engine/controls/KeyboardInput";
 import { GameInputActions } from "./constants";
 import { QuiditchPlayerController } from "./QuiditchPlayerController";
-import { MFActor } from "../engine/MF/MFActor";
 import { RapierPhysicsManager } from "../engine/MF/rapier/RapierPhysicsManager";
 import { RapierDebugRenderer } from "../utils/debugRenderer";
 import { MeshBasedActor } from "../engine/MF/three/MeshBasedActor";
@@ -48,6 +47,9 @@ sceneManager.addTickable(plane);
 const debugRenderer = new RapierDebugRenderer(scene, world, 2);
 sceneManager.addTickable(debugRenderer);
 
+const targetMesh = new Mesh(new SphereGeometry(0.1,16,32), new MeshBasicMaterial({color:"red"}));
+scene.add(targetMesh)
+
 const mouseInputController = new MouseInputController(player,(event)=>{
     let result: Vector2d = null;
     const rect = canvas.getBoundingClientRect();
@@ -56,15 +58,16 @@ const mouseInputController = new MouseInputController(player,(event)=>{
     let viewportDown = new Vector2();
     viewportDown.x = (((clientX - rect.left) / rect.width) * 2) - 1;
     viewportDown.y = - (((clientY - rect.top) / rect.height) * 2) + 1;
-    const res: Vector3 = new Vector3(viewportDown.x, viewportDown.y, 0);
 
     const mesh = ((plane as MeshBasedActor).getMesh() as ThreeBasedMesh).getMesh();
     const rayCaster = new Raycaster();
     rayCaster.setFromCamera(viewportDown, sceneManager._camera);
-
+   
     const intersectResult = rayCaster.intersectObject(mesh);
     if (intersectResult.length > 0) {
         result = new Vector2d(intersectResult[0].point.x, intersectResult[0].point.y);
+        targetMesh.position.set(intersectResult[0].point.x, intersectResult[0].point.y, 2);
+        
     }
     return result;
 }, sceneManager);
