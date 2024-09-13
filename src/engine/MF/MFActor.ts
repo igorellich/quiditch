@@ -5,6 +5,22 @@ import { IBody } from "./IBody";
 import { IMesh } from "./IMesh";
 
 export class MFActor extends Actor implements IBodiedActor{
+    getSpeed(): number {
+        return this._body.getSpeed();
+    }
+    getRotationSpeed(): number {
+        return this._body.getRotationSpeed();
+    }
+    setSpeed(speed: number): void {
+        if(this._body){
+        this._body.setSpeed(speed);
+        }
+    }
+    setRotationSpeed(rotationSpeed: number): void {
+        if(this._body){
+        this._body.setRotationSpeed(rotationSpeed);
+        }
+    }
     public async setCollisions<TCollision>(memberGroups: TCollision[], filterGroups: TCollision[]): Promise<void> {
         this._body.setCollisions(memberGroups, filterGroups)
     }
@@ -12,10 +28,19 @@ export class MFActor extends Actor implements IBodiedActor{
     
     private readonly _body:IBody;
     private readonly _mesh:IMesh;
-    public constructor(body:IBody, mesh:IMesh, speed:number, rotationSpeed:number){
+    public constructor(body:IBody, mesh:IMesh, speed:number, rotationSpeed:number){       
+       
         super(speed, rotationSpeed);
         this._mesh = mesh;
         this._body = body;
+        this._body.setSpeed(speed);
+        this._body.setRotationSpeed(rotationSpeed);
+    }
+    move(backward?: boolean): void {
+        this._body.move(backward);
+    }
+    rotate(right?: boolean): void {
+        this._body.rotate(right);
     }
     public async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         this._body.tick(elapsedTime, deltaTime);

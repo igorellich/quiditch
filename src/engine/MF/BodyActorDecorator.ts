@@ -11,6 +11,12 @@ export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
         super(mfActor);
         this._sceneManager = sceneManager;
     }
+    move(backward?: boolean): void {
+        this._baseActor.move(backward);
+    }
+    rotate(right?: boolean): void {
+        this._baseActor.rotate(right);
+    }
     getBody(): IBody {
         return (this._baseActor as IBodiedActor).getBody();
     }

@@ -4,22 +4,18 @@ import { Vector2d } from "../Vector2d";
 
 export abstract class Actor implements IActor{
    
-    private readonly _speed: number;
-
-    public getSpeed():number{
-        return this._speed;
-    }
-
-    public getRotationSpeed():number{
-        return this._rotationSpeed;
-    }
-
-    private readonly _rotationSpeed: number;
+    
 
     constructor(speed:number = 0, rotationSpeed: number = 0){
-        this._speed = speed;
-        this._rotationSpeed = rotationSpeed;
+        this.setSpeed(speed);
+        this.setRotationSpeed(rotationSpeed);
     }
+    abstract getSpeed(): number;
+    abstract getRotationSpeed(): number;
+    abstract setSpeed(speed: number): void;
+    abstract setRotationSpeed(rotationSpeed: number): void;
+    abstract move(backward?: boolean): void;
+    abstract rotate(right?: boolean): void;
     public async getDirectionVector(): Promise<Vector2d | undefined> {
         let result: Vector2d = undefined
 

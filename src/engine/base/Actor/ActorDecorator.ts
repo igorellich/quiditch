@@ -6,6 +6,18 @@ export class ActorDecorator implements IActor {
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
     }
+    move(backward?: boolean): void {
+        this._baseActor.move(backward);
+    }
+    rotate(right?: boolean): void {
+        this._baseActor.rotate(right);
+    }
+    setSpeed(speed: number): void {
+        this._baseActor.setSpeed(speed);
+    }
+    setRotationSpeed(rotationSpeed: number): void {
+        this._baseActor.setRotationSpeed(rotationSpeed);
+    }
     getDirectionVector(): Promise<Vector2d> {
         return this._baseActor.getDirectionVector();
     }

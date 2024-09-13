@@ -5,9 +5,40 @@ import { interactionGroups } from "../../../utils/interaction-groups";
 
 // Facade-class for rapier's RigidBody
 export class RapierBasedBody implements IBody{
+    private _speed: number;
+
+    public getSpeed():number{
+        return this._speed;
+    }
+
+    public getRotationSpeed():number{
+        return this._rotationSpeed;
+    }
+
+    private _rotationSpeed: number;
     private readonly _rigidBody: RigidBody;
     constructor(rigidBody: RigidBody) {
         this._rigidBody = rigidBody;
+    }
+    setSpeed(speed: number): void {
+        this._speed = speed;
+    }
+    setRotationSpeed(rotationSpeed: number): void {
+        this._rotationSpeed = rotationSpeed;
+    }
+    async move(backward?: boolean): Promise<void> {
+        const directionVector = new Vector2d(
+            -Math.sin(await this.getRotation()) * this._speed * this._rigidBody.mass()*10,
+            Math.cos(await this.getRotation()) * this._speed* this._rigidBody.mass()*10
+        )
+        this._rigidBody.setLinearDamping(10)
+       
+        this._rigidBody.applyImpulse(directionVector,true);
+    }
+    async rotate(right?: boolean): Promise<void> {
+        const rotatingSpeed = right?-this._rotationSpeed:this._rotationSpeed;
+        const newRotation = await this.getRotation() + rotatingSpeed;
+        await this.setRotation(newRotation);
     }
     async setCollisions<TCollision>(memberGroups: TCollision[], filterGroups: TCollision[]): Promise<void> {
 

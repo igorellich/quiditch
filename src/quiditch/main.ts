@@ -8,7 +8,7 @@ import { ThreeSceneManager } from "../engine/MF/three/ThreeSceneManager";
 import { InputController } from "../engine/controls/BaseInput";
 import { KeyboardInputController } from "../engine/controls/KeyboardInput";
 import { GameInputActions } from "./constants";
-import { RapierPlayerController } from "./MF/three-rapier/RapierPlayerController";
+import { QuiditchPlayerController } from "./QuiditchPlayerController";
 import { MFActor } from "../engine/MF/MFActor";
 import { RapierPhysicsManager } from "../engine/MF/rapier/RapierPhysicsManager";
 import { RapierDebugRenderer } from "../utils/debugRenderer";
@@ -39,7 +39,7 @@ const ball = await quiditchFactory.createBall();
 ball.setPosition(5,5);
 sceneManager.addTickable(ball);
 
-const rapierPlayerController = new RapierPlayerController(player, inputController, world);
+const rapierPlayerController = new QuiditchPlayerController(player, inputController);
 sceneManager.addTickable(rapierPlayerController);
 
 const plane = await quiditchFactory.createPlane();
@@ -68,7 +68,7 @@ const mouseInputController = new MouseInputController(player,(event)=>{
     }
     return result;
 }, sceneManager);
-const rapierMousePlayerController = new RapierPlayerController(player, mouseInputController, world);
+const rapierMousePlayerController = new QuiditchPlayerController(player, mouseInputController);
 sceneManager.addTickable(rapierMousePlayerController);
 
 sceneManager.startTime();

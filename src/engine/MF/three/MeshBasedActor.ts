@@ -7,6 +7,18 @@ export class MeshBasedActor implements IActor{
     constructor(mesh:IMesh){
         this._mesh = mesh;
     }
+    setSpeed(speed: number): void {
+        //TODO
+    }
+    setRotationSpeed(rotationSpeed: number): void {
+        //TODO
+    }
+    move(backward?: boolean): void {
+        //TODO
+    }
+    rotate(right?: boolean): void {
+        //TODO
+    }
     async getDirectionVector(): Promise<Vector2d> {
         let result: Vector2d = undefined
 
