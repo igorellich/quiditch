@@ -63,8 +63,8 @@ export abstract class SceneManager{
 
     public getActors():IActor[]{
         return this._tickers.filter(t=>{
-            return t instanceof Actor;
-        })
+            return (t as Actor).move;
+        }) as IActor[];
     }
 
 }

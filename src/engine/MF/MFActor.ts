@@ -1,10 +1,14 @@
 import { Actor } from "../base/Actor/Actor";
 import { IBodiedActor } from "../base/Actor/IBodiedActor";
+import { IMovable } from "../base/Actor/Imoveable";
 import { Vector2d } from "../base/Vector2d";
 import { IBody } from "./IBody";
 import { IMesh } from "./IMesh";
 
 export class MFActor extends Actor implements IBodiedActor{
+    unjoin(target: IMovable): void {
+        this._body.unjoin(target);
+    }
     getSpeed(): number {
         return this._body.getSpeed();
     }
@@ -35,6 +39,9 @@ export class MFActor extends Actor implements IBodiedActor{
         this._body = body;
         this._body.setSpeed(speed);
         this._body.setRotationSpeed(rotationSpeed);
+    }
+    join(target: IMovable): void {
+        this._body.join(target);
     }
     move(backward: boolean, delta:number): void {
         this._body.move(backward,delta);

@@ -17,6 +17,8 @@ export class MFQuiditchFactory implements IQuiditchFactory<IActor> {
     private readonly _meshFactory: IQuiditchFactory<IMesh>
     private readonly _sceneManager: SceneManager
 
+   
+
     constructor(bodyFactory: IQuiditchFactory<IBody>, meshFactory: IQuiditchFactory<IMesh>, sceneManager: SceneManager) {
         this._bodyFactory = bodyFactory;
         this._meshFactory = meshFactory;

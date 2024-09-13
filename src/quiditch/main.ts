@@ -35,7 +35,7 @@ sceneManager.addTickable(player);
 
 
 const ball = await quiditchFactory.createBall();
-ball.setPosition(5,5);
+ball.setPosition(0,10);
 sceneManager.addTickable(ball);
 
 const rapierPlayerController = new QuiditchPlayerController(player, inputController);

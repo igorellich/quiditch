@@ -1,10 +1,17 @@
 import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
+import { IMovable } from "./Imoveable";
 
 export class ActorDecorator implements IActor {
     protected readonly _baseActor: IActor;
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
+    }
+    unjoin(target: IMovable): void {
+        this._baseActor.unjoin(target);
+    }
+    join(target: IMovable): void {
+        this._baseActor.join(target);
     }
     move(backward: boolean, delta:number): void {
         this._baseActor.move(backward, delta);

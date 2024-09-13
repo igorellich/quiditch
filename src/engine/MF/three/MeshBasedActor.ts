@@ -1,4 +1,5 @@
 import { IActor } from "../../base/Actor/IActor";
+import { IMovable } from "../../base/Actor/Imoveable";
 import { Vector2d } from "../../base/Vector2d";
 import { IMesh } from "../IMesh";
 
@@ -6,6 +7,12 @@ export class MeshBasedActor implements IActor{
     private readonly _mesh:IMesh
     constructor(mesh:IMesh){
         this._mesh = mesh;
+    }
+    unjoin(target: IMovable): void {
+       //TODO
+    }
+    join(target: IMovable): void {
+        //TODO
     }
     setSpeed(speed: number): void {
         //TODO

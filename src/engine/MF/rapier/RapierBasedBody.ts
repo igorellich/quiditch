@@ -1,7 +1,9 @@
-import { RigidBody } from "@dimforge/rapier2d";
+import { ImpulseJoint, JointData, RevoluteImpulseJoint, RigidBody, World } from "@dimforge/rapier2d";
 import { IBody } from "../IBody";
 import { Vector2d } from "../../base/Vector2d";
 import { interactionGroups } from "../../../utils/interaction-groups";
+import { IMovable } from "../../base/Actor/Imoveable";
+import { IBodiedActor } from "../../base/Actor/IBodiedActor";
 
 // Facade-class for rapier's RigidBody
 export class RapierBasedBody implements IBody{
@@ -17,8 +19,29 @@ export class RapierBasedBody implements IBody{
 
     private _rotationSpeed: number;
     private readonly _rigidBody: RigidBody;
-    constructor(rigidBody: RigidBody) {
+
+    private readonly _world:World;
+
+    private _jointsMap:Map<IMovable,ImpulseJoint> = new Map<IMovable,ImpulseJoint>();
+    constructor(rigidBody: RigidBody,world:World) {
         this._rigidBody = rigidBody;
+        this._world = world;
+    }
+    unjoin(target: IMovable): void {
+        if(this._jointsMap.get(target)){
+            this._world.removeImpulseJoint(this._jointsMap.get(target), true);
+            this._jointsMap.delete(target);
+        }
+       
+    }
+    join(target: IMovable): void {
+
+        let params = JointData.revolute({ x: 7, y: 7 }, { x:0, y: 0  });
+        if(!this._jointsMap.get(target)){
+        this._jointsMap.set(target, this._world.createImpulseJoint(params, ((target as IBodiedActor).getBody() as RapierBasedBody)._rigidBody, this._rigidBody, true));
+        //(this._jointsMap.get(target) as RevoluteImpulseJoint).configureMotorVelocity(5.0, 0.0);
+        }
+        
     }
     setSpeed(speed: number): void {
         this._speed = speed;

@@ -13,7 +13,7 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
     }
     async createBall(): Promise<IBody> {
         const rigidBody = this._createBallRigidBody();
-        const body =  new RapierBasedBody(rigidBody);
+        const body =  new RapierBasedBody(rigidBody, this._world);
         body.tick = async (elapsedTime: number, deltaTime: number)=>{
             // body.getRigidBody().applyImpulse({x:0,y:0.003},true);
         }
@@ -21,7 +21,7 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
     }
     async createPlayer(): Promise<IBody> {
         const playerRigidBody = this._createPlayerRigidBody();
-        const body = new RapierBasedBody(playerRigidBody);
+        const body = new RapierBasedBody(playerRigidBody, this._world);
         
         return body;
     }

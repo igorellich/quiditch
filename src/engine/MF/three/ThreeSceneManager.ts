@@ -14,6 +14,10 @@ export class ThreeSceneManager extends SceneManager{
     private readonly _scene:Scene;
 
     public readonly _camera: PerspectiveCamera;
+    tick() {
+        super.tick();
+        
+    }
 
     constructor(size:Size, canvas: HTMLCanvasElement, scene: Scene,collisionManager?:IPhysicsManager){
         super(size, collisionManager);
@@ -31,10 +35,10 @@ export class ThreeSceneManager extends SceneManager{
        
         // this._camera.position.z = 15
         // this._camera.rotation.x = Math.PI / 6
-         this._camera.position.z = 13       
+         this._camera.position.z = 50      
 
-        const controls = new OrbitControls(this._camera, this._renderer.domElement);
-        controls.enableDamping = true;
+        //const controls = new OrbitControls(this._camera, this._renderer.domElement);
+        //controls.enableDamping = true;
 
         window.addEventListener('resize', () => {
             this._size.height = window.innerHeight;
