@@ -1,6 +1,6 @@
 export interface IMovable{
-    move(backward?:boolean):void;
-    rotate(right?:boolean):void;
+    move(backward:boolean, delta:number):void;
+    rotate(right:boolean, delta:number):void;
     getSpeed():number
 
     getRotationSpeed():number

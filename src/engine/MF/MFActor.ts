@@ -36,11 +36,11 @@ export class MFActor extends Actor implements IBodiedActor{
         this._body.setSpeed(speed);
         this._body.setRotationSpeed(rotationSpeed);
     }
-    move(backward?: boolean): void {
-        this._body.move(backward);
+    move(backward: boolean, delta:number): void {
+        this._body.move(backward,delta);
     }
-    rotate(right?: boolean): void {
-        this._body.rotate(right);
+    rotate(right: boolean, delta:number): void {
+        this._body.rotate(right, delta);
     }
     public async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         this._body.tick(elapsedTime, deltaTime);

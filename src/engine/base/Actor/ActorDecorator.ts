@@ -6,11 +6,11 @@ export class ActorDecorator implements IActor {
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
     }
-    move(backward?: boolean): void {
-        this._baseActor.move(backward);
+    move(backward: boolean, delta:number): void {
+        this._baseActor.move(backward, delta);
     }
-    rotate(right?: boolean): void {
-        this._baseActor.rotate(right);
+    rotate(right: boolean, delta:number): void {
+        this._baseActor.rotate(right,delta);
     }
     setSpeed(speed: number): void {
         this._baseActor.setSpeed(speed);

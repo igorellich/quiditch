@@ -26,18 +26,19 @@ export class RapierBasedBody implements IBody{
     setRotationSpeed(rotationSpeed: number): void {
         this._rotationSpeed = rotationSpeed;
     }
-    async move(backward?: boolean): Promise<void> {
+    async move(backward: boolean, delta:number): Promise<void> {
+        const speed = backward?-this._speed:this._speed;
         const directionVector = new Vector2d(
-            -Math.sin(await this.getRotation()) * this._speed * this._rigidBody.mass()*10,
-            Math.cos(await this.getRotation()) * this._speed* this._rigidBody.mass()*10
+            -Math.sin(await this.getRotation()) * speed * this._rigidBody.mass()*2000*delta,
+            Math.cos(await this.getRotation()) * speed* this._rigidBody.mass()*2000*delta
         )
         this._rigidBody.setLinearDamping(10)
        
         this._rigidBody.applyImpulse(directionVector,true);
     }
-    async rotate(right?: boolean): Promise<void> {
-        const rotatingSpeed = right?-this._rotationSpeed:this._rotationSpeed;
-        const newRotation = await this.getRotation() + rotatingSpeed;
+    async rotate(right: boolean, delta:number): Promise<void> {
+        const rotatingSpeed = right?-this._rotationSpeed:this._rotationSpeed*delta;
+        const newRotation = await this.getRotation() + rotatingSpeed/2;
         await this.setRotation(newRotation);
     }
     async setCollisions<TCollision>(memberGroups: TCollision[], filterGroups: TCollision[]): Promise<void> {

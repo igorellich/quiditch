@@ -48,13 +48,13 @@ export class QuiditchPlayerController extends ActorController<QuiditchInputActio
         //if (this._characterController) {
             const rotatingRight = this._rotating ? this._rotating === QuiditchInputActions.turnLeft ? false : true : null;
             if (rotatingRight !== null) {
-                this._actor.rotate(rotatingRight);
+                this._actor.rotate(rotatingRight, deltaTime);
             }
             
             //const rigidBody = body.getRigidBody();
             const movingBackward = this._moving?this._moving===QuiditchInputActions.moveForward?false:true:null;
             if(movingBackward!==null){
-                this._actor.move(movingBackward);
+                this._actor.move(movingBackward,deltaTime);
             }
            
             
