@@ -15,16 +15,23 @@ export class MouseInputController extends InputController<GameInputActions> impl
     private _moveAction: GameInputActions;
 
     private _rotateIndex: number = 1;
-    constructor(actor: IActor, targetPointGetter: (e: MouseEvent | TouchEvent) => Vector2d, sceneManager: SceneManager) {
+    constructor(actor: IActor, targetPointGetter: (e: MouseEvent | TouchEvent) => Vector2d, sceneManager: SceneManager, attackButton: HTMLElement) {
         super();
         this._actor = actor;
         sceneManager.addTickable(this);
+        attackButton.addEventListener("click",(evt)=>{
+            evt.preventDefault();
+            evt.stopPropagation();
+            this._onInputChange(GameInputActions.attack, false);
+        })
         document.addEventListener('click', (e) => {
+            
             this._targetPoint = targetPointGetter(e);
         })
         document.addEventListener('touchend', (e) => {
             this._targetPoint = targetPointGetter(e);
         })
+       
     }
 
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {

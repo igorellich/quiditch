@@ -50,6 +50,10 @@ sceneManager.addTickable(debugRenderer);
 const targetMesh = new Mesh(new SphereGeometry(0.1,16,32), new MeshBasicMaterial({color:"red"}));
 scene.add(targetMesh)
 
+const attackButton = document.createElement("div");
+attackButton.className="attack";
+document.body.appendChild(attackButton)
+
 const mouseInputController = new MouseInputController(player,(event)=>{
     let result: Vector2d = null;
     const rect = canvas.getBoundingClientRect();
@@ -70,7 +74,7 @@ const mouseInputController = new MouseInputController(player,(event)=>{
         
     }
     return result;
-}, sceneManager);
+}, sceneManager,attackButton);
 const rapierMousePlayerController = new QuiditchPlayerController(player, mouseInputController);
 sceneManager.addTickable(rapierMousePlayerController);
 

@@ -43,7 +43,7 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
 
         const characterDesc = RigidBodyDesc.dynamic().setLinearDamping(1).setAngularDamping(1);
         const rigidBody = this._world.createRigidBody(characterDesc);
-        let characterColliderDesc = ColliderDesc.ball(2).setMass(1)
+        let characterColliderDesc = ColliderDesc.ball(2).setMass(0.1)
         const collider = this._world.createCollider(
             characterColliderDesc,
             rigidBody,
