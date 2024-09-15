@@ -41,7 +41,7 @@ sceneManager.addTickable(ball);
 const rapierPlayerController = new QuiditchPlayerController(player, inputController);
 sceneManager.addTickable(rapierPlayerController);
 
-const plane = await quiditchFactory.createPlane();
+const plane = await quiditchFactory.createGround();
 sceneManager.addTickable(plane);
 
 const debugRenderer = new RapierDebugRenderer(scene, world, 2);
@@ -77,6 +77,9 @@ const mouseInputController = new MouseInputController(player,(event)=>{
 }, sceneManager,attackButton);
 const rapierMousePlayerController = new QuiditchPlayerController(player, mouseInputController);
 sceneManager.addTickable(rapierMousePlayerController);
+
+const walls = await quiditchFactory.createWalls();
+sceneManager.addTickable(walls);
 
 sceneManager.startTime();
 // document.addEventListener("click",function (event){

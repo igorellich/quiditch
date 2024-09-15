@@ -1,4 +1,4 @@
-import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { AmbientLight, Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { SceneManager, Size } from "../../base/SceneManager"
 import { IPhysicsManager } from "../../base/IPhysicsManager";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -37,8 +37,12 @@ export class ThreeSceneManager extends SceneManager{
         // this._camera.rotation.x = Math.PI / 6
          this._camera.position.z = 50      
 
-        //const controls = new OrbitControls(this._camera, this._renderer.domElement);
-        //controls.enableDamping = true;
+        const controls = new OrbitControls(this._camera, this._renderer.domElement);
+        controls.enableDamping = true;
+        //  controls.enableRotate=false;
+
+        const light = new AmbientLight();
+        scene.add(light);
 
         window.addEventListener('resize', () => {
             this._size.height = window.innerHeight;

@@ -10,5 +10,5 @@ export interface IPhysicsManager{
     castRay(origin: Vector2d, dir:Vector2d, rayLength: number, sourceActor?: IBodiedActor,targetActors?:IBodiedActor[]): Promise<RayCastResult>;
 }
 export type RayCastResult={
-    hit:boolean, instance?: Actor, distance?:number
+    hit:boolean, instance?: IBodiedActor, distance?:number
 }

@@ -2,5 +2,7 @@
 export interface IQuiditchFactory<T>{
     createPlayer():Promise<T>;
     createBall():Promise<T>;
-    createPlane():Promise<T>
+    createGround():Promise<T>;
+    
+    createWalls():Promise<T>;
 }

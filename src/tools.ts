@@ -64,7 +64,7 @@ export const createArenaBuffer32Array = (radius: number, length: number): Float3
 
 }
 
-export const createArenaBuffer32Array3D = (radius: number, length: number, zIndex: number)=>{
+export const createArenaBuffer32Array3D = (radius: number, length: number, zIndex: number):Float32Array=>{
     const twoDBuffer = createArenaBuffer32Array(radius, length);
     const arenaBuffer3D = new Float32Array(twoDBuffer.length*3);
     for(let i=0; i<twoDBuffer.length/2;i++){

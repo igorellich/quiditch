@@ -8,9 +8,12 @@ import { IBody } from "./IBody";
 export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
 
     private readonly _sceneManager: SceneManager;
-    constructor(mfActor: IBodiedActor, sceneManager: SceneManager) {
+
+    private readonly _name:string;
+    constructor(mfActor: IBodiedActor, name: string,sceneManager: SceneManager) {
         super(mfActor);
         this._sceneManager = sceneManager;
+        this._name = name;
     }
     join(target: IMovable): void {
         this._baseActor.join(target);
@@ -30,5 +33,8 @@ export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
             Math.cos(await this.getRotation() + angleDelta)).normalize();
 
         return this._sceneManager.castRay(await this.getPosition(), dir, rayLength, this)
+    }
+    public getName(){
+        return this._name;
     }
 }

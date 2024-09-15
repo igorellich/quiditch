@@ -24,23 +24,30 @@ export class MFQuiditchFactory implements IQuiditchFactory<IActor> {
         this._meshFactory = meshFactory;
         this._sceneManager = sceneManager;
     }
-    async createPlane(): Promise<IActor> {
-        const mesh = await this._meshFactory.createPlane();
+    async createWalls(): Promise<IActor> {
+        const body = await this._bodyFactory.createWalls();
+        const mesh = await this._meshFactory.createWalls();
+        body.setCollisions([CollisionGroups.wall], [CollisionGroups.character, CollisionGroups.ball])
+        const baseActor = new MFActor(body, mesh, 0, 0,"MF_wall");
+        return new BodyActorDecorator(baseActor, "wall", this._sceneManager);
+    }
+    async createGround(): Promise<IActor> {
+        const mesh = await this._meshFactory.createGround();
         return new MeshBasedActor(mesh);
     }
     async createBall(): Promise<BodyActorDecorator> {
         const body = await this._bodyFactory.createBall();
         const mesh = await this._meshFactory.createBall();
         body.setCollisions([CollisionGroups.ball], [CollisionGroups.character, CollisionGroups.gates, CollisionGroups.wall])
-        const baseActor = new MFActor(body, mesh, 10, 10);
-        return new BodyActorDecorator(baseActor,this._sceneManager);
+        const baseActor = new MFActor(body, mesh, 10, 10, "MF_ball");
+        return new BodyActorDecorator(baseActor, "ball", this._sceneManager);
     }
     async createPlayer(): Promise<PlayerActor> {
         const body = await this._bodyFactory.createPlayer();
         body.setCollisions([CollisionGroups.character], [CollisionGroups.ball, CollisionGroups.gates, CollisionGroups.wall])
         const mesh = await this._meshFactory.createPlayer();
-        const baseActor = new MFActor(body, mesh, 0.1, 0.1);
-        return new PlayerActor(baseActor,this._sceneManager);
+        const baseActor = new MFActor(body, mesh, 0.1, 0.1,"MF_player");
+        return new PlayerActor(baseActor,"player", this._sceneManager);
     }
 
 

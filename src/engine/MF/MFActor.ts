@@ -32,13 +32,19 @@ export class MFActor extends Actor implements IBodiedActor{
     
     private readonly _body:IBody;
     private readonly _mesh:IMesh;
-    public constructor(body:IBody, mesh:IMesh, speed:number, rotationSpeed:number){       
+
+    private readonly _name:string;
+    public constructor(body:IBody, mesh:IMesh, speed:number, rotationSpeed:number, name:string){       
        
         super(speed, rotationSpeed);
         this._mesh = mesh;
         this._body = body;
         this._body.setSpeed(speed);
         this._body.setRotationSpeed(rotationSpeed);
+        this._name = name;
+    }
+    getName(): string {
+        return this._name;
     }
     join(target: IMovable): void {
         this._body.join(target);

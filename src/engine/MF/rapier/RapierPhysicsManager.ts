@@ -25,7 +25,7 @@ export class RapierPhysicsManager implements IPhysicsManager {
 
                 if (body === castResult.collider.parent()) {
                     result.hit = true;
-                    result.instance = targetActors.find(a => (a.getBody() as RapierBasedBody).getRigidBody() === body);
+                    result.instance = targetActors.find(a => a.getBody && (a.getBody() as RapierBasedBody).getRigidBody() === body);
 
                     const point: Vector2d = new Vector2d(
                         origin.x + dir.x * castResult.timeOfImpact,
