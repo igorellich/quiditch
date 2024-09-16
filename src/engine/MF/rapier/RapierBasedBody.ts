@@ -1,8 +1,8 @@
 import { ImpulseJoint, JointData, RevoluteImpulseJoint, RigidBody, World } from "@dimforge/rapier2d";
-import { IBody } from "../IBody";
+import { IBody } from "../../base/IBody";
 import { Vector2d } from "../../base/Vector2d";
 import { interactionGroups } from "../../../utils/interaction-groups";
-import { IMovable } from "../../base/Actor/Imoveable";
+import { IMovable } from "../../base/Imoveable";
 import { IBodiedActor } from "../../base/Actor/IBodiedActor";
 
 // Facade-class for rapier's RigidBody

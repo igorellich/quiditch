@@ -1,4 +1,4 @@
-import { IBody } from "../../MF/IBody";
+import { IBody } from "../IBody";
 import { IActor } from "./IActor";
 
 export interface IBodiedActor extends IActor{

@@ -1,12 +1,12 @@
 import { Actor } from "../../engine/base/Actor/Actor";
 import { IQuiditchFactory } from "../IQuiditchActorFactory";
-import { IBody } from "../../engine/MF/IBody";
+import { IBody } from "../../engine/base/IBody";
 import { IMesh } from "../../engine/MF/IMesh";
 import { MFActor } from "../../engine/MF/MFActor";
 import { CollisionGroups } from "../constants";
 import { IActor } from "../../engine/base/Actor/IActor";
 import { PlayerActor } from "../components/PlayerActor";
-import { BodyActorDecorator } from "../../engine/MF/BodyActorDecorator";
+import { BodyActorDecorator } from "../../engine/base/Actor/BodyActorDecorator";
 import { SceneManager } from "../../engine/base/SceneManager";
 import { MeshBasedActor } from "../../engine/MF/three/MeshBasedActor";
 

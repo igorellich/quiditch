@@ -1,8 +1,8 @@
 import { Actor } from "../base/Actor/Actor";
 import { IBodiedActor } from "../base/Actor/IBodiedActor";
-import { IMovable } from "../base/Actor/Imoveable";
+import { IMovable } from "../base/Imoveable";
 import { Vector2d } from "../base/Vector2d";
-import { IBody } from "./IBody";
+import { IBody } from "../base/IBody";
 import { IMesh } from "./IMesh";
 
 export class MFActor extends Actor implements IBodiedActor{

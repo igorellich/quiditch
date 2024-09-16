@@ -1,5 +1,5 @@
 import { IActor } from "../../base/Actor/IActor";
-import { IMovable } from "../../base/Actor/Imoveable";
+import { IMovable } from "../../base/Imoveable";
 import { Vector2d } from "../../base/Vector2d";
 import { IMesh } from "../IMesh";
 

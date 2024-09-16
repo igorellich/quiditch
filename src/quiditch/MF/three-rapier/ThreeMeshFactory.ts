@@ -37,7 +37,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
             color: 'green'
         }));
         this._scene.add(planeMesh);
-        planeMesh.position.z = this._zHeight;
+        //planeMesh.position.z = this._zHeight;
         return new ThreeBasedMesh(planeMesh);
     }
     async createBall(): Promise<IMesh> {
@@ -54,13 +54,10 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new ThreeBasedMesh(mesh);
     }
     private async _createPlayerMesh():Promise<Mesh>{
-        const mesh = await this._loadGltfModel('src/quiditch/assets/gltf/hover_bike/scene.gltf');
+        const mesh = await this._loadGltfModel('assets/gltf/hover_bike/scene.gltf');
         mesh.scale.set(0.003,0.003,0.003)
         mesh.rotateX(Math.PI/2)
         mesh.rotateY(Math.PI/2)
-        
-        //@ts-ignore
-
         const group = new Group();
         group.add(mesh);
         return group as unknown as Mesh;
@@ -68,7 +65,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     private async  _createBallMesh():Promise<Mesh>{
         
       
-        const mesh = await this._loadGltfModel('src/quiditch/assets/gltf/magma_ball/scene.gltf');
+        const mesh = await this._loadGltfModel('assets/gltf/magma_ball/scene.gltf');
         mesh.scale.set(0.01,0.01,0.01)
         
         return mesh as unknown as Mesh;

@@ -1,9 +1,9 @@
-import { ActorDecorator } from "../base/Actor/ActorDecorator";
-import { IBodiedActor } from "../base/Actor/IBodiedActor";
-import { IMovable } from "../base/Actor/Imoveable";
-import { SceneManager } from "../base/SceneManager";
-import { Vector2d } from "../base/Vector2d";
-import { IBody } from "./IBody";
+import { ActorDecorator } from "./ActorDecorator";
+import { IBodiedActor } from "./IBodiedActor";
+import { IMovable } from "../Imoveable";
+import { SceneManager } from "../SceneManager";
+import { Vector2d } from "../Vector2d";
+import { IBody } from "../IBody";
 
 export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
 

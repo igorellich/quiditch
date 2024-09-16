@@ -1,6 +1,6 @@
 import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
-import { IMovable } from "./Imoveable";
+import { IMovable } from "../Imoveable";
 
 export class ActorDecorator implements IActor {
     protected readonly _baseActor: IActor;

@@ -1,7 +1,7 @@
 import { Vector2 } from "three";
 import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
-import { IMovable } from "./Imoveable";
+import { IMovable } from "../Imoveable";
 
 export abstract class Actor implements IActor{
    

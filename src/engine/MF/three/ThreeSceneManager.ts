@@ -35,7 +35,7 @@ export class ThreeSceneManager extends SceneManager{
        
         // this._camera.position.z = 15
         // this._camera.rotation.x = Math.PI / 6
-         this._camera.position.z = 50      
+         this._camera.position.z = 10      
 
         const controls = new OrbitControls(this._camera, this._renderer.domElement);
         controls.enableDamping = true;

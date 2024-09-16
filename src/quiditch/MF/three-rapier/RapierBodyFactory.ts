@@ -1,5 +1,5 @@
 import { ActiveCollisionTypes, ActiveEvents, ColliderDesc, RigidBody, RigidBodyDesc, World } from "@dimforge/rapier2d";
-import { IBody } from "../../../engine/MF/IBody";
+import { IBody } from "../../../engine/base/IBody";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { RapierBasedBody } from "../../../engine/MF/rapier/RapierBasedBody";
 import { createArenaBuffer32Array } from "../../../tools";
