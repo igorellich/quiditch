@@ -1,6 +1,5 @@
 import { IActor } from "../../engine/base/Actor/IActor";
 import { ITickable } from "../../engine/base/ITickable";
-import { SceneManager } from "../../engine/base/SceneManager";
 import { Vector2d } from "../../engine/base/Vector2d";
 import { InputController } from "../../engine/controls/BaseInput";
 import { GameInputActions } from "../constants";
@@ -14,21 +13,17 @@ export class TargetPointInputController extends InputController<GameInputActions
     private _moveAction: GameInputActions;
 
     private _rotateIndex: number = 1;
-    constructor(actor: IActor, sceneManager: SceneManager, attackButton: HTMLElement) {
+    constructor(actor?: IActor) {
         super();
-        this._actor = actor;
-        sceneManager.addTickable(this);
-        attackButton.addEventListener("click",(evt)=>{
-            evt.preventDefault();
-            evt.stopPropagation();
-            this._onInputChange(GameInputActions.attack, false);
-        })
-       
-       
+        this._actor = actor;       
     }
 
-    public setTargerPoint(target:Vector2d){
+    public setTargerPoint(target: Vector2d) {
         this._targetPoint = target;
+    }
+
+    attack(){
+        this._onInputChange(GameInputActions.attack, false);
     }
 
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
@@ -49,12 +44,12 @@ export class TargetPointInputController extends InputController<GameInputActions
                 if (angle > 10 && distance > 3) {
                     const rotateAction = this._rotateIndex == 1 ? GameInputActions.turnRight : GameInputActions.turnLeft;
                     if (this._rotateAction !== rotateAction) {
-                        if(this._rotateAction!=null){
+                        if (this._rotateAction != null) {
                             this._onInputChange(rotateAction, false);
                         }
-                        
+
                     }
-                    if(this._moveAction){
+                    if (this._moveAction) {
                         this._onInputChange(GameInputActions.moveForward, false);
                     }
                     this._onInputChange(rotateAction, true);
@@ -90,7 +85,7 @@ export class TargetPointInputController extends InputController<GameInputActions
                 }
                 this._targetPoint = null;
             }
-        }else{
+        } else {
             if (this._moveAction) {
                 this._onInputChange(this._moveAction, false);
                 this._moveAction = null;

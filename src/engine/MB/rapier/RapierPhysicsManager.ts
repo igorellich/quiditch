@@ -1,11 +1,11 @@
 import { EventQueue, QueryFilterFlags, Ray, World } from "@dimforge/rapier2d";
-import { Actor } from "../../base/Actor/Actor";
 import { IPhysicsManager, RayCastResult } from "../../base/IPhysicsManager";
 import { Collision } from "../../base/Collision";
-import { MFActor } from "../MFActor";
 import { RapierBasedBody } from "./RapierBasedBody";
 import { Vector2d } from "../../base/Vector2d";
 import { Vector2 } from "three";
+import { IActor } from "../../base/Actor/IActor";
+import { IBodiedActor } from "../Actor/IBodiedActor";
 
 export class RapierPhysicsManager implements IPhysicsManager {
     private readonly _world: World;
@@ -13,7 +13,7 @@ export class RapierPhysicsManager implements IPhysicsManager {
     constructor(world: World) {
         this._world = world;
     }
-    async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: MFActor, targetActors?: MFActor[]): Promise<RayCastResult> {
+    async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: IBodiedActor, targetActors?: IBodiedActor[]): Promise<RayCastResult> {
         const body = sourceActor.getBody() as RapierBasedBody;
         const result: RayCastResult = { hit: false };
         //console.log(origin,dir)
@@ -47,13 +47,13 @@ export class RapierPhysicsManager implements IPhysicsManager {
             this._collisionInfos.push({ c1, c2, start })
         })
     }
-    getCollisions(actors: Actor[]): Collision[] {
+    getCollisions(actors: IActor[]): Collision[] {
         const result: Collision[] = [];
         for (const colInfo of this._collisionInfos) {
             const collision: Collision = { actorA: undefined, actorB: undefined }
             for (const actor of actors) {
-                if ((actor as MFActor)?.getBody) {
-                    const rigidBody = ((actor as MFActor)?.getBody() as RapierBasedBody)?.getRigidBody();
+                if ((actor as IBodiedActor)?.getBody) {
+                    const rigidBody = ((actor as IBodiedActor)?.getBody() as RapierBasedBody)?.getRigidBody();
                     if (rigidBody) {
                         for (let i = 0; i < rigidBody.numColliders(); i++) {
                             const handle = rigidBody.collider(i).handle;

@@ -1,12 +1,17 @@
 import { IActor } from "../../base/Actor/IActor";
-import { IMovable } from "../../base/Imoveable";
+import { IMovable } from "../../base/IMoveable";
 import { Vector2d } from "../../base/Vector2d";
 import { IMesh } from "../IMesh";
 
 export class MeshBasedActor implements IActor{
     private readonly _mesh:IMesh
-    constructor(mesh:IMesh){
+    private readonly _name:string
+    constructor(name: string, mesh:IMesh){
         this._mesh = mesh;
+        this._name = name
+    }
+    getName(): string {
+        throw new Error("Method not implemented.");
     }
     async unjoin(target: IMovable): Promise<void> {
        //TODO

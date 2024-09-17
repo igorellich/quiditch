@@ -1,18 +1,20 @@
-import { BufferAttribute, BufferGeometry, ConeGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3DEventMap, PlaneGeometry, Scene, SphereGeometry, SpotLight } from "three";
-import { IMesh } from "../../../engine/MF/IMesh";
+import { AnimationMixer, BufferAttribute, BufferGeometry, Group, Light, Mesh, MeshBasicMaterial, Object3DEventMap, PlaneGeometry, Scene, SpotLight } from "three";
+import { IMesh } from "../../../../engine/MB/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
-import { ThreeBasedMesh } from "../../../engine/MF/three/ThreeBasedMesh";
-import { createArenaBuffer32Array3D } from "../../../tools";
+import { ThreeBasedMesh } from "../../../../engine/MB/three/ThreeBasedMesh";
+import { createArenaBuffer32Array3D } from "../../../../tools";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+import { ThreeSceneManager } from "../../../../engine/MB/three/ThreeSceneManager";
+import { ITickable } from "../../../../engine/base/ITickable";
 
 export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
-    private readonly _scene:Scene;
+    private readonly _sceneManager:ThreeSceneManager;
     private readonly _zHeight: number;
 
     private readonly _gltfLoader:GLTFLoader;
-    constructor(scene:Scene, zHeight: number){
-        this._scene = scene;
+    constructor(scene:ThreeSceneManager, zHeight: number){
+        this._sceneManager = scene;
         this._zHeight = zHeight;
 
         this._gltfLoader = new GLTFLoader();
@@ -29,27 +31,27 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
             ,wireframe: true
         });
         const mesh = new Mesh(geometry, material);
-        this._scene.add(mesh);
+        this._sceneManager.getScene().add(mesh);
         return new ThreeBasedMesh(mesh);
     }
     async createGround(): Promise<IMesh> {
         const planeMesh = new Mesh(new PlaneGeometry(500, 500, 2), new MeshBasicMaterial({
             color: 'green'
         }));
-        this._scene.add(planeMesh);
+        this._sceneManager.getScene().add(planeMesh);
         //planeMesh.position.z = this._zHeight;
         return new ThreeBasedMesh(planeMesh);
     }
     async createBall(): Promise<IMesh> {
         
         const mesh = await this._createBallMesh();
-        this._scene.add(mesh);
+        this._sceneManager.getScene().add(mesh);
         mesh.position.z = this._zHeight;
         return new ThreeBasedMesh(mesh);
     }
     async createPlayer(): Promise<IMesh> {
         const mesh = await this._createPlayerMesh();
-        this._scene.add(mesh);
+        this._sceneManager.getScene().add(mesh);
         mesh.position.z = this._zHeight;
         return new ThreeBasedMesh(mesh);
     }
@@ -75,6 +77,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return group as unknown as Mesh;
     }
     private async _loadGltfModel(path:string):Promise<Group<Object3DEventMap>>{
+        const sceneManager = this._sceneManager;
         return new Promise((res, rej)=>{
             this._gltfLoader.load(
                 // resource URL
@@ -96,11 +99,27 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
                           l.shadow.mapSize.height = 2048
                         }
                       })
-                      
+                      if(gltf.animations.length>0){
+                        const mixer = new AnimationMixer(gltf.scene);
+                        const action = mixer.clipAction(gltf.animations[0]);
+                        
+                        action.play();
+                        sceneManager.addTickable(new TickMixer(mixer));
+                      }
                       res(gltf.scene)
             
                 }
             )
         }) 
     }
+}
+class TickMixer implements ITickable{
+    private readonly _mixer:AnimationMixer;
+    constructor(mixer:AnimationMixer){
+        this._mixer = mixer;
+    }
+    async tick(elapsedTime: number, deltaTime: number): Promise<void> {
+       this._mixer.update(deltaTime);
+    }
+
 }

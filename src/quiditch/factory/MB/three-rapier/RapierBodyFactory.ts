@@ -1,8 +1,8 @@
 import { ActiveCollisionTypes, ActiveEvents, ColliderDesc, RigidBody, RigidBodyDesc, World } from "@dimforge/rapier2d";
-import { IBody } from "../../../engine/base/IBody";
+import { IBody } from "../../../../engine/MB/IBody";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
-import { RapierBasedBody } from "../../../engine/MF/rapier/RapierBasedBody";
-import { createArenaBuffer32Array } from "../../../tools";
+import { RapierBasedBody } from "../../../../engine/MB/rapier/RapierBasedBody";
+import { createArenaBuffer32Array } from "../../../../tools";
 
 export class RapierBodyFactory implements IQuiditchFactory<IBody>{
     private readonly _world: World;

@@ -1,10 +1,10 @@
-import { IBodiedActor } from "../../engine/base/Actor/IBodiedActor";
-import { BodyActorDecorator } from "../../engine/base/Actor/BodyActorDecorator";
+import { BodyActorDecorator } from "../../../../engine/MB/Actor/BodyActorDecorator";
+import { IActor } from "../../../../engine/base/Actor/IActor";
 
 
 export class PlayerActor extends BodyActorDecorator {
 
-    private _jointBody:IBodiedActor;
+    private _jointBody:IActor;
     public override async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         await super.tick(elapsedTime, deltaTime);
 

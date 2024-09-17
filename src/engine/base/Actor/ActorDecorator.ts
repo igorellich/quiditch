@@ -1,11 +1,14 @@
 import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
-import { IMovable } from "../Imoveable";
+import { IMovable } from "../IMoveable";
 
 export class ActorDecorator implements IActor {
     protected readonly _baseActor: IActor;
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
+    }
+    getName(): string {
+        return this._baseActor.getName();
     }
     unjoin(target: IMovable): Promise<void> {
        return this._baseActor.unjoin(target);

@@ -2,7 +2,7 @@ import { ActorController } from "../engine/controls/ActorController";
 import { InputController } from "../engine/controls/BaseInput";
 import { GameInputActions as QuiditchInputActions } from "./constants";
 import { IActor } from "../engine/base/Actor/IActor";
-import { PlayerActor } from "./components/PlayerActor";
+import { PlayerActor } from "./factory/MB/components/PlayerActor";
 
 export class QuiditchPlayerController extends ActorController<QuiditchInputActions, IActor>{
     
@@ -14,8 +14,8 @@ export class QuiditchPlayerController extends ActorController<QuiditchInputActio
     private _rotating: QuiditchInputActions.turnLeft|QuiditchInputActions.turnRight|null = null;
 
     //private _characterController: KinematicCharacterController;
-    constructor(actor: IActor, inputController: InputController<QuiditchInputActions>) {
-        super(actor, inputController);
+    constructor(actor: IActor) {
+        super(actor);
         this._actor = actor;
         //this._characterController = world.createCharacterController(0.1);
     }
@@ -57,8 +57,7 @@ export class QuiditchPlayerController extends ActorController<QuiditchInputActio
             const movingBackward = this._moving?this._moving===QuiditchInputActions.moveForward?false:true:null;
             if(movingBackward!==null){
                 this._actor.move(movingBackward,deltaTime);
-            }
-           
+            }          
             
             // this._characterController.computeColliderMovement(collider,
             //     directionVector,

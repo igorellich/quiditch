@@ -1,15 +1,17 @@
-import { Vector2 } from "three";
 import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
-import { IMovable } from "../Imoveable";
+import { IMovable } from "../IMoveable";
 
 export abstract class Actor implements IActor{
    
     
-
-    constructor(speed:number = 0, rotationSpeed: number = 0){
+    public readonly _name:string;
+    constructor(name: string, speed:number = 0, rotationSpeed: number = 0){
         this.setSpeed(speed);
         this.setRotationSpeed(rotationSpeed);
+    }
+    getName(): string {
+        return this._name;
     }
     abstract unjoin(target: IMovable): Promise<void>;
     abstract join(target: IMovable):  Promise<void>;

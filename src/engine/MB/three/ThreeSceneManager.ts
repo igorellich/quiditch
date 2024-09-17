@@ -25,8 +25,8 @@ export class ThreeSceneManager extends SceneManager {
 
     }
 
-    constructor(size: Size, canvas: HTMLCanvasElement, scene: Scene, collisionManager?: IPhysicsManager) {
-        super(size, collisionManager);
+    constructor(size: Size, canvas: HTMLCanvasElement, scene: Scene, physicsManager?: IPhysicsManager) {
+        super(size, physicsManager);
         this._scene = scene;
         this._renderer = new WebGLRenderer({
             canvas: canvas,
@@ -90,6 +90,10 @@ export class ThreeSceneManager extends SceneManager {
 
     public getCamera():PerspectiveCamera{
         return this._persuingCamera.getMesh() as PerspectiveCamera;
+    }
+
+    public getScene():Scene{
+        return this._scene;
     }
 
 }

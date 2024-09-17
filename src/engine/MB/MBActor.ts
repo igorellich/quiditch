@@ -1,11 +1,11 @@
 import { Actor } from "../base/Actor/Actor";
-import { IBodiedActor } from "../base/Actor/IBodiedActor";
-import { IMovable } from "../base/Imoveable";
+import { IBodiedActor } from "./Actor/IBodiedActor";
+import { IMovable } from "../base/IMoveable";
 import { Vector2d } from "../base/Vector2d";
-import { IBody } from "../base/IBody";
+import { IBody } from "./IBody";
 import { IMesh } from "./IMesh";
 
-export class MFActor extends Actor implements IBodiedActor{
+export class MBActor extends Actor implements IBodiedActor{
     unjoin(target: IMovable): Promise<void> {
         return this._body.unjoin(target);
     }
@@ -33,15 +33,14 @@ export class MFActor extends Actor implements IBodiedActor{
     private readonly _body:IBody;
     private readonly _mesh:IMesh;
 
-    private readonly _name:string;
     public constructor(body:IBody, mesh:IMesh, speed:number, rotationSpeed:number, name:string){       
        
-        super(speed, rotationSpeed);
+        super(name, speed, rotationSpeed);
         this._mesh = mesh;
         this._body = body;
         this._body.setSpeed(speed);
         this._body.setRotationSpeed(rotationSpeed);
-        this._name = name;
+       
     }
     getName(): string {
         return this._name;
