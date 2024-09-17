@@ -41,7 +41,6 @@ const joy = nipplejs.default.create({
 });
 
 (joy as nipplejs.Joystick).on("end",async (evt, data)=>{
-    const playerPos = await player.getPosition();
     targetPointInputController.setTargerPoint(null);
 });
 

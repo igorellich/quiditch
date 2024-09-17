@@ -1,4 +1,4 @@
-import { IMovable } from "../base/IMoveable";
+import { IMovable } from "../base/Imoveable";
 import { IObject2D } from "../base/IObject2D";
 import { ITickable } from "../base/ITickable";
 

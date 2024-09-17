@@ -1,6 +1,6 @@
 import { Actor } from "../base/Actor/Actor";
 import { IBodiedActor } from "./Actor/IBodiedActor";
-import { IMovable } from "../base/IMoveable";
+import { IMovable } from "../base/Imoveable";
 import { Vector2d } from "../base/Vector2d";
 import { IBody } from "./IBody";
 import { IMesh } from "./IMesh";
