@@ -13,11 +13,11 @@ export class ActorDecorator implements IActor {
     join(target: IMovable): void {
         this._baseActor.join(target);
     }
-    move(backward: boolean, delta:number): void {
-        this._baseActor.move(backward, delta);
+    move(backward: boolean, delta:number): Promise<void> {
+        return this._baseActor.move(backward, delta);
     }
-    rotate(right: boolean, delta:number): void {
-        this._baseActor.rotate(right,delta);
+    rotate(right: boolean, delta:number): Promise<void> {
+        return this._baseActor.rotate(right,delta);
     }
     setSpeed(speed: number): void {
         this._baseActor.setSpeed(speed);

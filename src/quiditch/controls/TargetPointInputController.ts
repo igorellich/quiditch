@@ -6,7 +6,7 @@ import { Vector2d } from "../../engine/base/Vector2d";
 import { InputController } from "../../engine/controls/BaseInput";
 import { GameInputActions } from "../constants";
 
-export class MouseInputController extends InputController<GameInputActions> implements ITickable {
+export class TargetPointInputController extends InputController<GameInputActions> implements ITickable {
     private _actor: IActor;
     private _targetPoint: Vector2d;
 
@@ -15,7 +15,7 @@ export class MouseInputController extends InputController<GameInputActions> impl
     private _moveAction: GameInputActions;
 
     private _rotateIndex: number = 1;
-    constructor(actor: IActor, targetPointGetter: (e: MouseEvent | TouchEvent) => Vector2d, sceneManager: SceneManager, attackButton: HTMLElement) {
+    constructor(actor: IActor, sceneManager: SceneManager, attackButton: HTMLElement) {
         super();
         this._actor = actor;
         sceneManager.addTickable(this);
@@ -24,14 +24,12 @@ export class MouseInputController extends InputController<GameInputActions> impl
             evt.stopPropagation();
             this._onInputChange(GameInputActions.attack, false);
         })
-        document.addEventListener('click', (e) => {
-            
-            this._targetPoint = targetPointGetter(e);
-        })
-        document.addEventListener('touchend', (e) => {
-            this._targetPoint = targetPointGetter(e);
-        })
        
+       
+    }
+
+    public setTargerPoint(target:Vector2d){
+        this._targetPoint = target;
     }
 
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
@@ -50,12 +48,15 @@ export class MouseInputController extends InputController<GameInputActions> impl
             const distance = actorPosion.distanceTo(this._targetPoint);
             if (angle > 10 || distance > 3) {
                 if (angle > 10 && distance > 3) {
-                    const rotateAction = GameInputActions.turnRight;//this._rotateIndex == 1 ? GameInputActions.turnRight : GameInputActions.turnLeft;
+                    const rotateAction = this._rotateIndex == 1 ? GameInputActions.turnRight : GameInputActions.turnLeft;
                     if (this._rotateAction !== rotateAction) {
-
-                        this._onInputChange(rotateAction, true);
-                        this._rotateAction = rotateAction;
+                        if(this._rotateAction!=null){
+                            this._onInputChange(rotateAction, false);
+                        }
+                        
                     }
+                    this._onInputChange(rotateAction, true);
+                    this._rotateAction = rotateAction;
 
                 } else {
                     if (this._rotateAction) {

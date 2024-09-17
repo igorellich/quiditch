@@ -18,11 +18,11 @@ export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
     join(target: IMovable): void {
         this._baseActor.join(target);
     }
-    move(backward: boolean, delta: number): void {
-        this._baseActor.move(backward, delta);
+    async move(backward: boolean, delta: number): Promise<void> {
+       await this._baseActor.move(backward, delta);
     }
-    rotate(right: boolean, delta: number): void {
-        this._baseActor.rotate(right, delta);
+    async rotate(right: boolean, delta: number): Promise<void> {
+        await this._baseActor.rotate(right, delta);
     }
     getBody(): IBody {
         return (this._baseActor as IBodiedActor).getBody();

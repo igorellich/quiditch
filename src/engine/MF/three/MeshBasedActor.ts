@@ -20,11 +20,13 @@ export class MeshBasedActor implements IActor{
     setRotationSpeed(rotationSpeed: number): void {
         //TODO
     }
-    move(backward?: boolean): void {
+    move(backward?: boolean): Promise<void> {
         //TODO
+        return;
     }
-    rotate(right?: boolean): void {
+    rotate(right?: boolean): Promise<void> {
         //TODO
+        return;
     }
     async getDirectionVector(): Promise<Vector2d> {
         let result: Vector2d = undefined

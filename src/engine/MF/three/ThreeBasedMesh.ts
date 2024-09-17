@@ -1,12 +1,12 @@
-import { Mesh } from "three";
+import { Object3D } from "three";
 import { IMesh } from "../IMesh";
 import { Vector2d } from "../../base/Vector2d";
 
 export class ThreeBasedMesh implements IMesh{
 
-    private readonly _mesh:Mesh;
+    protected readonly _mesh:Object3D;
     
-    constructor(mesh:Mesh){
+    constructor(mesh:Object3D){
         this._mesh = mesh;
     }
     public getMesh(){

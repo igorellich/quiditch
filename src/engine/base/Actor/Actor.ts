@@ -17,8 +17,8 @@ export abstract class Actor implements IActor{
     abstract getRotationSpeed(): number;
     abstract setSpeed(speed: number): void;
     abstract setRotationSpeed(rotationSpeed: number): void;
-    abstract move(backward: boolean, delta:number): void;
-    abstract rotate(right: boolean, delta:number): void;
+    abstract move(backward: boolean, delta:number): Promise<void>;
+    abstract rotate(right: boolean, delta:number):  Promise<void>;
     public async getDirectionVector(): Promise<Vector2d | undefined> {
         let result: Vector2d = undefined
 

@@ -1,5 +1,6 @@
 import { World } from "@dimforge/rapier2d";
-import { Mesh, MeshBasicMaterial, Raycaster, Scene, SphereGeometry, Vector2, Vector3 } from "three";
+import * as nipplejs from "nipplejs";
+import { Mesh, MeshBasicMaterial, Raycaster, Scene, SphereGeometry, Vector2 } from "three";
 import { RapierBodyFactory } from "./MF/three-rapier/RapierBodyFactory";
 import { MFQuiditchFactory } from "./MF/MFQuiditchActorFactory";
 import { ThreeMeshFactory } from "./MF/three-rapier/ThreeMeshFactory";
@@ -13,8 +14,21 @@ import { RapierPhysicsManager } from "../engine/MF/rapier/RapierPhysicsManager";
 import { RapierDebugRenderer } from "../utils/debugRenderer";
 import { MeshBasedActor } from "../engine/MF/three/MeshBasedActor";
 import { ThreeBasedMesh } from "../engine/MF/three/ThreeBasedMesh";
-import { MouseInputController } from "./controls/MouseInputController";
+import { TargetPointInputController } from "./controls/TargetPointInputController";
 import { Vector2d } from "../engine/base/Vector2d";
+
+//@ts-ignore
+const joy = nipplejs.default.create({});
+
+(joy as nipplejs.Joystick).on("move",async (evt, data)=>{
+    const playerPos = await player.getPosition();
+    targetInputController.setTargerPoint(new Vector2d(playerPos.x+data.vector.x*1000, playerPos.y+data.vector.y*1000));
+});
+
+(joy as nipplejs.Joystick).on("end",async (evt, data)=>{
+    const playerPos = await player.getPosition();
+    targetInputController.setTargerPoint(new Vector2d(playerPos.x, playerPos.y));
+});
 
 
 let gravity = { x: 0.0, y: 0.0 };
@@ -30,6 +44,8 @@ const bodyFactory = new RapierBodyFactory(world);
 const meshFactory = new ThreeMeshFactory(scene, 2);
 const quiditchFactory = new MFQuiditchFactory(bodyFactory, meshFactory,sceneManager);
 const player = await quiditchFactory.createPlayer();
+
+sceneManager.setCameraTarget(player);
 
 sceneManager.addTickable(player);
 
@@ -54,7 +70,8 @@ const attackButton = document.createElement("div");
 attackButton.className="attack";
 document.body.appendChild(attackButton)
 
-const mouseInputController = new MouseInputController(player,(event)=>{
+const targetInputController = new TargetPointInputController(player, sceneManager,attackButton);
+const targetPointGetter = (event)=>{
     let result: Vector2d = null;
     const rect = canvas.getBoundingClientRect();
     const clientX = (event as MouseEvent).clientX||(event as TouchEvent).touches[0].clientX;
@@ -65,7 +82,7 @@ const mouseInputController = new MouseInputController(player,(event)=>{
 
     const mesh = ((plane as MeshBasedActor).getMesh() as ThreeBasedMesh).getMesh();
     const rayCaster = new Raycaster();
-    rayCaster.setFromCamera(viewportDown, sceneManager._camera);
+    rayCaster.setFromCamera(viewportDown, sceneManager.getCamera());
    
     const intersectResult = rayCaster.intersectObject(mesh);
     if (intersectResult.length > 0) {
@@ -74,8 +91,15 @@ const mouseInputController = new MouseInputController(player,(event)=>{
         
     }
     return result;
-}, sceneManager,attackButton);
-const rapierMousePlayerController = new QuiditchPlayerController(player, mouseInputController);
+}
+document.addEventListener('click', (e) => {
+            
+    //targetInputController.setTargerPoint(targetPointGetter(e));
+})
+document.addEventListener('touchend', (e) => {
+    targetInputController.setTargerPoint(targetPointGetter(e));
+})
+const rapierMousePlayerController = new QuiditchPlayerController(player, targetInputController);
 sceneManager.addTickable(rapierMousePlayerController);
 
 const walls = await quiditchFactory.createWalls();

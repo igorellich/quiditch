@@ -49,10 +49,10 @@ export class MFActor extends Actor implements IBodiedActor{
     join(target: IMovable): void {
         this._body.join(target);
     }
-    move(backward: boolean, delta:number): void {
-        this._body.move(backward,delta);
+    async move(backward: boolean, delta:number): Promise<void> {
+        await this._body.move(backward,delta);
     }
-    rotate(right: boolean, delta:number): void {
+    async rotate(right: boolean, delta:number): Promise<void> {
         this._body.rotate(right, delta);
     }
     public async tick(elapsedTime: number, deltaTime: number): Promise<void> {

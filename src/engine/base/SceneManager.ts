@@ -13,7 +13,7 @@ export abstract class SceneManager{
     constructor(size:Size, collisionManager?:IPhysicsManager){
       
         this._size = size;
-        this._collisionManager  =collisionManager;
+        this._collisionManager = collisionManager;
 
     }
     public abstract startTime():void;
@@ -29,12 +29,12 @@ export abstract class SceneManager{
 
 
 
-    protected tick() {
+    protected async tick() {
         const elapsedTime = this._getElapsedTime();
         const deltaTime = elapsedTime - (this._prevTime);
         this._prevTime = elapsedTime;
         for (const actor of this._tickers) {
-            actor.tick(elapsedTime, deltaTime);
+            await actor.tick(elapsedTime, deltaTime);
         }
         if(this._collisionManager){
             this._collisionManager.step(deltaTime);
@@ -66,6 +66,9 @@ export abstract class SceneManager{
             return (t as Actor).move;
         }) as IActor[];
     }
+
+    abstract setCameraTarget(targer:IActor);
+    
 
 }
 
