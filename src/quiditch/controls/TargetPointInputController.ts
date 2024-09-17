@@ -15,14 +15,14 @@ export class TargetPointInputController extends InputController<GameInputActions
     private _rotateIndex: number = 1;
     constructor(actor?: IActor) {
         super();
-        this._actor = actor;       
+        this._actor = actor;
     }
 
     public setTargerPoint(target: Vector2d) {
         this._targetPoint = target;
     }
 
-    attack(){
+    attack() {
         this._onInputChange(GameInputActions.attack, false);
     }
 
@@ -32,17 +32,25 @@ export class TargetPointInputController extends InputController<GameInputActions
             const actorPosion = await this._actor.getPosition();
             const tagerDirection = (new Vector2d(this._targetPoint.x - actorPosion.x,
                 this._targetPoint.y - actorPosion.y)).normalize();
-            const angle: number = actorDirection.angleTo(tagerDirection) * 180 / Math.PI;
-
-            if (this._prevAngle && this._prevAngle < angle) {
-                this._rotateIndex = -1 * this._rotateIndex;
+            const atan1 = Math.atan2(actorDirection.y, actorDirection.x);
+            const atan2 = Math.atan2(tagerDirection.y, tagerDirection.x);
+            let angle: number = (atan2 - atan1) * 180 / Math.PI;//actorDirection.angleTo(tagerDirection) * 180 / Math.PI;
+            if (Math.abs(angle) > 180) {
+                angle = angle > 0 ? 360 - angle : 360 + angle;
+                if (angle > 360) {
+                    angle -= 360;
+                }
+                if (angle < -360) {
+                    angle += 360;
+                }
             }
+
 
             this._prevAngle = angle;
             const distance = actorPosion.distanceTo(this._targetPoint);
-            if (angle > 10 || distance > 3) {
-                if (angle > 10 && distance > 3) {
-                    const rotateAction = this._rotateIndex == 1 ? GameInputActions.turnRight : GameInputActions.turnLeft;
+            if (Math.abs(angle) > 10 || distance > 3) {
+                if (Math.abs(angle) > 10 && distance > 3) {
+                    const rotateAction = angle > 0 ? GameInputActions.turnLeft : GameInputActions.turnRight; //this._rotateIndex == 1 ? GameInputActions.turnRight : GameInputActions.turnLeft;
                     if (this._rotateAction !== rotateAction) {
                         if (this._rotateAction != null) {
                             this._onInputChange(rotateAction, false);
@@ -53,6 +61,7 @@ export class TargetPointInputController extends InputController<GameInputActions
                     //     this._onInputChange(GameInputActions.moveForward, false);
                     // }
                     this._onInputChange(rotateAction, true);
+                    console.log(rotateAction)
                     this._rotateAction = rotateAction;
 
                 } else {
