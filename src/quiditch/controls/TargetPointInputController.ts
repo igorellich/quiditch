@@ -49,9 +49,9 @@ export class TargetPointInputController extends InputController<GameInputActions
                         }
 
                     }
-                    if (this._moveAction) {
-                        this._onInputChange(GameInputActions.moveForward, false);
-                    }
+                    // if (this._moveAction) {
+                    //     this._onInputChange(GameInputActions.moveForward, false);
+                    // }
                     this._onInputChange(rotateAction, true);
                     this._rotateAction = rotateAction;
 
