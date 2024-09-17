@@ -8,7 +8,7 @@ export interface IMovable{
     setSpeed(speed:number):void;
     setRotationSpeed(rotationSpeed:number):void;
 
-    join(target: IMovable):void;
-    unjoin(target: IMovable):void;
+    join(target: IMovable):Promise<void>;
+    unjoin(target: IMovable):Promise<void>;
 
 }

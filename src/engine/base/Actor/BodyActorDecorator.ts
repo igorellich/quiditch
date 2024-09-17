@@ -15,8 +15,8 @@ export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
         this._sceneManager = sceneManager;
         this._name = name;
     }
-    join(target: IMovable): void {
-        this._baseActor.join(target);
+    join(target: IMovable): Promise<void> {
+        return this._baseActor.join(target);
     }
     async move(backward: boolean, delta: number): Promise<void> {
        await this._baseActor.move(backward, delta);

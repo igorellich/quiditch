@@ -11,8 +11,8 @@ export abstract class Actor implements IActor{
         this.setSpeed(speed);
         this.setRotationSpeed(rotationSpeed);
     }
-    abstract unjoin(target: IMovable): void;
-    abstract join(target: IMovable): void;
+    abstract unjoin(target: IMovable): Promise<void>;
+    abstract join(target: IMovable):  Promise<void>;
     abstract getSpeed(): number;
     abstract getRotationSpeed(): number;
     abstract setSpeed(speed: number): void;

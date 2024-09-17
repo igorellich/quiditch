@@ -17,8 +17,23 @@ import { ThreeBasedMesh } from "../engine/MF/three/ThreeBasedMesh";
 import { TargetPointInputController } from "./controls/TargetPointInputController";
 import { Vector2d } from "../engine/base/Vector2d";
 
+
+const attackButton = document.createElement("div");
+attackButton.className="attack";
+document.body.appendChild(attackButton)
+
+const stickZone = document.createElement("div");
+stickZone.className="stickZone";
+document.body.appendChild(stickZone)
+
+
 //@ts-ignore
-const joy = nipplejs.default.create({});
+const joy = nipplejs.default.create({
+    mode:"semi",
+    catchDistance:150,
+    zone:document.querySelector(".stickZone")
+
+});
 
 (joy as nipplejs.Joystick).on("move",async (evt, data)=>{
     const playerPos = await player.getPosition();
@@ -27,7 +42,7 @@ const joy = nipplejs.default.create({});
 
 (joy as nipplejs.Joystick).on("end",async (evt, data)=>{
     const playerPos = await player.getPosition();
-    targetInputController.setTargerPoint(new Vector2d(playerPos.x, playerPos.y));
+    targetInputController.setTargerPoint(null);
 });
 
 
@@ -60,15 +75,13 @@ sceneManager.addTickable(rapierPlayerController);
 const plane = await quiditchFactory.createGround();
 sceneManager.addTickable(plane);
 
-const debugRenderer = new RapierDebugRenderer(scene, world, 2);
-sceneManager.addTickable(debugRenderer);
+// const debugRenderer = new RapierDebugRenderer(scene, world, 2);
+// sceneManager.addTickable(debugRenderer);
 
 const targetMesh = new Mesh(new SphereGeometry(0.1,16,32), new MeshBasicMaterial({color:"red"}));
 scene.add(targetMesh)
 
-const attackButton = document.createElement("div");
-attackButton.className="attack";
-document.body.appendChild(attackButton)
+
 
 const targetInputController = new TargetPointInputController(player, sceneManager,attackButton);
 const targetPointGetter = (event)=>{

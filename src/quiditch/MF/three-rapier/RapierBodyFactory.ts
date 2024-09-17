@@ -10,11 +10,13 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
         this._world = world;
     }
     async createWalls(): Promise<IBody> {
-        const groundBodyDesc = RigidBodyDesc.fixed();
+        const groundBodyDesc = RigidBodyDesc.fixed().setCcdEnabled(true);
         const rigidBody = this._world.createRigidBody(groundBodyDesc);
+
         const polyLine = createArenaBuffer32Array(20, 50);
         const wallColider = this._world.createCollider(ColliderDesc.polyline(polyLine), rigidBody);
         wallColider.setActiveEvents(ActiveEvents.COLLISION_EVENTS);
+        
         wallColider.setRestitution(1);
         
         return  new RapierBasedBody(rigidBody, this._world);
@@ -38,9 +40,9 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
     }
     _createPlayerRigidBody(): RigidBody {
 
-        const characterDesc = RigidBodyDesc.dynamic().setLinearDamping(1).setAngularDamping(10);;
+        const characterDesc = RigidBodyDesc.dynamic().setLinearDamping(1).setAngularDamping(10);
         const rigidBody = this._world.createRigidBody(characterDesc);
-        let characterColliderDesc = ColliderDesc.ball(2).setMass(70)
+        let characterColliderDesc = ColliderDesc.capsule(1.1,0.3).setMass(70)
         const collider = this._world.createCollider(
             characterColliderDesc,
             rigidBody,
@@ -52,9 +54,9 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
     }
     _createBallRigidBody(): RigidBody {
 
-        const characterDesc = RigidBodyDesc.dynamic().setLinearDamping(0).setAngularDamping(0);
+        const characterDesc = RigidBodyDesc.dynamic().setLinearDamping(0).setAngularDamping(0).setCcdEnabled(true);;
         const rigidBody = this._world.createRigidBody(characterDesc);
-        let characterColliderDesc = ColliderDesc.ball(2).setMass(0.1).setRestitution(1).setFriction(0)
+        let characterColliderDesc = ColliderDesc.ball(0.6).setMass(0.1).setRestitution(1).setFriction(0)
         const collider = this._world.createCollider(
             characterColliderDesc,
             rigidBody,

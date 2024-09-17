@@ -27,16 +27,16 @@ export class RapierBasedBody implements IBody{
         this._rigidBody = rigidBody;
         this._world = world;
     }
-    unjoin(target: IMovable): void {
+    async unjoin(target: IMovable): Promise<void> {
         if(this._jointsMap.get(target)){
             this._world.removeImpulseJoint(this._jointsMap.get(target), true);
             this._jointsMap.delete(target);
         }
        
     }
-    join(target: IMovable): void {
+   async join(target: IMovable): Promise<void> {
 
-        let params = JointData.fixed({ x: 5, y: 0 }, 0,{ x:0.2, y: 0.0  },0);
+        let params = JointData.fixed({ x: 0, y: 2.7 }, 0,{ x:0.0, y: 0.0  },0);
         if(!this._jointsMap.get(target)){
             const joint = this._world.createImpulseJoint(params,  this._rigidBody,((target as IBodiedActor).getBody() as RapierBasedBody)._rigidBody, true);
         this._jointsMap.set(target, joint);
@@ -60,6 +60,7 @@ export class RapierBasedBody implements IBody{
             Math.cos(await this.getRotation()) * speed* this._rigidBody.mass()*2000*delta
         )
         this._rigidBody.setLinearDamping(10)
+        this._rigidBody.setAngularDamping(1)
        
         this._rigidBody.applyImpulse(directionVector,true);
     }

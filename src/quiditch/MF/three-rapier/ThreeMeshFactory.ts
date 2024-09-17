@@ -64,11 +64,15 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     }
     private async  _createBallMesh():Promise<Mesh>{
         
-      
+
         const mesh = await this._loadGltfModel('assets/gltf/magma_ball/scene.gltf');
-        mesh.scale.set(0.01,0.01,0.01)
-        
-        return mesh as unknown as Mesh;
+        mesh.scale.set(0.02, 0.02, 0.02);
+        mesh.position.z = 1.5;
+        mesh.position.x = -0.24;
+        mesh.position.y = -0.36;
+        const group = new Group();
+        group.add(mesh);
+        return group as unknown as Mesh;
     }
     private async _loadGltfModel(path:string):Promise<Group<Object3DEventMap>>{
         return new Promise((res, rej)=>{

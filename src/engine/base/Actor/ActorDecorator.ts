@@ -7,11 +7,11 @@ export class ActorDecorator implements IActor {
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
     }
-    unjoin(target: IMovable): void {
-        this._baseActor.unjoin(target);
+    unjoin(target: IMovable): Promise<void> {
+       return this._baseActor.unjoin(target);
     }
-    join(target: IMovable): void {
-        this._baseActor.join(target);
+    join(target: IMovable): Promise<void> {
+        return this._baseActor.join(target);
     }
     move(backward: boolean, delta:number): Promise<void> {
         return this._baseActor.move(backward, delta);

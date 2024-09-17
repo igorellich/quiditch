@@ -6,8 +6,8 @@ import { IBody } from "../base/IBody";
 import { IMesh } from "./IMesh";
 
 export class MFActor extends Actor implements IBodiedActor{
-    unjoin(target: IMovable): void {
-        this._body.unjoin(target);
+    unjoin(target: IMovable): Promise<void> {
+        return this._body.unjoin(target);
     }
     getSpeed(): number {
         return this._body.getSpeed();
@@ -46,7 +46,7 @@ export class MFActor extends Actor implements IBodiedActor{
     getName(): string {
         return this._name;
     }
-    join(target: IMovable): void {
+    async join(target: IMovable): Promise<void> {
         this._body.join(target);
     }
     async move(backward: boolean, delta:number): Promise<void> {

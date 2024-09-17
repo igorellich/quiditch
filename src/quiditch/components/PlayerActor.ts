@@ -14,18 +14,21 @@ export class PlayerActor extends BodyActorDecorator {
         if (castResult.hit && !this._jointBody && castResult.instance.getName()==="ball") {
             
             if (castResult.distance < 5) {
-                this.join(castResult.instance);
+                await this.join(castResult.instance);
                 this._jointBody = castResult.instance;
             }
 
         }
     }
 
-    public attack():void{
+    public async attack():Promise<void>{
         if(this._jointBody){
-            this.unjoin(this._jointBody);
-            this._jointBody.move(false,1/60);
-            this._jointBody = null;
+            await this.unjoin(this._jointBody);
+            await this._jointBody.move(false, 1/60);
+            setTimeout(()=>{
+                this._jointBody = null;
+            },200)
+            
         }
     }
 }

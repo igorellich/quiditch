@@ -66,11 +66,11 @@ export class ThreeSceneManager extends SceneManager {
 
         window.addEventListener('dblclick', () => {
 
-            if (!document.fullscreenElement) {
-                this._renderer.domElement.requestFullscreen();
-            } else {
-                document.exitFullscreen();
-            }
+            // if (!document.fullscreenElement) {
+            //     this._renderer.domElement.requestFullscreen();
+            // } else {
+            //     document.exitFullscreen();
+            // }
         })
 
     }

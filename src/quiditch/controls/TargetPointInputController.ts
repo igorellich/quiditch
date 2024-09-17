@@ -1,4 +1,3 @@
-import { Actor } from "../../engine/base/Actor/Actor";
 import { IActor } from "../../engine/base/Actor/IActor";
 import { ITickable } from "../../engine/base/ITickable";
 import { SceneManager } from "../../engine/base/SceneManager";
@@ -55,6 +54,9 @@ export class TargetPointInputController extends InputController<GameInputActions
                         }
                         
                     }
+                    if(this._moveAction){
+                        this._onInputChange(GameInputActions.moveForward, false);
+                    }
                     this._onInputChange(rotateAction, true);
                     this._rotateAction = rotateAction;
 
@@ -87,6 +89,15 @@ export class TargetPointInputController extends InputController<GameInputActions
                     this._rotateAction = null;
                 }
                 this._targetPoint = null;
+            }
+        }else{
+            if (this._moveAction) {
+                this._onInputChange(this._moveAction, false);
+                this._moveAction = null;
+            }
+            if (this._rotateAction) {
+                this._onInputChange(this._rotateAction, false);
+                this._rotateAction = null;
             }
         }
     }

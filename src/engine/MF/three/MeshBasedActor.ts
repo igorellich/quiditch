@@ -8,10 +8,10 @@ export class MeshBasedActor implements IActor{
     constructor(mesh:IMesh){
         this._mesh = mesh;
     }
-    unjoin(target: IMovable): void {
+    async unjoin(target: IMovable): Promise<void> {
        //TODO
     }
-    join(target: IMovable): void {
+    async join(target: IMovable): Promise<void> {
         //TODO
     }
     setSpeed(speed: number): void {
