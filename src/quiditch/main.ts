@@ -11,6 +11,7 @@ import { RapierPhysicsManager } from "../engine/MB/rapier/RapierPhysicsManager";
 import { RapierDebugRenderer } from "../utils/debugRenderer";
 import { TargetPointInputController } from "./controls/TargetPointInputController";
 import { Vector2d } from "../engine/base/Vector2d";
+import { ThreeStats } from "../utils/threeStats";
 
 
 const attackButton = document.createElement("div");
@@ -94,7 +95,8 @@ sceneManager.startTime();
 
 // const debugRenderer = new RapierDebugRenderer(scene, world, 2);
 // sceneManager.addTickable(debugRenderer);
-
+const stats =new ThreeStats(document.body);
+sceneManager.addTickable(stats);
 
 // const targetMesh = new Mesh(new SphereGeometry(0.1,16,32), new MeshBasicMaterial({color:"red"}));
 // scene.add(targetMesh)
