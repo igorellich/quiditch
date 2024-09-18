@@ -7,6 +7,9 @@ export class ActorDecorator implements IActor {
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
     }
+    getAngelToTarget(target: Vector2d): Promise<number> {
+        return this._baseActor.getAngelToTarget(target);
+    }
     getName(): string {
         return this._baseActor.getName();
     }

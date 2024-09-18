@@ -8,11 +8,11 @@ export class TargetPointInputController extends InputController<GameInputActions
     private _actor: IActor;
     private _targetPoint: Vector2d;
 
-    private _prevAngle: number;
+  
     private _rotateAction: GameInputActions;
     private _moveAction: GameInputActions;
 
-    private _rotateIndex: number = 1;
+   
     constructor(actor?: IActor) {
         super();
         this._actor = actor;
@@ -29,28 +29,15 @@ export class TargetPointInputController extends InputController<GameInputActions
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         const actorDirection = await this._actor?.getDirectionVector();
         if (this._targetPoint && actorDirection) {
-            const actorPosion = await this._actor.getPosition();
-            const tagerDirection = (new Vector2d(this._targetPoint.x - actorPosion.x,
-                this._targetPoint.y - actorPosion.y)).normalize();
-            const atan1 = Math.atan2(actorDirection.y, actorDirection.x);
-            const atan2 = Math.atan2(tagerDirection.y, tagerDirection.x);
-            let angle: number = (atan2 - atan1) * 180 / Math.PI;//actorDirection.angleTo(tagerDirection) * 180 / Math.PI;
-            if (Math.abs(angle) > 180) {
-                angle = angle > 0 ? 360 - angle : 360 + angle;
-                if (angle > 360) {
-                    angle -= 360;
-                }
-                if (angle < -360) {
-                    angle += 360;
-                }
-            }
+            const actorPosition = await this._actor.getPosition();
+                      
+            const angle = await this._actor.getAngelToTarget(this._targetPoint); //radians
 
-
-            this._prevAngle = angle;
-            const distance = actorPosion.distanceTo(this._targetPoint);
-            if (Math.abs(angle) > 10 || distance > 3) {
-                if (Math.abs(angle) > 10 && distance > 3) {
-                    const rotateAction = angle > 0 ? GameInputActions.turnLeft : GameInputActions.turnRight; //this._rotateIndex == 1 ? GameInputActions.turnRight : GameInputActions.turnLeft;
+            
+            const distance = actorPosition.distanceTo(this._targetPoint);
+            if (Math.abs(angle) > Math.PI/18 || distance > 3) {
+                if (Math.abs(angle) > Math.PI/18 && distance > 3) {
+                    const rotateAction = angle > 0 ? GameInputActions.turnLeft : GameInputActions.turnRight; 
                     if (this._rotateAction !== rotateAction) {
                         if (this._rotateAction != null) {
                             this._onInputChange(rotateAction, false);

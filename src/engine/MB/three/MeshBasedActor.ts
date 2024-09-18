@@ -1,18 +1,18 @@
-import { IActor } from "../../base/Actor/IActor";
+import { Actor } from "../../base/Actor/Actor";
 import { IMovable } from "../../base/Imoveable";
 import { Vector2d } from "../../base/Vector2d";
 import { IMesh } from "../IMesh";
 
-export class MeshBasedActor implements IActor{
+export class MeshBasedActor extends Actor{
+ 
     private readonly _mesh:IMesh
-    private readonly _name:string
+   
     constructor(name: string, mesh:IMesh){
+        super(name);
         this._mesh = mesh;
-        this._name = name
+        
     }
-    getName(): string {
-        throw new Error("Method not implemented.");
-    }
+    
     async unjoin(target: IMovable): Promise<void> {
        //TODO
     }
@@ -65,4 +65,7 @@ export class MeshBasedActor implements IActor{
        
     }
     
+       public async setCollisions<TCollision>(memberGroups: TCollision[], filterGroup: TCollision[]): Promise<void> {
+        
+    }
 }

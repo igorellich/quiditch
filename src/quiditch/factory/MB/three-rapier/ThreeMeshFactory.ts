@@ -7,6 +7,9 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 import { ThreeSceneManager } from "../../../../engine/MB/three/ThreeSceneManager";
 import { ITickable } from "../../../../engine/base/ITickable";
+import { Pointer } from "../components/Pointer";
+import { IObject2D } from "../../../../engine/base/IObject2D";
+import { IActor } from "../../../../engine/base/Actor/IActor";
 
 export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     private readonly _sceneManager:ThreeSceneManager;
@@ -21,6 +24,18 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('/examples/jsm/libs/draco/');
         this._gltfLoader.setDRACOLoader(dracoLoader);
+    }
+    async createPointer(targetObject?: IObject2D, sourceActor?:IActor): Promise<Pointer> {
+        const mesh = await this._loadGltfModel('assets/gltf/pointer/scene.gltf');
+        // /mesh.scale.set(0.003,0.003,0.003)
+        mesh.rotateX(Math.PI/2)
+        mesh.position.z = 3;
+        mesh.position.y = 2;
+        const group = new Group();
+        group.add(mesh);
+        this._sceneManager.getScene().add(group);
+        const threebasedMesh = new ThreeBasedMesh(group);
+        return new Pointer("pointer",threebasedMesh,targetObject,sourceActor);
     }
     async createWalls(): Promise<IMesh> {
         const buffer = createArenaBuffer32Array3D(20, 50, 2);
@@ -57,9 +72,10 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     }
     private async _createPlayerMesh():Promise<Mesh>{
         const mesh = await this._loadGltfModel('assets/gltf/hover_bike/scene.gltf');
-        mesh.scale.set(0.003,0.003,0.003)
         mesh.rotateX(Math.PI/2)
         mesh.rotateY(Math.PI/2)
+        mesh.scale.set(0.003,0.003,0.003)
+       
         const group = new Group();
         group.add(mesh);
         return group as unknown as Mesh;
@@ -69,6 +85,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
 
         const mesh = await this._loadGltfModel('assets/gltf/magma_ball/scene.gltf');
         mesh.scale.set(0.02, 0.02, 0.02);
+      
         mesh.position.z = 1.5;
         mesh.position.x = -0.24;
         mesh.position.y = -0.36;
@@ -106,6 +123,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
                         action.play();
                         sceneManager.addTickable(new TickMixer(mixer));
                       }
+                     
                       res(gltf.scene)
             
                 }

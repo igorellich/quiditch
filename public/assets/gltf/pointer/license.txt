@@ -1,0 +1,11 @@
+Model Information:
+* title:	Chevron
+* source:	https://sketchfab.com/3d-models/chevron-f4a277b8d9cd47e0bea272eb58c1c5b0
+* author:	Dragos Circa (https://sketchfab.com/dragoscirca)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Chevron" (https://sketchfab.com/3d-models/chevron-f4a277b8d9cd47e0bea272eb58c1c5b0) by Dragos Circa (https://sketchfab.com/dragoscirca) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

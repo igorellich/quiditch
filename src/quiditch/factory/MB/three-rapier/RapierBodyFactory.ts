@@ -9,6 +9,9 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
     constructor(world: World) {
         this._world = world;
     }
+    createPointer(): Promise<IBody> {
+        return null;
+    }
     async createWalls(): Promise<IBody> {
         const groundBodyDesc = RigidBodyDesc.fixed().setCcdEnabled(true);
         const rigidBody = this._world.createRigidBody(groundBodyDesc);
@@ -22,7 +25,7 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
         return  new RapierBasedBody(rigidBody, this._world);
     }
     createGround(): Promise<IBody> {
-        throw new Error("Method not implemented.");
+        return null;
     }
     async createBall(): Promise<IBody> {
         const rigidBody = this._createBallRigidBody();

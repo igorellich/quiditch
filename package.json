@@ -19,6 +19,8 @@
     "@dimforge/rapier2d": "^0.14.0",
     "gsap": "^3.12.5",
     "nipplejs": "^0.10.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "three": "^0.167.1",
     "vite-plugin-wasm": "^3.3.0"
   }

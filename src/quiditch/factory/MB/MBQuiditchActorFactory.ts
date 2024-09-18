@@ -8,6 +8,8 @@ import { PlayerActor } from "./components/PlayerActor";
 import { BodyActorDecorator } from "../../../engine/MB/Actor/BodyActorDecorator";
 import { SceneManager } from "../../../engine/base/SceneManager";
 import { MeshBasedActor } from "../../../engine/MB/three/MeshBasedActor";
+import { IObject2D } from "../../../engine/base/IObject2D";
+import { Pointer } from "./components/Pointer";
 
 
 export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
@@ -22,6 +24,10 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         this._bodyFactory = bodyFactory;
         this._meshFactory = meshFactory;
         this._sceneManager = sceneManager;
+    }
+     async createPointer(targetObject?: IObject2D, sourceActor?:IActor): Promise<Pointer> {
+        const mesh = await this._meshFactory.createPointer(targetObject, sourceActor) as Pointer;
+        return mesh;
     }
     async createWalls(): Promise<IActor> {
         const body = await this._bodyFactory.createWalls();

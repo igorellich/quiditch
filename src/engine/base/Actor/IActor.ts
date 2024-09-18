@@ -8,6 +8,7 @@ export interface IActor extends IObject2D, ITickable, IMovable{
 
      getDirectionVector():Promise<Vector2d>;
      getName():string;
+     getAngelToTarget(target: Vector2d):Promise<number>;
 
     
 }

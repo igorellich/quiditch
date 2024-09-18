@@ -70,6 +70,9 @@ const ball = await quiditchFactory.createBall();
 ball.setPosition(0,10);
 sceneManager.addTickable(ball);
 
+const poiner = await quiditchFactory.createPointer(ball, player);
+sceneManager.addTickable(poiner);
+
 const plane = await quiditchFactory.createGround();
 sceneManager.addTickable(plane);
 
