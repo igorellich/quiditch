@@ -71,7 +71,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new ThreeBasedMesh(mesh);
     }
     private async _createPlayerMesh():Promise<Mesh>{
-        const mesh = await this._loadGltfModel('assets/gltf/hover_bike/scene.gltf');
+        const mesh = await this._loadGltfModel('assets/glb/hover_bike/scene.glb');
         mesh.rotateX(Math.PI/2)
         mesh.rotateY(Math.PI/2)
         mesh.scale.set(0.003,0.003,0.003)
