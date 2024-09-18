@@ -41,14 +41,9 @@ export abstract class Actor implements IActor {
             const atan1 = Math.atan2(actorDirection.y, actorDirection.x);
             const atan2 = Math.atan2(tagerDirection.y, tagerDirection.x);
             angle = (atan2 - atan1);
+            // console.log(angle*180/Math.PI)
             if (Math.abs(angle) > Math.PI) {
-                angle = angle > 0 ? 2 * Math.PI - angle : 2 * Math.PI + angle;
-                if (angle > 2 * Math.PI) {
-                    angle -= 2 * Math.PI;
-                }
-                if (angle < -2 * Math.PI) {
-                    angle += 2 * Math.PI;
-                }
+                angle = angle > 0 ?angle- 2 * Math.PI: 2 * Math.PI + angle;              
             }
         }
         return angle;

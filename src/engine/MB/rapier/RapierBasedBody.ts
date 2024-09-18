@@ -59,8 +59,8 @@ export class RapierBasedBody implements IBody{
             -Math.sin(await this.getRotation()) * speed * this._rigidBody.mass()*2000*delta,
             Math.cos(await this.getRotation()) * speed* this._rigidBody.mass()*2000*delta
         )
-        this._rigidBody.setLinearDamping(10)
-        this._rigidBody.setAngularDamping(1)
+        // this._rigidBody.setLinearDamping(10)
+        // this._rigidBody.setAngularDamping(1)
        
         this._rigidBody.applyImpulse(directionVector,true);
     }
