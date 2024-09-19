@@ -23,6 +23,9 @@ attackButton.addEventListener("click", (evt) => {
 attackButton.className="attack";
 document.body.appendChild(attackButton)
 
+const goalsCounter = document.createElement("div");
+goalsCounter.className="goals";
+document.body.appendChild(goalsCounter);
 const stickZone = document.createElement("div");
 stickZone.className="stickZone";
 document.body.appendChild(stickZone)
@@ -56,7 +59,7 @@ const canvas = document.querySelector("#app") as HTMLCanvasElement;
 const physicsManager = new RapierPhysicsManager(world);
 const sceneManager = new ThreeSceneManager({ height: window.innerHeight, width: window.innerWidth }, canvas, scene, physicsManager);
 const bodyFactory = new RapierBodyFactory(world);
-const meshFactory = new ThreeMeshFactory(sceneManager, 2);
+const meshFactory = new ThreeMeshFactory(sceneManager, 5);
 const quiditchFactory = new MBQuiditchFactory(bodyFactory, meshFactory,sceneManager);
 
 //3d models
@@ -80,7 +83,7 @@ sceneManager.addTickable(plane);
 const walls = await quiditchFactory.createWalls();
 sceneManager.addTickable(walls);
 
-const gates = await quiditchFactory.createGates(1);
+const gates = await quiditchFactory.createGates(2);
 sceneManager.addTickable(gates);
 gates.setPosition(0,10);
 
@@ -97,7 +100,7 @@ quiditchPlayerController.addInputController(keyboardInputController);
 
 sceneManager.startTime();
 
-const debugRenderer = new RapierDebugRenderer(scene, world, 2);
+const debugRenderer = new RapierDebugRenderer(scene, world, 5);
 sceneManager.addTickable(debugRenderer);
 const stats =new ThreeStats(document.body);
 sceneManager.addTickable(stats);

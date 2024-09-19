@@ -35,8 +35,8 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
 
         
        
-        const middleColliderDesc = ColliderDesc.cuboid(ringRadius, 0.2).setActiveEvents(ActiveEvents.COLLISION_EVENTS);
-        const borderColliderDesc = ColliderDesc.cuboid(0.1, 0.1).setRestitution(1.1);
+        const middleColliderDesc = ColliderDesc.cuboid(ringRadius, 0.001).setActiveEvents(ActiveEvents.COLLISION_EVENTS);
+        const borderColliderDesc = ColliderDesc.cuboid(0.1, 0.4).setRestitution(1.1);
 
         const leftcollider = this._world.createCollider(borderColliderDesc, leftBorderBody)
         const rightcollider = this._world.createCollider(borderColliderDesc, rightBorderBody)

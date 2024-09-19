@@ -1,9 +1,13 @@
 import { Actor } from "../../base/Actor/Actor";
+import { IActor } from "../../base/Actor/IActor";
 import { IMovable } from "../../base/Imoveable";
 import { Vector2d } from "../../base/Vector2d";
 import { IMesh } from "../IMesh";
 
 export class MeshBasedActor extends Actor{
+    async onCollision(actor: IActor): Promise<void> {
+       
+    }
  
     private readonly _mesh:IMesh
    

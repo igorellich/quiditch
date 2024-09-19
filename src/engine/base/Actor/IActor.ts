@@ -10,5 +10,7 @@ export interface IActor extends IObject2D, ITickable, IMovable{
      getName():string;
      getAngelToTarget(target: Vector2d):Promise<number>;
 
+     onCollision(actor:IActor, elapsedTime: number):Promise<void>;
+
     
 }

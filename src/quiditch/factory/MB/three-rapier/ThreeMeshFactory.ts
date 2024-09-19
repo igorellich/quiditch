@@ -31,7 +31,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
             color:'gold'
         });
         const ringGeom = new TorusGeometry(ringRadius,0.1*ringRadius,12,48);
-        const ringHeight = -ringRadius+2;
+        const ringHeight = -ringRadius+this._zHeight;
         const ringMesh = new Mesh(ringGeom,material);
         ringMesh.position.z = ringRadius+ringHeight;
         ringMesh.rotation.x = -Math.PI/2;
@@ -49,7 +49,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         const mesh = await this._loadGltfModel('assets/gltf/pointer/scene.gltf');
         // /mesh.scale.set(0.003,0.003,0.003)
         mesh.rotateX(Math.PI/2)
-        mesh.position.z = 3;
+        mesh.position.z = this._zHeight;
         mesh.position.y = 2;
         const group = new Group();
         group.add(mesh);
@@ -58,7 +58,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new Pointer("pointer",threebasedMesh,targetObject,sourceActor);
     }
     async createWalls(): Promise<IMesh> {
-        const buffer = createArenaBuffer32Array3D(20, 50, 2);
+        const buffer = createArenaBuffer32Array3D(20, 50, this._zHeight);
         const geometry = new BufferGeometry();
         geometry.setAttribute('position', new BufferAttribute(buffer, 3));
         const material = new MeshBasicMaterial({
@@ -70,7 +70,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new ThreeBasedMesh(mesh);
     }
     async createGround(): Promise<IMesh> {
-        const planeMesh = new Mesh(new PlaneGeometry(500, 500, 2), new MeshBasicMaterial({
+        const planeMesh = new Mesh(new PlaneGeometry(500, 500, this._zHeight), new MeshBasicMaterial({
             color: 'green'
         }));
         this._sceneManager.getScene().add(planeMesh);

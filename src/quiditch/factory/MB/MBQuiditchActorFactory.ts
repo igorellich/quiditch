@@ -10,6 +10,7 @@ import { SceneManager } from "../../../engine/base/SceneManager";
 import { MeshBasedActor } from "../../../engine/MB/three/MeshBasedActor";
 import { IObject2D } from "../../../engine/base/IObject2D";
 import { Pointer } from "./components/Pointer";
+import { Gates } from "./components/Gates";
 
 
 export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
@@ -25,12 +26,13 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         this._meshFactory = meshFactory;
         this._sceneManager = sceneManager;
     }
-    async createGates(radius: number): Promise<IActor> {
+    async createGates(radius: number): Promise<Gates> {
         const mesh = await this._meshFactory.createGates(radius);
         const body = await this._bodyFactory.createGates(radius);
         body.setCollisions([CollisionGroups.gates], [CollisionGroups.character, CollisionGroups.ball])
         const baseActor = new MBActor(body, mesh, 0, 0,"MB_gates");
-        return baseActor;
+        return new Gates(baseActor, "gates", this._sceneManager);
+       
     }
      async createPointer(targetObject?: IObject2D, sourceActor?:IActor): Promise<Pointer> {
         const mesh = await this._meshFactory.createPointer(targetObject, sourceActor) as Pointer;

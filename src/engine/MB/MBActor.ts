@@ -4,8 +4,12 @@ import { IMovable } from "../base/Imoveable";
 import { Vector2d } from "../base/Vector2d";
 import { IBody } from "./IBody";
 import { IMesh } from "./IMesh";
+import { IActor } from "../base/Actor/IActor";
 
 export class MBActor extends Actor implements IBodiedActor{
+    async onCollision(actor: IActor): Promise<void> {
+        
+    }
     unjoin(target: IMovable): Promise<void> {
         return this._body.unjoin(target);
     }

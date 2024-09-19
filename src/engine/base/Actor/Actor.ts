@@ -1,7 +1,6 @@
 import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
 import { IMovable } from "../Imoveable";
-import { IObject2D } from "../IObject2D";
 
 export abstract class Actor implements IActor {
 
@@ -12,6 +11,7 @@ export abstract class Actor implements IActor {
         this._name = name;
         this.setRotationSpeed(rotationSpeed);
     }
+    abstract onCollision(actor: IActor): Promise<void>;
     getName(): string {
         return this._name;
     }

@@ -38,7 +38,7 @@ export class ThreeSceneManager extends SceneManager {
         this._renderer.setSize(this._size.width, this._size.height);
 
         const camera = new PerspectiveCamera(75, this._size.width / this._size.height, 0.1, 100);        
-        camera.position.z = 10;
+        camera.position.z = 25;
 
         this._persuingCamera = new PersuingCamera(camera, 7);
         this.addTickable(this._persuingCamera);
