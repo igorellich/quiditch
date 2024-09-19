@@ -4,9 +4,9 @@ import { IActor } from "../../../../engine/base/Actor/IActor";
 import { IObject2D } from "../../../../engine/base/IObject2D";
 
 export class Pointer extends MeshBasedActor{
-    private _targetObject: IObject2D;
+    private _targetObject?: IObject2D;
 
-    private _sourceActor: IActor;
+    private _sourceActor?: IActor;
     constructor(name: string, mesh:IMesh, targetObject?: IObject2D, sourceActor?:IActor){
         super(name, mesh);
         this._targetObject = targetObject;

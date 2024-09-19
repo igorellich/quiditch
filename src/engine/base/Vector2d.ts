@@ -28,7 +28,7 @@ export class Vector2d{
 		return this.x * v.x + this.y * v.y;
 
 	}
-    clamp( value, min, max ) {
+    clamp( value:number, min:number, max:number ) {
 
         return Math.max( min, Math.min( max, value ) );
     

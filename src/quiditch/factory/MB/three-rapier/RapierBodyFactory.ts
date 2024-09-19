@@ -1,17 +1,56 @@
-import { ActiveCollisionTypes, ActiveEvents, ColliderDesc, RigidBody, RigidBodyDesc, World } from "@dimforge/rapier2d";
+import { ActiveCollisionTypes, ActiveEvents, ColliderDesc, JointData, RigidBody, RigidBodyDesc, World } from "@dimforge/rapier2d";
 import { IBody } from "../../../../engine/MB/IBody";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { RapierBasedBody } from "../../../../engine/MB/rapier/RapierBasedBody";
 import { createArenaBuffer32Array } from "../../../../tools";
+import { IActor } from "../../../../engine/base/Actor/IActor";
+import { IObject2D } from "../../../../engine/base/IObject2D";
 
 export class RapierBodyFactory implements IQuiditchFactory<IBody>{
     private readonly _world: World;
     constructor(world: World) {
         this._world = world;
     }
-    createPointer(): Promise<IBody> {
-        return null;
+    createGround(): Promise<IBody> {
+        throw new Error("Method not implemented.");
     }
+    createPointer(targetObject?: IObject2D | undefined, sourceActor?: IActor | undefined): Promise<IBody> {
+        throw new Error("Method not implemented.");
+    }
+    async createGates(ringRadius:number): Promise<IBody> {
+
+
+        const ringBodyDesc = RigidBodyDesc.fixed().setCcdEnabled(true)
+        const body = this._world.createRigidBody(ringBodyDesc);
+        const result = new RapierBasedBody(body, this._world);
+        const ringBordersDesc = RigidBodyDesc.dynamic().setCcdEnabled(true)
+
+        const rightBorderBody = this._world.createRigidBody(ringBordersDesc);
+
+      
+
+        rightBorderBody.setTranslation({ x: ringRadius, y: 0 }, true)
+        const leftBorderBody = this._world.createRigidBody(ringBordersDesc);
+        leftBorderBody.setTranslation({ x: -ringRadius, y: 0 }, true)
+
+        
+       
+        const middleColliderDesc = ColliderDesc.cuboid(ringRadius, 0.2).setActiveEvents(ActiveEvents.COLLISION_EVENTS);
+        const borderColliderDesc = ColliderDesc.cuboid(0.1, 0.1).setRestitution(1.1);
+
+        const leftcollider = this._world.createCollider(borderColliderDesc, leftBorderBody)
+        const rightcollider = this._world.createCollider(borderColliderDesc, rightBorderBody)
+
+        const middleCollider = this._world.createCollider(middleColliderDesc, body);
+        //middleCollider.setCollisionGroups(this._filterGroups)
+        middleCollider.setSensor(true);
+        let leftJoint = JointData.fixed({ x: 0.0, y: 0.0 }, 0, { x: -ringRadius, y: 0.0 },0);
+        this._world.createImpulseJoint(leftJoint, leftBorderBody, body as RigidBody, false);
+         const rightJointParams = JointData.fixed({ x: 0.0, y: 0.0 }, 0, { x: ringRadius, y: 0.0 }, 0);
+       this._world.createImpulseJoint(rightJointParams, rightBorderBody, body as RigidBody, true);
+       return result;
+    }
+   
     async createWalls(): Promise<IBody> {
         const groundBodyDesc = RigidBodyDesc.fixed().setCcdEnabled(true);
         const rigidBody = this._world.createRigidBody(groundBodyDesc);
@@ -24,9 +63,7 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
         
         return  new RapierBasedBody(rigidBody, this._world);
     }
-    createGround(): Promise<IBody> {
-        return null;
-    }
+    
     async createBall(): Promise<IBody> {
         const rigidBody = this._createBallRigidBody();
         const body =  new RapierBasedBody(rigidBody, this._world);

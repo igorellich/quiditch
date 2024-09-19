@@ -25,6 +25,13 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         this._meshFactory = meshFactory;
         this._sceneManager = sceneManager;
     }
+    async createGates(radius: number): Promise<IActor> {
+        const mesh = await this._meshFactory.createGates(radius);
+        const body = await this._bodyFactory.createGates(radius);
+        body.setCollisions([CollisionGroups.gates], [CollisionGroups.character, CollisionGroups.ball])
+        const baseActor = new MBActor(body, mesh, 0, 0,"MB_gates");
+        return baseActor;
+    }
      async createPointer(targetObject?: IObject2D, sourceActor?:IActor): Promise<Pointer> {
         const mesh = await this._meshFactory.createPointer(targetObject, sourceActor) as Pointer;
         return mesh;
@@ -33,7 +40,7 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         const body = await this._bodyFactory.createWalls();
         const mesh = await this._meshFactory.createWalls();
         body.setCollisions([CollisionGroups.wall], [CollisionGroups.character, CollisionGroups.ball])
-        const baseActor = new MBActor(body, mesh, 0, 0,"MF_wall");
+        const baseActor = new MBActor(body, mesh, 0, 0,"MB_wall");
         return new BodyActorDecorator(baseActor, "wall", this._sceneManager);
     }
     async createGround(): Promise<IActor> {
@@ -44,14 +51,14 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         const body = await this._bodyFactory.createBall();
         const mesh = await this._meshFactory.createBall();
         body.setCollisions([CollisionGroups.ball], [CollisionGroups.character, CollisionGroups.gates, CollisionGroups.wall])
-        const baseActor = new MBActor(body, mesh, 10, 10, "MF_ball");
+        const baseActor = new MBActor(body, mesh, 10, 10, "MB_ball");
         return new BodyActorDecorator(baseActor, "ball", this._sceneManager);
     }
     async createPlayer(): Promise<PlayerActor> {
         const body = await this._bodyFactory.createPlayer();
         body.setCollisions([CollisionGroups.character], [CollisionGroups.ball, CollisionGroups.gates, CollisionGroups.wall])
         const mesh = await this._meshFactory.createPlayer();
-        const baseActor = new MBActor(body, mesh, 0.1, 0.1,"MF_player");
+        const baseActor = new MBActor(body, mesh, 0.1, 0.1,"MB_player");
         return new PlayerActor(baseActor,"player", this._sceneManager);
     }
 

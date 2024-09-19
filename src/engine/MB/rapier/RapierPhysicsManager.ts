@@ -14,7 +14,7 @@ export class RapierPhysicsManager implements IPhysicsManager {
         this._world = world;
     }
     async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: IBodiedActor, targetActors?: IBodiedActor[]): Promise<RayCastResult> {
-        const body = sourceActor.getBody() as RapierBasedBody;
+        const body = sourceActor?.getBody() as RapierBasedBody;
         const result: RayCastResult = { hit: false };
         //console.log(origin,dir)
         const castResult = this._world.castRay(new Ray(origin, dir), rayLength, false, undefined,
@@ -25,7 +25,7 @@ export class RapierPhysicsManager implements IPhysicsManager {
 
                 if (body === castResult.collider.parent()) {
                     result.hit = true;
-                    result.instance = targetActors.find(a => a.getBody && (a.getBody() as RapierBasedBody).getRigidBody() === body);
+                    result.instance = targetActors?.find(a => a.getBody && (a.getBody() as RapierBasedBody).getRigidBody() === body);
 
                     const point: Vector2d = new Vector2d(
                         origin.x + dir.x * castResult.timeOfImpact,

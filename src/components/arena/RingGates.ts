@@ -1,6 +1,6 @@
 import RAPIER, { RigidBody } from "@dimforge/rapier2d";
 import { PhysicsMesh, PhysicsMeshArgs } from "../PhysicsMesh";
-import {MeshBasicMaterial, Group, TorusGeometry, Mesh, CylinderGeometry, Scene} from 'three'
+import {MeshBasicMaterial, Group, TorusGeometry, Mesh, CylinderGeometry} from 'three'
 
 export class RingGates extends PhysicsMesh{
     public update(elapsedTime: number): void {

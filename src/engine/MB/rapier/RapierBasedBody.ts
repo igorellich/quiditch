@@ -7,7 +7,7 @@ import { IBodiedActor } from "../Actor/IBodiedActor";
 
 // Facade-class for rapier's RigidBody
 export class RapierBasedBody implements IBody{
-    private _speed: number;
+    private _speed: number = 0;
 
     public getSpeed():number{
         return this._speed;
@@ -17,7 +17,7 @@ export class RapierBasedBody implements IBody{
         return this._rotationSpeed;
     }
 
-    private _rotationSpeed: number;
+    private _rotationSpeed: number = 0;
     private readonly _rigidBody: RigidBody;
 
     private readonly _world:World;
@@ -28,8 +28,9 @@ export class RapierBasedBody implements IBody{
         this._world = world;
     }
     async unjoin(target: IMovable): Promise<void> {
-        if(this._jointsMap.get(target)){
-            this._world.removeImpulseJoint(this._jointsMap.get(target), true);
+        const joint = this._jointsMap.get(target);
+        if(joint){
+            this._world.removeImpulseJoint(joint, true);
             this._jointsMap.delete(target);
         }
        

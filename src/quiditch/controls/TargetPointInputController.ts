@@ -5,12 +5,12 @@ import { InputController } from "../../engine/controls/BaseInput";
 import { GameInputActions } from "../constants";
 
 export class TargetPointInputController extends InputController<GameInputActions> implements ITickable {
-    private _actor: IActor;
-    private _targetPoint: Vector2d;
+    private _actor?: IActor;
+    private _targetPoint?: Vector2d;
 
   
-    private _rotateAction: GameInputActions;
-    private _moveAction: GameInputActions;
+    private _rotateAction?: GameInputActions;
+    private _moveAction?: GameInputActions;
 
    
     constructor(actor?: IActor) {
@@ -18,7 +18,7 @@ export class TargetPointInputController extends InputController<GameInputActions
         this._actor = actor;
     }
 
-    public setTargerPoint(target: Vector2d) {
+    public setTargerPoint(target?: Vector2d) {
         this._targetPoint = target;
     }
 
@@ -29,12 +29,13 @@ export class TargetPointInputController extends InputController<GameInputActions
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         const actorDirection = await this._actor?.getDirectionVector();
         if (this._targetPoint && actorDirection) {
-            const actorPosition = await this._actor.getPosition();
+            const actorPosition = await this._actor?.getPosition();
                       
-            const angle = await this._actor.getAngelToTarget(this._targetPoint); //radians
+            const angle = await this._actor?.getAngelToTarget(this._targetPoint); //radians
 
             
-            const distance = actorPosition.distanceTo(this._targetPoint);
+            const distance = actorPosition?.distanceTo(this._targetPoint);
+            if(angle && distance){
             if (Math.abs(angle) > Math.PI/18 || distance > 3) {
                 if (Math.abs(angle) > Math.PI/18 && distance > 3) {
                     const rotateAction = angle > 0 ? GameInputActions.turnLeft : GameInputActions.turnRight; 
@@ -55,7 +56,7 @@ export class TargetPointInputController extends InputController<GameInputActions
                     if (this._rotateAction) {
                         this._onInputChange(this._rotateAction, false);
 
-                        this._rotateAction = null;
+                        this._rotateAction = undefined;
                     }
 
 
@@ -66,29 +67,30 @@ export class TargetPointInputController extends InputController<GameInputActions
                     } else {
                         if (this._moveAction) {
                             this._onInputChange(this._moveAction, false);
-                            this._moveAction = null;
+                            this._moveAction = undefined;
                         }
                     }
                 }
             } else {
                 if (this._moveAction) {
                     this._onInputChange(this._moveAction, false);
-                    this._moveAction = null;
+                    this._moveAction = undefined;
                 }
                 if (this._rotateAction) {
                     this._onInputChange(this._rotateAction, false);
-                    this._rotateAction = null;
+                    this._rotateAction = undefined;
                 }
-                this._targetPoint = null;
+                this._targetPoint = undefined;
             }
+        }
         } else {
             if (this._moveAction) {
                 this._onInputChange(this._moveAction, false);
-                this._moveAction = null;
+                this._moveAction = undefined;
             }
             if (this._rotateAction) {
                 this._onInputChange(this._rotateAction, false);
-                this._rotateAction = null;
+                this._rotateAction = undefined;
             }
         }
     }

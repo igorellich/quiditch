@@ -9,6 +9,7 @@ export abstract class Actor implements IActor {
     public readonly _name: string;
     constructor(name: string, speed: number = 0, rotationSpeed: number = 0) {
         this.setSpeed(speed);
+        this._name = name;
         this.setRotationSpeed(rotationSpeed);
     }
     getName(): string {
@@ -22,8 +23,8 @@ export abstract class Actor implements IActor {
     abstract setRotationSpeed(rotationSpeed: number): void;
     abstract move(backward: boolean, delta: number): Promise<void>;
     abstract rotate(right: boolean, delta: number): Promise<void>;
-    public async getDirectionVector(): Promise<Vector2d | undefined> {
-        let result: Vector2d = undefined
+    public async getDirectionVector(): Promise<Vector2d> {
+        let result: Vector2d;
 
         result = new Vector2d(-Math.sin(await this.getRotation()), Math.cos(await this.getRotation()));
 

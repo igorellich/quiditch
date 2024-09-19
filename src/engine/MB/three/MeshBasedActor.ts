@@ -25,20 +25,16 @@ export class MeshBasedActor extends Actor{
     setRotationSpeed(rotationSpeed: number): void {
         //TODO
     }
-    move(backward?: boolean): Promise<void> {
+    async move(backward?: boolean): Promise<void> {
         //TODO
         return;
     }
-    rotate(right?: boolean): Promise<void> {
+    async rotate(right?: boolean): Promise<void> {
         //TODO
         return;
     }
     async getDirectionVector(): Promise<Vector2d> {
-        let result: Vector2d = undefined
-
-        result = new Vector2d(-Math.sin(await this.getRotation()),Math.cos(await this.getRotation()));       
-
-        return result;
+        return new Vector2d(-Math.sin(await this.getRotation()),Math.cos(await this.getRotation()));       
     }
     getSpeed(): number {
         return 0;

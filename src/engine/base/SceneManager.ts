@@ -18,11 +18,11 @@ export abstract class SceneManager{
     public abstract stopTime():void;
     protected abstract _getElapsedTime():number;
     protected abstract _draw(): void;
-    public async castRay(origin: Vector2d, dir:Vector2d, rayLength: number, sourceActor?: IActor): Promise<RayCastResult>{
+    public async castRay(origin: Vector2d, dir:Vector2d, rayLength: number, sourceActor?: IActor): Promise<RayCastResult|undefined>{
         if(this._physicsManager){
            return this._physicsManager.castRay(origin, dir, rayLength, sourceActor, this.getActors() as IActor[]);
         }
-        return null;
+        return undefined;
     }
 
 
@@ -65,7 +65,7 @@ export abstract class SceneManager{
         }) as IActor[];
     }
 
-    abstract setCameraTarget(targer:IActor);
+    abstract setCameraTarget(targer:IActor): void;
     
 
 }

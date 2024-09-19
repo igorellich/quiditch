@@ -1,4 +1,4 @@
-import RAPIER, { ActiveCollisionTypes } from "@dimforge/rapier2d";
+import RAPIER from "@dimforge/rapier2d";
 
 import { createArenaBuffer32Array } from "../../tools";
 import { PhysicsMesh, PhysicsMeshArgs } from "../PhysicsMesh";
@@ -52,13 +52,13 @@ export class Arena extends PhysicsMesh {
             store:this.store,
             rotation:Math.PI/2
           }
-          const gates = new RingGates({ ...gateArgs, translation: { x: 6, y: 0 } }, 1.5);
-          const gates1 = new RingGates({ ...gateArgs, translation: { x: 6, y: 4 } }, 1);
-          const gates2 = new RingGates({ ...gateArgs, translation: { x: 6, y: -4 } }, 1);
+          new RingGates({ ...gateArgs, translation: { x: 6, y: 0 } }, 1.5);
+          new RingGates({ ...gateArgs, translation: { x: 6, y: 4 } }, 1);
+          new RingGates({ ...gateArgs, translation: { x: 6, y: -4 } }, 1);
 
-          const gates3 = new RingGates({ ...gateArgs, translation: { x: -6, y: 0 } }, 1.5);
-          const gates4 = new RingGates({ ...gateArgs, translation: { x: -6, y: 4 } }, 1);
-          const gates5 = new RingGates({ ...gateArgs, translation: { x: -6, y: -4 } }, 1);
+          new RingGates({ ...gateArgs, translation: { x: -6, y: 0 } }, 1.5);
+          new RingGates({ ...gateArgs, translation: { x: -6, y: 4 } }, 1);
+          new RingGates({ ...gateArgs, translation: { x: -6, y: -4 } }, 1);
 
     }
 }

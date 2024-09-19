@@ -42,7 +42,7 @@ const joy = nipplejs.default.create({
 });
 
 (joy as nipplejs.Joystick).on("end",async (evt, data)=>{
-    targetPointInputController.setTargerPoint(null);
+    targetPointInputController.setTargerPoint(undefined);
 });
 
 
@@ -68,7 +68,7 @@ sceneManager.addTickable(player);
 
 
 const ball = await quiditchFactory.createBall();
-ball.setPosition(0,10);
+ball.setPosition(0,4);
 sceneManager.addTickable(ball);
 
 const poiner = await quiditchFactory.createPointer(ball, player);
@@ -79,6 +79,10 @@ sceneManager.addTickable(plane);
 
 const walls = await quiditchFactory.createWalls();
 sceneManager.addTickable(walls);
+
+const gates = await quiditchFactory.createGates(1);
+sceneManager.addTickable(gates);
+gates.setPosition(0,10);
 
 // Controls
 const quiditchPlayerController = new QuiditchPlayerController(player);
@@ -93,8 +97,8 @@ quiditchPlayerController.addInputController(keyboardInputController);
 
 sceneManager.startTime();
 
-// const debugRenderer = new RapierDebugRenderer(scene, world, 2);
-// sceneManager.addTickable(debugRenderer);
+const debugRenderer = new RapierDebugRenderer(scene, world, 2);
+sceneManager.addTickable(debugRenderer);
 const stats =new ThreeStats(document.body);
 sceneManager.addTickable(stats);
 

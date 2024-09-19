@@ -1,4 +1,4 @@
-import { AnimationMixer, BufferAttribute, BufferGeometry, Group, Light, Mesh, MeshBasicMaterial, Object3DEventMap, PlaneGeometry, Scene, SpotLight } from "three";
+import { AnimationMixer, BufferAttribute, BufferGeometry, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, Object3DEventMap, PlaneGeometry, Scene, SpotLight, TorusGeometry } from "three";
 import { IMesh } from "../../../../engine/MB/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { ThreeBasedMesh } from "../../../../engine/MB/three/ThreeBasedMesh";
@@ -24,6 +24,26 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('/examples/jsm/libs/draco/');
         this._gltfLoader.setDRACOLoader(dracoLoader);
+    }
+    async createGates(ringRadius: number): Promise<IMesh> {
+        const mesh = new Group();
+        const material = new MeshBasicMaterial({
+            color:'gold'
+        });
+        const ringGeom = new TorusGeometry(ringRadius,0.1*ringRadius,12,48);
+        const ringHeight = -ringRadius+2;
+        const ringMesh = new Mesh(ringGeom,material);
+        ringMesh.position.z = ringRadius+ringHeight;
+        ringMesh.rotation.x = -Math.PI/2;
+        
+        const basementGeom = new CylinderGeometry(0.1, 0.1, ringHeight);
+        const basementMesh = new Mesh(basementGeom, material);
+        basementMesh.position.z=ringHeight/2;
+        basementMesh.rotation.x = -Math.PI/2;
+        this._sceneManager.getScene().add(mesh);
+        mesh.add(ringMesh,basementMesh)
+        const threebasedMesh = new ThreeBasedMesh(mesh);
+        return threebasedMesh;
     }
     async createPointer(targetObject?: IObject2D, sourceActor?:IActor): Promise<Pointer> {
         const mesh = await this._loadGltfModel('assets/gltf/pointer/scene.gltf');

@@ -9,4 +9,6 @@ export interface IQuiditchFactory<T>{
     createWalls():Promise<T>;
 
     createPointer(targetObject?: IObject2D, sourceActor?:IActor):Promise<T>;
+
+    createGates(ringRadius:number):Promise<T>;
 }

@@ -10,7 +10,7 @@ export class PersuingCamera extends ThreeBasedMesh implements ITickable {
         super(camera);
         this._yDistance = yDistance;
     }
-    private _target: IActor;
+    private _target?: IActor;
     private readonly _yDistance: number = 0;
     async setTarget(target: IActor) {
         this._target = target;
