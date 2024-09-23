@@ -12,6 +12,8 @@ import { RapierDebugRenderer } from "../utils/debugRenderer";
 import { TargetPointInputController } from "./controls/TargetPointInputController";
 import { Vector2d } from "../engine/base/Vector2d";
 import { ThreeStats } from "../utils/threeStats";
+import { RectZone } from "../engine/ai/zone/RectZone";
+import { Patroller } from "../engine/ai/Patroller";
 
 
 const attackButton = document.createElement("div");
@@ -41,11 +43,11 @@ const joy = nipplejs.default.create({
 
 (joy as nipplejs.Joystick).on("move",async (evt, data)=>{
     const playerPos = await player.getPosition();
-    targetPointInputController.setTargerPoint(new Vector2d(playerPos.x+data.vector.x*1000, playerPos.y+data.vector.y*1000));
+    targetPointInputController.setTargetPoint(new Vector2d(playerPos.x+data.vector.x*1000, playerPos.y+data.vector.y*1000));
 });
 
 (joy as nipplejs.Joystick).on("end",async (evt, data)=>{
-    targetPointInputController.setTargerPoint(undefined);
+    targetPointInputController.setTargetPoint(undefined);
 });
 
 
@@ -68,6 +70,8 @@ const player = await quiditchFactory.createPlayer();
 sceneManager.setCameraTarget(player);
 
 sceneManager.addTickable(player);
+
+
 
 
 const ball = await quiditchFactory.createBall();
@@ -104,6 +108,21 @@ const debugRenderer = new RapierDebugRenderer(scene, world, 5);
 sceneManager.addTickable(debugRenderer);
 const stats =new ThreeStats(document.body);
 sceneManager.addTickable(stats);
+
+//AI
+const aiPlayer =  await quiditchFactory.createPlayer();
+sceneManager.addTickable(aiPlayer);
+const aiPlayerController = new QuiditchPlayerController(aiPlayer);
+sceneManager.addTickable(aiPlayerController);
+
+const aiTargetPointInputController = new TargetPointInputController(aiPlayer);
+sceneManager.addTickable(aiTargetPointInputController);
+aiPlayerController.addInputController(aiTargetPointInputController);
+const zone = new RectZone(new Vector2d(-16,16),new Vector2d(16,-16));
+    const patroller = new Patroller(zone,aiTargetPointInputController,1);
+    sceneManager.addTickable(patroller);
+aiPlayer.setPosition(-6,-6);
+
 
 // const targetMesh = new Mesh(new SphereGeometry(0.1,16,32), new MeshBasicMaterial({color:"red"}));
 // scene.add(targetMesh)

@@ -1,9 +1,15 @@
 export class Vector2d{
-    x:number;
-    y: number;
+    private readonly _x:number;
+    private readonly _y: number;
+	public get x(){
+		return this._x;
+	}
+	public get y(){
+		return this._y;
+	}
     constructor(x:number, y:number){
-        this.x = x;
-        this.y = y;
+        this._x = x;
+        this._y = y;
     }
     angleTo( v:Vector2d ) {
 
@@ -20,12 +26,12 @@ export class Vector2d{
 	}
     lengthSq() {
 
-		return this.x * this.x + this.y * this.y;
+		return this._x * this._x + this._y * this._y;
 
 	}
     dot( v:Vector2d ) {
 
-		return this.x * v.x + this.y * v.y;
+		return this._x * v._x + this._y * v._y;
 
 	}
     clamp( value:number, min:number, max:number ) {
@@ -41,16 +47,16 @@ export class Vector2d{
 
 	distanceToSquared( v:Vector2d ) {
 
-		const dx = this.x - v.x, dy = this.y - v.y;
+		const dx = this._x - v._x, dy = this._y - v._y;
 		return dx * dx + dy * dy;
 
 	}
 	multiplyScalar( scalar:number ) {
 
-		this.x *= scalar;
-		this.y *= scalar;
+		const x =  this._x * scalar;
+		const y =  this._y * scalar;
 
-		return this;
+		return new Vector2d(x,y);
 
 	}
 	normalize() {
@@ -65,7 +71,7 @@ export class Vector2d{
 	}
 	length() {
 
-		return Math.sqrt( this.x * this.x + this.y * this.y );
+		return Math.sqrt( this._x * this._x + this._y * this._y );
 
 	}
 
