@@ -59,38 +59,33 @@ export class TargetPointInputController extends InputController<GameInputActions
                 if (Math.abs(angle) > Math.PI / 18 || distance > 3) {
 
                     // rotate
-                    if (Math.abs(angle) > Math.PI / 18 && distance > 3) {
+                    if (Math.abs(angle) > Math.PI / 18) {
                         this._targetReached = false;
                         const rotateAction = angle > 0 ? GameInputActions.turnLeft : GameInputActions.turnRight;
                         if (this._rotateAction !== rotateAction) {
-                            if (this._rotateAction != null) {
-                                this._onInputChange(rotateAction, false);
-                            }
+                            this._onInputChange(rotateAction, true);
+                            this._rotateAction = rotateAction;
                         }
-                        if (this._moveAction) {
-                            this._moveAction = undefined;
-                            this._onInputChange(GameInputActions.moveForward, false);
-                        }
-                        this._onInputChange(rotateAction, true);
-                        this._rotateAction = rotateAction;
-
                     } else {
-                        // move
-                        if (this._rotateAction) {
+                        if (this._rotateAction != null) {
+
                             this._onInputChange(this._rotateAction, false);
                             this._rotateAction = undefined;
                         }
+                    }
+                    // move                       
+                    if (distance > 3) {
+                        this._targetReached = false;
+                        if (this._moveAction !== GameInputActions.moveForward) {
 
-
-                        if (distance > 3) {
-                            if (this._moveAction !== GameInputActions.moveForward) {
-                                this._targetReached = false;
-                                this._onInputChange(GameInputActions.moveForward, true);
-                                this._moveAction = GameInputActions.moveForward;
-                            }
+                            this._onInputChange(GameInputActions.moveForward, true);
+                            this._moveAction = GameInputActions.moveForward;
                         }
-                        else {
-                            this.setTargetPoint(undefined);
+                    } else {
+                        if (this._moveAction != null) {
+
+                            this._onInputChange(this._moveAction, false);
+                            this._moveAction = undefined;
                         }
                     }
                 } else {
