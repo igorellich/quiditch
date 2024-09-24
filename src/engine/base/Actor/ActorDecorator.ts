@@ -1,14 +1,16 @@
 import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
 import { IMovable } from "../Imoveable";
+import { Collision } from "../Collision";
 
 export class ActorDecorator implements IActor {
     protected readonly _baseActor: IActor;
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
     }
-    async onCollision(actor: IActor, elapsedTime: number): Promise<void> {
-        this._baseActor.onCollision(actor, elapsedTime);
+   
+    async onCollision(collision: Collision, elapsedTime: number): Promise<void> {
+        this._baseActor.onCollision(collision, elapsedTime);
     }
     getAngelToTarget(target: Vector2d): Promise<number> {
         return this._baseActor.getAngelToTarget(target);

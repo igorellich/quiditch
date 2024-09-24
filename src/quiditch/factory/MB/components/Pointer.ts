@@ -1,10 +1,11 @@
 import { IMesh } from "../../../../engine/MB/IMesh";
 import { MeshBasedActor } from "../../../../engine/MB/three/MeshBasedActor";
 import { IActor } from "../../../../engine/base/Actor/IActor";
+import { Collision } from "../../../../engine/base/Collision";
 import { IObject2D } from "../../../../engine/base/IObject2D";
 
 export class Pointer extends MeshBasedActor{
-    async onCollision(actor: IActor): Promise<void> {
+    async onCollision(collision: Collision): Promise<void> {
         
     }
     private _targetObject?: IObject2D;

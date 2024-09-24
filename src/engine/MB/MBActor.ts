@@ -4,13 +4,14 @@ import { IMovable } from "../base/Imoveable";
 import { Vector2d } from "../base/Vector2d";
 import { IBody } from "./IBody";
 import { IMesh } from "./IMesh";
-import { IActor } from "../base/Actor/IActor";
+import { Collision } from "../base/Collision";
 
 export class MBActor extends Actor implements IBodiedActor{
-    async onCollision(actor: IActor): Promise<void> {
+    async onCollision(collision: Collision): Promise<void> {
         
     }
     unjoin(target: IMovable): Promise<void> {
+        super.join(target);
         return this._body.unjoin(target);
     }
     getSpeed(): number {
@@ -50,6 +51,7 @@ export class MBActor extends Actor implements IBodiedActor{
         return this._name;
     }
     async join(target: IMovable): Promise<void> {
+        super.join(target);
         this._body.join(target);
     }
     async move(backward: boolean, delta:number): Promise<void> {

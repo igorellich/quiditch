@@ -1,6 +1,7 @@
 import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
 import { IMovable } from "../Imoveable";
+import { Collision } from "../Collision";
 
 export abstract class Actor implements IActor {
 
@@ -11,12 +12,29 @@ export abstract class Actor implements IActor {
         this._name = name;
         this.setRotationSpeed(rotationSpeed);
     }
-    abstract onCollision(actor: IActor): Promise<void>;
+
+    protected _joints: IMovable[] = [];
+    _addJoint(actor: IMovable): void {
+        if(this._joints.indexOf(actor)<0){
+            this._joints.push(actor);
+        }
+    }
+    _removeJoint(actor: IMovable): void {
+        const jointIndex = this._joints.indexOf(actor);
+        if (jointIndex >= 0) {
+            this._joints.splice(jointIndex, 1);
+        }
+    }
+    abstract onCollision(Collision: Collision): Promise<void>;
     getName(): string {
         return this._name;
     }
-    abstract unjoin(target: IMovable): Promise<void>;
-    abstract join(target: IMovable): Promise<void>;
+    public async unjoin(target: IMovable): Promise<void>{
+        this._removeJoint(target);
+    };
+    public async join(target: IMovable): Promise<void>{
+        this._addJoint(target);
+    };
     abstract getSpeed(): number;
     abstract getRotationSpeed(): number;
     abstract setSpeed(speed: number): void;

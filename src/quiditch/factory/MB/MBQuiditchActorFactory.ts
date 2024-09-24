@@ -11,6 +11,7 @@ import { MeshBasedActor } from "../../../engine/MB/three/MeshBasedActor";
 import { IObject2D } from "../../../engine/base/IObject2D";
 import { Pointer } from "./components/Pointer";
 import { Gates } from "./components/Gates";
+import { Quaffle } from "./components/balls/Quaffle";
 
 
 export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
@@ -54,13 +55,16 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         const mesh = await this._meshFactory.createBall();
         body.setCollisions([CollisionGroups.ball], [CollisionGroups.character, CollisionGroups.gates, CollisionGroups.wall])
         const baseActor = new MBActor(body, mesh, 10, 10, "MB_ball");
-        return new BodyActorDecorator(baseActor, "ball", this._sceneManager);
+        const ball = new Quaffle(baseActor, "ball", this._sceneManager);
+       
+        return ball;
+
     }
     async createPlayer(): Promise<PlayerActor> {
         const body = await this._bodyFactory.createPlayer();
         body.setCollisions([CollisionGroups.character], [CollisionGroups.ball, CollisionGroups.gates, CollisionGroups.wall])
         const mesh = await this._meshFactory.createPlayer();
-        const baseActor = new MBActor(body, mesh, 0.1, 0.1,"MB_player");
+        const baseActor = new MBActor(body, mesh, 0.15, 0.25,"MB_player");
         return new PlayerActor(baseActor,"player", this._sceneManager);
     }
 

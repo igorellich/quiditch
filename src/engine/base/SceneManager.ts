@@ -37,13 +37,14 @@ export abstract class SceneManager{
         if(this._physicsManager){
             this._physicsManager.step(deltaTime);
             const collisions = this._physicsManager.getCollisions(this._tickers);
+            
             if(collisions.length>0){
                 collisions.forEach(c => {
                     if (c.actorB) {
-                        c.actorA?.onCollision(c.actorB, elapsedTime);
+                        c.actorA?.onCollision(c, elapsedTime);
                     }
                     if (c.actorA) {
-                        c.actorB?.onCollision(c.actorA, elapsedTime);
+                        c.actorB?.onCollision(c, elapsedTime);
                     }
 
                 })
