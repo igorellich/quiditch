@@ -31,8 +31,20 @@ export class Chaser extends Patroller<Vector2d> {
 
             const closestQuaffle = await this._getClosestQuaffle();
             if (closestQuaffle) {
+                const joints = await closestQuaffle.getJoints();
+                const quafflePos = await closestQuaffle.getPosition();
+                if(joints.length>0){
+                    setTimeout(async () => {
+                        const dirVec = await actor.getDirectionVector();
+                        this._targetPointer.setTargetPoint(new Vector2d(quafflePos.x - dirVec.x*5, quafflePos.y - dirVec.y*5));
+
+                    }, 200)
+
+                } else {
+                    this._targetPointer.setTargetPoint(quafflePos);
+                }
                 console.log("found quaffle", closestQuaffle)
-                this._targetPointer.setTargetPoint(await closestQuaffle.getPosition());
+                
             } else {
                 this.setPatrolling(true);
             }

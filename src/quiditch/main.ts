@@ -35,9 +35,10 @@ document.body.appendChild(stickZone)
 
 //@ts-ignore
 const joy = nipplejs.default.create({
-    mode:"semi",
-    catchDistance:150,
-    zone:document.querySelector(".stickZone")
+    mode: "semi",
+    catchDistance: 150,
+    zone: document.querySelector(".stickZone") as HTMLElement,
+    size: 200
 
 });
 
