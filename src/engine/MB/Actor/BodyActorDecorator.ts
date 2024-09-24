@@ -1,6 +1,5 @@
 import { ActorDecorator } from "../../base/Actor/ActorDecorator";
 import { IBodiedActor } from "./IBodiedActor";
-import { IMovable } from "../../base/Imoveable";
 import { SceneManager } from "../../base/SceneManager";
 import { Vector2d } from "../../base/Vector2d";
 import { IBody } from "../IBody";
@@ -9,21 +8,14 @@ export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
 
     private readonly _sceneManager: SceneManager;
 
-    private readonly _name:string;
-    constructor(mfActor: IBodiedActor, name: string,sceneManager: SceneManager) {
+
+    constructor(mfActor: IBodiedActor, sceneManager: SceneManager) {
         super(mfActor);
         this._sceneManager = sceneManager;
-        this._name = name;
+       
     }
-    join(target: IMovable): Promise<void> {
-        return this._baseActor.join(target);
-    }
-    async move(backward: boolean, delta: number): Promise<void> {
-       await this._baseActor.move(backward, delta);
-    }
-    async rotate(right: boolean, delta: number): Promise<void> {
-        await this._baseActor.rotate(right, delta);
-    }
+    
+  
     getBody(): IBody {
         return (this._baseActor as IBodiedActor).getBody();
     }
@@ -34,7 +26,5 @@ export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
 
         return this._sceneManager.castRay(await this.getPosition(), dir, rayLength, this)
     }
-    public getName(){
-        return this._name;
-    }
+ 
 }

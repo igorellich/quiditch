@@ -2,11 +2,22 @@ import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
 import { IMovable } from "../Imoveable";
 import { Collision } from "../Collision";
+import { IObject2D } from "../IObject2D";
 
 export class ActorDecorator implements IActor {
     protected readonly _baseActor: IActor;
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
+    }
+    getJoints(): Promise<IMovable[]> {
+        return this._baseActor.getJoints();
+    }
+    async onJoin(target: IMovable): Promise<void> {
+        //console.log("on join")
+        this._baseActor.onJoin(target);
+    }
+    async onUnjoin(target: IMovable): Promise<void> {
+        this._baseActor.onUnjoin(target);
     }
    
     async onCollision(collision: Collision, elapsedTime: number): Promise<void> {

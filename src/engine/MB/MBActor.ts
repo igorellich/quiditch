@@ -11,7 +11,7 @@ export class MBActor extends Actor implements IBodiedActor{
         
     }
     unjoin(target: IMovable): Promise<void> {
-        super.join(target);
+        super.unjoin(target);
         return this._body.unjoin(target);
     }
     getSpeed(): number {
@@ -51,6 +51,7 @@ export class MBActor extends Actor implements IBodiedActor{
         return this._name;
     }
     async join(target: IMovable): Promise<void> {
+        //console.log("on join")
         super.join(target);
         this._body.join(target);
     }

@@ -27,6 +27,12 @@ export class RapierBasedBody implements IBody{
         this._rigidBody = rigidBody;
         this._world = world;
     }
+    async onJoin(target: IMovable): Promise<void> {
+      
+    }
+    async onUnjoin(target: IMovable): Promise<void> {
+        
+    }
     async unjoin(target: IMovable): Promise<void> {
         const joint = this._jointsMap.get(target);
         if(joint){

@@ -31,8 +31,8 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         const mesh = await this._meshFactory.createGates(radius);
         const body = await this._bodyFactory.createGates(radius);
         body.setCollisions([CollisionGroups.gates], [CollisionGroups.character, CollisionGroups.ball])
-        const baseActor = new MBActor(body, mesh, 0, 0,"MB_gates");
-        return new Gates(baseActor, "gates", this._sceneManager);
+        const baseActor = new MBActor(body, mesh, 0, 0,"gates");
+        return new Gates(baseActor, this._sceneManager);
        
     }
      async createPointer(targetObject?: IObject2D, sourceActor?:IActor): Promise<Pointer> {
@@ -43,8 +43,8 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         const body = await this._bodyFactory.createWalls();
         const mesh = await this._meshFactory.createWalls();
         body.setCollisions([CollisionGroups.wall], [CollisionGroups.character, CollisionGroups.ball])
-        const baseActor = new MBActor(body, mesh, 0, 0,"MB_wall");
-        return new BodyActorDecorator(baseActor, "wall", this._sceneManager);
+        const baseActor = new MBActor(body, mesh, 0, 0,"wall");
+        return new BodyActorDecorator(baseActor, this._sceneManager);
     }
     async createGround(): Promise<IActor> {
         const mesh = await this._meshFactory.createGround();
@@ -54,8 +54,8 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         const body = await this._bodyFactory.createBall();
         const mesh = await this._meshFactory.createBall();
         body.setCollisions([CollisionGroups.ball], [CollisionGroups.character, CollisionGroups.gates, CollisionGroups.wall])
-        const baseActor = new MBActor(body, mesh, 10, 10, "MB_ball");
-        const ball = new Quaffle(baseActor, "ball", this._sceneManager);
+        const baseActor = new MBActor(body, mesh, 10, 10, "ball");
+        const ball = new Quaffle(baseActor, this._sceneManager);
        
         return ball;
 
@@ -64,8 +64,8 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         const body = await this._bodyFactory.createPlayer();
         body.setCollisions([CollisionGroups.character], [CollisionGroups.ball, CollisionGroups.gates, CollisionGroups.wall])
         const mesh = await this._meshFactory.createPlayer();
-        const baseActor = new MBActor(body, mesh, 0.15, 0.25,"MB_player");
-        return new PlayerActor(baseActor,"player", this._sceneManager);
+        const baseActor = new MBActor(body, mesh, 0.15, 0.25,"player");
+        return new PlayerActor(baseActor, this._sceneManager);
     }
 
 

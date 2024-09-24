@@ -13,4 +13,8 @@ export interface IMovable extends IObject2D{
     join(target: IMovable):Promise<void>;
     unjoin(target: IMovable):Promise<void>;
 
+    onJoin(target: IMovable):Promise<void>;
+
+    onUnjoin(target: IMovable):Promise<void>;
+
 }

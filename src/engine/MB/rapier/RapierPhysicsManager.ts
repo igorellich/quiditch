@@ -50,7 +50,7 @@ export class RapierPhysicsManager implements IPhysicsManager {
     getCollisions(actors: IActor[]): Collision[] {
         const result: Collision[] = [];
         for (const colInfo of this._collisionInfos) {
-            const collision: Collision = { actorA: undefined, actorB: undefined, sensor:undefined }
+            const collision: Collision = { actorA: undefined, actorB: undefined, sensorA:undefined, sensorB:undefined }
             for (const actor of actors) {
                 if ((actor as IBodiedActor)?.getBody) {
                     const rigidBody = ((actor as IBodiedActor)?.getBody() as RapierBasedBody)?.getRigidBody();
@@ -60,14 +60,18 @@ export class RapierPhysicsManager implements IPhysicsManager {
                             const handle = currCollider.handle;
                           
                             if (colInfo.c1 == handle || colInfo.c2 == handle) {
-                                if(currCollider.isSensor()){
-                                    collision.sensor = true;
-                                }
+                               
                                 collision.start = colInfo.start;
                                 if (!collision.actorA) {
                                     collision.actorA = actor;
+                                    if(currCollider.isSensor()){
+                                        collision.sensorA = true;
+                                    }
                                 } else {
                                     collision.actorB = actor;
+                                    if(currCollider.isSensor()){
+                                        collision.sensorB = true;
+                                    }
                                 }
                             }
                         }

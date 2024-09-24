@@ -13,6 +13,6 @@ export interface IActor extends ITickable, IMovable{
 
      onCollision(collision:Collision, elapsedTime: number):Promise<void>;
 
-
+     getJoints():Promise<IMovable[]>;
     
 }
