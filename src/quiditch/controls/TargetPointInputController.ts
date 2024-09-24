@@ -6,7 +6,7 @@ import { GameInputActions } from "../constants";
 import { ITargetPointer } from "./ITargetPointer";
 
 export class TargetPointInputController extends InputController<GameInputActions> implements ITickable, ITargetPointer<Vector2d> {
-    private _actor?: IActor;
+    private _actor: IActor;
     private _targetPoint?: Vector2d;
 
 
@@ -14,9 +14,12 @@ export class TargetPointInputController extends InputController<GameInputActions
     private _moveAction?: GameInputActions;
 
 
-    constructor(actor?: IActor) {
+    constructor(actor: IActor) {
         super();
         this._actor = actor;
+    }
+    getActor(): IActor {
+        return this._actor;
     }
     private _targetReached: boolean = true;
     isTargetReached(): boolean {

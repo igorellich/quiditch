@@ -15,7 +15,7 @@ export const createCircleBuffer32Array = (radius: number, pointsCount: number = 
 }
 
 export const createArenaBuffer32Array = (radius: number, length: number): Float32Array=>{
-    const circlePointsCount = radius*10;
+    const circlePointsCount = radius*20;
    
     
     const circleBuffer = new Float32Array(circlePointsCount*2);

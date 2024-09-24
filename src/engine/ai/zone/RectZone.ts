@@ -18,7 +18,7 @@ export class RectZone implements IZone<Vector2d> {
         return new Vector2d(x, y);
     }
     async belongs(point: Vector2d): Promise<boolean> {
-        return point.x > this._ltPoint.x && point.y > this._ltPoint.y && point.x < this._rbPoint.x && point.y < this._rbPoint.y;
+        return point.x > this._ltPoint.x && point.y < this._ltPoint.y && point.x < this._rbPoint.x && point.y > this._rbPoint.y;
     }
 
 }

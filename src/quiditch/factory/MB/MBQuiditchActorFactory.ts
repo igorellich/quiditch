@@ -54,7 +54,7 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         const body = await this._bodyFactory.createBall();
         const mesh = await this._meshFactory.createBall();
         body.setCollisions([CollisionGroups.ball], [CollisionGroups.character, CollisionGroups.gates, CollisionGroups.wall])
-        const baseActor = new MBActor(body, mesh, 10, 10, "ball");
+        const baseActor = new MBActor(body, mesh, 3, 3, "ball");
         const ball = new Quaffle(baseActor, this._sceneManager);
        
         return ball;

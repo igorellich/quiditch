@@ -13,7 +13,7 @@ import { TargetPointInputController } from "./controls/TargetPointInputControlle
 import { Vector2d } from "../engine/base/Vector2d";
 import { ThreeStats } from "../utils/threeStats";
 import { RectZone } from "../engine/ai/zone/RectZone";
-import { Patroller } from "../engine/ai/Patroller";
+import { Chaser } from "./ai/Chaser";
 
 
 const attackButton = document.createElement("div");
@@ -118,9 +118,11 @@ sceneManager.addTickable(aiPlayerController);
 const aiTargetPointInputController = new TargetPointInputController(aiPlayer);
 sceneManager.addTickable(aiTargetPointInputController);
 aiPlayerController.addInputController(aiTargetPointInputController);
-const zone = new RectZone(new Vector2d(-16,16),new Vector2d(16,-16));
-    const patroller = new Patroller(zone,aiTargetPointInputController,1);
+
+const zone = new RectZone(new Vector2d(-45,45),new Vector2d(45,-45));
+    const patroller = new Chaser(zone,aiTargetPointInputController,1,sceneManager);
     sceneManager.addTickable(patroller);
+    patroller.setPatrolling(true);
 aiPlayer.setPosition(-6,-6);
 
 
