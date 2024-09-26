@@ -11,6 +11,10 @@ export enum GameInputActions {
     'turnRight' = 'turnRight',
     'attack' = 'attack'
 }
+export enum ActorNames{
+    "quaffle"="quaffle",
+    "gates"="gates"
+}
 export type KeyboardInputMap={
     [action in GameInputActions]: string[]
 }

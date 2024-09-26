@@ -2,7 +2,7 @@ import { IQuiditchFactory } from "../IQuiditchActorFactory";
 import { IBody } from "../../../engine/MB/IBody";
 import { IMesh } from "../../../engine/MB/IMesh";
 import { MBActor } from "../../../engine/MB/MBActor";
-import { CollisionGroups } from "../../constants";
+import { ActorNames, CollisionGroups } from "../../constants";
 import { IActor } from "../../../engine/base/Actor/IActor";
 import { PlayerActor } from "./components/PlayerActor";
 import { BodyActorDecorator } from "../../../engine/MB/Actor/BodyActorDecorator";
@@ -50,11 +50,11 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         const mesh = await this._meshFactory.createGround();
         return new MeshBasedActor("ground", mesh);
     }
-    async createBall(): Promise<BodyActorDecorator> {
-        const body = await this._bodyFactory.createBall();
-        const mesh = await this._meshFactory.createBall();
+    async createQuaffle(): Promise<BodyActorDecorator> {
+        const body = await this._bodyFactory.createQuaffle();
+        const mesh = await this._meshFactory.createQuaffle();
         body.setCollisions([CollisionGroups.ball], [CollisionGroups.character, CollisionGroups.gates, CollisionGroups.wall])
-        const baseActor = new MBActor(body, mesh, 3, 3, "ball");
+        const baseActor = new MBActor(body, mesh, 3, 3, ActorNames.quaffle);
         const ball = new Quaffle(baseActor, this._sceneManager);
        
         return ball;
@@ -62,7 +62,7 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
     }
     async createPlayer(): Promise<PlayerActor> {
         const body = await this._bodyFactory.createPlayer();
-        body.setCollisions([CollisionGroups.character], [CollisionGroups.ball, CollisionGroups.gates, CollisionGroups.wall])
+        body.setCollisions([CollisionGroups.character], [CollisionGroups.character, CollisionGroups.ball, CollisionGroups.gates, CollisionGroups.wall])
         const mesh = await this._meshFactory.createPlayer();
         const baseActor = new MBActor(body, mesh, 0.15, 0.25,"player");
         return new PlayerActor(baseActor, this._sceneManager);

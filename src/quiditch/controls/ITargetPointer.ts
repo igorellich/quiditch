@@ -5,4 +5,5 @@ export interface ITargetPointer<TPoint>{
     isTargetReached(): boolean;
 
     getActor():IActor;
+    setTargetAngle(angle: number):void;
 }

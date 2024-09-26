@@ -15,9 +15,9 @@ export class Patroller<TPoint> implements ITickable{
 
     public setPatrolling(patrolling: boolean): void{
         this._patrolling = patrolling;
-        if(!patrolling){
-            this._targetPointer.setTargetPoint(undefined);
-        }
+        // if(!patrolling){
+        //     this._targetPointer.setTargetPoint(undefined);
+        // }
     }
 
     private _reachTime: number;

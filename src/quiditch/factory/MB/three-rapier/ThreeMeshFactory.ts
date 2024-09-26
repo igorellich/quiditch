@@ -77,7 +77,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         //planeMesh.position.z = this._zHeight;
         return new ThreeBasedMesh(planeMesh);
     }
-    async createBall(): Promise<IMesh> {
+    async createQuaffle(): Promise<IMesh> {
         
         const mesh = await this._createBallMesh();
         this._sceneManager.getScene().add(mesh);

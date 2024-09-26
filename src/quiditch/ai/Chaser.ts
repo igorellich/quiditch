@@ -5,6 +5,7 @@ import { PlayerActor } from "../factory/MB/components/PlayerActor";
 import { IZone } from "../../engine/ai/zone/IZone";
 import { ITargetPointer } from "../controls/ITargetPointer";
 import { SceneManager } from "../../engine/base/SceneManager";
+import { ActorNames } from "../constants";
 
 export class Chaser extends Patroller<Vector2d> {
     private readonly _sceneManager: SceneManager;
@@ -14,22 +15,37 @@ export class Chaser extends Patroller<Vector2d> {
 
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
+        this.setPatrolling(false);
         const actor = this.getActor();
         
-        if (actor) {
-
+        if (actor && actor instanceof PlayerActor) {
+            const actorPos = await actor.getPosition();
             const joints = await actor.getJoints();
+            let hasQuaffle = false;
             for (const j of joints) {
                 if (j instanceof Quaffle) {
-                    if (actor instanceof PlayerActor) {
-                        actor.attack();
+                    hasQuaffle = true;
 
-                        break;
+                    this._targetPointer.setTargetPoint(undefined);
+                    const gates = await this._sceneManager.getClosestActor(actorPos, ActorNames.gates, this._zone);
+                    if (gates) {
+                        const gatesPos = await gates.getPosition();
+                        const angle = await actor.getAngelToTarget(gatesPos);
+                        
+                        if (Math.abs(angle) > Math.PI/ 1800) {
+                            this._targetPointer.setTargetAngle(angle);
+                        } else {
+                            actor.attack();
+                        }
                     }
+
+
+                    break;
+
                 }
             }
-
-            const closestQuaffle = await this._getClosestQuaffle();
+            if(!hasQuaffle){
+            const closestQuaffle = await this._sceneManager.getClosestActor(actorPos, ActorNames.quaffle,this._zone);
             if (closestQuaffle) {
                 const joints = await closestQuaffle.getJoints();
                 const quafflePos = await closestQuaffle.getPosition();
@@ -43,31 +59,15 @@ export class Chaser extends Patroller<Vector2d> {
                 } else {
                     this._targetPointer.setTargetPoint(quafflePos);
                 }
-                console.log("found quaffle", closestQuaffle)
+                //console.log("found quaffle", closestQuaffle)
                 
             } else {
                 this.setPatrolling(true);
             }
+        }
 
         }
         await super.tick(elapsedTime, deltaTime);
     }
-    private async _getClosestQuaffle(): Promise<Quaffle | undefined> {
-        const actors = this._sceneManager.getActors();
-        let distance: number | undefined;
-        let result: Quaffle | undefined;
-        for (let actor of actors) {
-            if (actor instanceof Quaffle) {
-                if (await this._zone.belongs(await actor.getPosition())) {
-                    const currDist = (await this._targetPointer.getActor().getPosition()).distanceTo(await actor.getPosition());
-                    if (!distance || currDist < distance) {
-                        distance = currDist;
-                        result = actor;
-                    }
-                }
-
-            }
-        }
-        return result;
-    }
+   
 }

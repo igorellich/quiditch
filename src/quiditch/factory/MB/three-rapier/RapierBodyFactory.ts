@@ -64,7 +64,7 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
         return  new RapierBasedBody(rigidBody, this._world);
     }
     
-    async createBall(): Promise<IBody> {
+    async createQuaffle(): Promise<IBody> {
         const rigidBody = this._createBallRigidBody();
         const body =  new RapierBasedBody(rigidBody, this._world);
         body.tick = async (elapsedTime: number, deltaTime: number)=>{

@@ -1,5 +1,6 @@
 import { BodyActorDecorator } from "../../../../engine/MB/Actor/BodyActorDecorator";
 import { Collision } from "../../../../engine/base/Collision";
+import { ActorNames } from "../../../constants";
 
 export class Gates extends BodyActorDecorator{
     private _prevTime:number=0;
@@ -7,8 +8,8 @@ export class Gates extends BodyActorDecorator{
     async onCollision(collision: Collision, elapsedTime: number): Promise<void> {
        
        await super.onCollision(collision, elapsedTime);
-       console.log("Gates collision", elapsedTime, collision)
-       const ball = collision.actorB&&collision.actorB.getName()=="ball"?collision.actorB:collision.actorA&&collision.actorA.getName()=="ball"?collision.actorA:null;
+       // console.log("Gates collision", elapsedTime, collision)
+       const ball = collision.actorB&&collision.actorB.getName()==ActorNames.quaffle?collision.actorB:collision.actorA&&collision.actorA.getName()==ActorNames.quaffle?collision.actorA:null;
        if(ball && elapsedTime-this._prevTime>1){
         const ballSensor = ball===collision.actorA?collision.sensorA:collision.sensorB;
         if(!ballSensor){
