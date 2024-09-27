@@ -3,6 +3,7 @@ import { Vector2d } from "../Vector2d";
 import { IMovable } from "../Imoveable";
 import { Collision } from "../Collision";
 import { IObject2D } from "../IObject2D";
+import {normaliseAngle} from "../../../utils/geometryUtils"
 
 export abstract class Actor implements IActor {
 
@@ -76,9 +77,7 @@ export abstract class Actor implements IActor {
             const atan2 = Math.atan2(tagerDirection.y, tagerDirection.x);
             angle = (atan2 - atan1);
             // console.log(angle*180/Math.PI)
-            if (Math.abs(angle) > Math.PI) {
-                angle = angle > 0 ?angle- 2 * Math.PI: 2 * Math.PI + angle;              
-            }
+           angle = normaliseAngle(angle);
         }
         return angle;
     }

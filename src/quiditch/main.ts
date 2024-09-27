@@ -66,11 +66,11 @@ const meshFactory = new ThreeMeshFactory(sceneManager, 5);
 const quiditchFactory = new MBQuiditchFactory(bodyFactory, meshFactory,sceneManager);
 
 //3d models
-const player = await quiditchFactory.createPlayer();
+//const player = await quiditchFactory.createPlayer();
 
-sceneManager.setCameraTarget(player);
+//sceneManager.setCameraTarget(player);
 
-sceneManager.addTickable(player);
+//sceneManager.addTickable(player);
 
 
 
@@ -79,8 +79,8 @@ const ball = await quiditchFactory.createQuaffle();
 ball.setPosition(0,4);
 sceneManager.addTickable(ball);
 
-const poiner = await quiditchFactory.createPointer(ball, player);
-sceneManager.addTickable(poiner);
+// const poiner = await quiditchFactory.createPointer(ball, player);
+// sceneManager.addTickable(poiner);
 
 const plane = await quiditchFactory.createGround();
 sceneManager.addTickable(plane);
@@ -90,18 +90,19 @@ sceneManager.addTickable(walls);
 
 const gates = await quiditchFactory.createGates(2);
 sceneManager.addTickable(gates);
-gates.setPosition(0,10);
+await gates.setPosition(-20,0);
+await gates.setRotation(-Math.PI/2);
 
 // Controls
-const quiditchPlayerController = new QuiditchPlayerController(player);
-sceneManager.addTickable(quiditchPlayerController);
+//const quiditchPlayerController = new QuiditchPlayerController(player);
+//sceneManager.addTickable(quiditchPlayerController);
 
 // const targetPointInputController = new TargetPointInputController(player);
 // sceneManager.addTickable(targetPointInputController);
 // quiditchPlayerController.addInputController(targetPointInputController);
 
 const keyboardInputController = new KeyboardInputController({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] });
-quiditchPlayerController.addInputController(keyboardInputController);
+//quiditchPlayerController.addInputController(keyboardInputController);
 
 sceneManager.startTime();
 

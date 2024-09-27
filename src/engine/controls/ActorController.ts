@@ -17,9 +17,9 @@ export abstract class ActorController<TGameActions, TActor extends IActor> imple
         if(this._inputControllers.indexOf(controller)<0){
         this._inputControllers.push(controller);
         // init inputs
-        controller.addOnInputChangeHandler((action, started) => {
+        controller.addOnInputChangeHandler(async (action, started) => {
             try {
-                this._applyAction(action,started);
+               await this._applyAction(action,started);
             } catch (ex) {
                 console.log(ex)
             }

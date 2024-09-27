@@ -26,31 +26,21 @@ export class TargetPointInputController extends InputController<GameInputActions
         return this._targetReached;
     }
 
-    public setTargetPoint(target?: Vector2d): void {
+    public async setTargetPoint(target?: Vector2d): Promise<void> {
         const oldTarget = this._targetPoint;
         this._targetPoint = target;
         if (oldTarget && !target) {
             this._targetReached = true;
-
             this.setTargetAngle(0)
-
-           if (this._moveAction) {
-                this._onInputChange(this._moveAction, false);
-                this._moveAction = undefined;
-            }
-            if (this._rotateAction) {
-                this._onInputChange(this._rotateAction, false);
-                this._rotateAction = undefined;
-            }
         }
     }
-    private _targetAngle?:number;
-    public setTargetAngle(angle: number){
+    private _targetAngle?: number;
+    public setTargetAngle(angle: number) {
         this._targetAngle = angle;
     }
 
-    attack() {
-        this._onInputChange(GameInputActions.attack, false);
+    async attack() {
+         await this._onInputChange(GameInputActions.attack, false);
     }
 
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
@@ -63,28 +53,36 @@ export class TargetPointInputController extends InputController<GameInputActions
 
             const distance = actorPosition?.distanceTo(this._targetPoint);
 
-            if (distance > 3 || (this._targetAngle && this._targetAngle > 0)) {
+            if (distance > 0 || (this._targetAngle && this._targetAngle > 0)) {
 
                 this._targetReached = false;
                 // move                       
-                if (distance > 3) {
+                if (distance > 0.5) {
                     
                     if (this._moveAction !== GameInputActions.moveForward) {
 
-                        this._onInputChange(GameInputActions.moveForward, true);
+                        await this._onInputChange(GameInputActions.moveForward, true);
                         this._moveAction = GameInputActions.moveForward;
                     }
                 } else {
                     if (this._moveAction != null) {
 
-                        this._onInputChange(this._moveAction, false);
+                        await this._onInputChange(this._moveAction, false);
                         this._moveAction = undefined;
                     }
+
+                    await this._actor.setPosition(this._targetPoint.x, this._targetPoint.y);
                 }
             } else {
-                this.setTargetPoint(undefined);
+                await this.setTargetPoint(undefined);
             }
 
+        }else{
+            if (this._moveAction != null) {
+
+                await this._onInputChange(this._moveAction, false);
+                this._moveAction = undefined;
+            }
         }
         
         // rotate
@@ -92,19 +90,24 @@ export class TargetPointInputController extends InputController<GameInputActions
             if (Math.abs(this._targetAngle) > Math.PI / 18) {
                 const rotateAction = this._targetAngle > 0 ? GameInputActions.turnLeft : GameInputActions.turnRight;
                 if (this._rotateAction !== rotateAction) {
-                    this._onInputChange(rotateAction, true);
+                    await this._onInputChange(rotateAction, true);
                     this._rotateAction = rotateAction;
                 }
             } else {
-                if(this._rotateAction){
-                this._onInputChange(this._rotateAction, false);
-                this._rotateAction = undefined;
+                if (this._rotateAction) {
+                    await this._onInputChange(this._rotateAction, false);
+                    this._rotateAction = undefined;
                 }
                 const actorRotation = await this._actor.getRotation();
                 await this._actor.setRotation(actorRotation + this._targetAngle);
                 // console.log( await this._actor.getRotation(), actorRotation + this._targetAngle);
             }
 
+        }else{
+                  if (this._rotateAction) {
+                await this._onInputChange(this._rotateAction, false);
+                this._rotateAction = undefined;
+            }
         }
     }
 

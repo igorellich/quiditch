@@ -12,8 +12,10 @@ export class InputController<T> implements InputInterface<T>{
         this._handlers.slice(index,1);
         }
     }
-    protected _onInputChange(action:T, started:boolean){
-        this._handlers.forEach(h=>h(action,started))
+    protected async _onInputChange(action:T, started:boolean){
+        for(const h of this._handlers){
+            await h(action,started)
+        }
     }
 
 }
