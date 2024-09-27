@@ -1,4 +1,4 @@
-import { AnimationMixer, BufferAttribute, BufferGeometry, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, Object3DEventMap, PlaneGeometry, Scene, SpotLight, TorusGeometry } from "three";
+import { AnimationMixer, BufferAttribute, BufferGeometry, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, Object3D, Object3DEventMap, PlaneGeometry, Scene, SpotLight, TorusGeometry } from "three";
 import { IMesh } from "../../../../engine/MB/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { ThreeBasedMesh } from "../../../../engine/MB/three/ThreeBasedMesh";
@@ -16,6 +16,8 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     private readonly _zHeight: number;
 
     private readonly _gltfLoader:GLTFLoader;
+
+    private readonly _prototypesMeshesMap: Map<string, Mesh>=new Map<string, Mesh>();
     constructor(scene:ThreeSceneManager, zHeight: number){
         this._sceneManager = scene;
         this._zHeight = zHeight;
@@ -91,28 +93,38 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         mesh.position.z = this._zHeight;
         return new ThreeBasedMesh(mesh);
     }
-    private async _createPlayerMesh():Promise<Mesh>{
-        const mesh = await this._loadGltfModel('assets/glb/hover_bike/scene.glb');
-        mesh.rotateX(Math.PI/2)
-        mesh.rotateY(Math.PI/2)
-        mesh.scale.set(0.003,0.003,0.003)
-       
-        const group = new Group();
-        group.add(mesh);
-        return group as unknown as Mesh;
-    }
-    private async  _createBallMesh():Promise<Mesh>{
-        
 
-        const mesh = await this._loadGltfModel('assets/gltf/magma_ball/scene.gltf');
-        mesh.scale.set(0.02, 0.02, 0.02);
-      
-        mesh.position.z = 1.5;
-        mesh.position.x = -0.24;
-        mesh.position.y = -0.36;
-        const group = new Group();
-        group.add(mesh);
-        return group as unknown as Mesh;
+    private async _createPlayerMesh():Promise<Mesh>{
+        let mesh = this._prototypesMeshesMap.get("player")
+        if(!mesh){
+            const model = await this._loadGltfModel('assets/glb/hover_bike/scene.glb');
+            model.rotateX(Math.PI/2)
+            model.rotateY(Math.PI/2)
+            model.scale.set(0.003,0.003,0.003)
+           
+            mesh = new Group() as unknown as Mesh;
+            mesh.add(model);
+            this._prototypesMeshesMap.set("player", mesh);
+        }
+        return mesh.clone();
+       
+    }
+    private async _createBallMesh(): Promise<Mesh> {
+
+        let mesh = this._prototypesMeshesMap.get("quaffle")
+        if (!mesh) {
+            const model = await this._loadGltfModel('assets/gltf/magma_ball/scene.gltf');
+            model.scale.set(0.02, 0.02, 0.02);
+
+            model.position.z = 1.5;
+            model.position.x = -0.24;
+            model.position.y = -0.36;
+            mesh = new Group() as unknown as Mesh;
+            mesh.add(model);
+
+            this._prototypesMeshesMap.set("quaffle", mesh);
+        }
+        return mesh.clone();
     }
     private async _loadGltfModel(path:string):Promise<Group<Object3DEventMap>>{
         const sceneManager = this._sceneManager;

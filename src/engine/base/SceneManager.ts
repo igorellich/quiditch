@@ -7,7 +7,7 @@ import { Vector2d } from "./Vector2d";
 
 export abstract class SceneManager {
     private readonly _tickers: ITickable[] = [];
-    private _prevTime: number = 0;
+    protected _prevTime: number = 0;
     protected _size: Size;
     protected readonly _physicsManager?: IPhysicsManager;
     constructor(size: Size, physicsManager?: IPhysicsManager) {
@@ -32,7 +32,7 @@ export abstract class SceneManager {
     protected async tick() {
         // console.log("scene manager tick");
         const elapsedTime = this._getElapsedTime();
-        const deltaTime = elapsedTime - (this._prevTime);
+        const deltaTime =  elapsedTime - (this._prevTime);
         this._prevTime = elapsedTime;
         for (const actor of this._tickers) {
             await actor.tick(elapsedTime, deltaTime);

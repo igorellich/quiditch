@@ -34,6 +34,7 @@ export class ThreeSceneManager extends SceneManager {
             alpha: true,
 
         });
+        
         this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this._renderer.setSize(this._size.width, this._size.height);
 
@@ -73,19 +74,37 @@ export class ThreeSceneManager extends SceneManager {
             // }
         })
 
+        window.addEventListener('visibilitychange', e => this.handleVisibilityChange(e));
+
+    }
+    handleVisibilityChange(e:Event) {
+        if (document.visibilityState === 'hidden') {
+           this.stopTime();
+        } else {
+            this.startTime();
+        }
     }
     protected _draw(): void {
         this._renderer.render(this._scene, this._persuingCamera.getMesh() as PerspectiveCamera);
     }
     public startTime(): void {
+        console.log("start time", Date.now());
         this._clock = new Clock();
+        this._clock.start();
         this._renderer.setAnimationLoop(this.tick.bind(this));
     }
     public stopTime(): void {
+        console.log("stop time",Date.now());
+        this._clock.stop();
+        this._prevTime = 0;
         this._renderer.setAnimationLoop(null);
     }
     protected _getElapsedTime(): number {
+        console.log(this._clock.getElapsedTime())
         return this._clock.getElapsedTime();
+    }
+    protected _getDelta(): number {
+        return this._clock.getDelta();
     }
 
     public getCamera():PerspectiveCamera{
