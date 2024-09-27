@@ -17,6 +17,7 @@ import { Chaser } from "./ai/Chaser";
 import { GameInputActions } from "./constants";
 
 
+
 const attackButton = document.createElement("div");
 attackButton.addEventListener("click", (evt) => {
     evt.preventDefault();
@@ -68,7 +69,7 @@ const quiditchFactory = new MBQuiditchFactory(bodyFactory, meshFactory,sceneMana
 
 //3d models
 const player = await quiditchFactory.createPlayer();
-
+player.setPosition(10,10)
 sceneManager.setCameraTarget(player);
 
 sceneManager.addTickable(player);
@@ -77,7 +78,7 @@ sceneManager.addTickable(player);
 
 
 const ball = await quiditchFactory.createQuaffle();
-ball.setPosition(0,4);
+ball.setPosition(0,0);
 sceneManager.addTickable(ball);
 
 const poiner = await quiditchFactory.createPointer(ball, player);
@@ -114,22 +115,30 @@ const stats =new ThreeStats(document.body);
 sceneManager.addTickable(stats);
 
 //AI
-const aiPlayer =  await quiditchFactory.createPlayer();
-await aiPlayer.setSpeed(await aiPlayer.getSpeed()*0.5);
-await aiPlayer.setRotationSpeed(await aiPlayer.getRotationSpeed()*0.5);
-sceneManager.addTickable(aiPlayer);
-
-const aiPlayerController = new QuiditchPlayerController(aiPlayer); //actor controller
-sceneManager.addTickable(aiPlayerController);
-
-const aiTargetPointInputController = new TargetPointInputController(aiPlayerController);
-sceneManager.addTickable(aiTargetPointInputController);
-
 const zone = new RectZone(new Vector2d(-45,45),new Vector2d(45,-45));
-    const patroller = new Chaser(zone,aiTargetPointInputController,1,sceneManager); //ai
-    sceneManager.addTickable(patroller);
+const  createChaser = async (zone:RectZone, x: number, y:number):Promise<Chaser>=>{
     
-aiPlayer.setPosition(-6,-6);
+    const aiPlayer =  await quiditchFactory.createPlayer();
+    await aiPlayer.setSpeed(await aiPlayer.getSpeed()*0.5);
+    await aiPlayer.setRotationSpeed(await aiPlayer.getRotationSpeed()*0.5);
+    sceneManager.addTickable(aiPlayer);
+    
+    const aiPlayerController = new QuiditchPlayerController(aiPlayer); //actor controller
+    sceneManager.addTickable(aiPlayerController);
+    
+    const aiTargetPointInputController = new TargetPointInputController(aiPlayerController);
+    sceneManager.addTickable(aiTargetPointInputController);
+    
+    
+        const chaser = new Chaser(zone,aiTargetPointInputController,1,sceneManager); //ai
+        sceneManager.addTickable(chaser);
+        aiPlayer.setPosition(x,y);
+        return chaser;
+    
+}
+createChaser(zone,-6,-6);
+createChaser(zone,6,6);
+
 
 
 // const targetMesh = new Mesh(new SphereGeometry(0.1,16,32), new MeshBasicMaterial({color:"red"}));

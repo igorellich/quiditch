@@ -68,7 +68,9 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
             ,wireframe: true
         });
         const ringGeom = new TorusGeometry(70,0.1*70,12,48);
+        
         const mesh = new Mesh(ringGeom, material);
+        mesh.position.z = this._zHeight*2;
         this._sceneManager.getScene().add(mesh);
         return new ThreeBasedMesh(mesh);
     }
