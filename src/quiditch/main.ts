@@ -108,8 +108,8 @@ const keyboardInputController = new KeyboardInputController<GameInputActions>({ 
 
 sceneManager.startTime();
 
-const debugRenderer = new RapierDebugRenderer(scene, world, 5);
-sceneManager.addTickable(debugRenderer);
+//const debugRenderer = new RapierDebugRenderer(scene, world, 5);
+//sceneManager.addTickable(debugRenderer);
 const stats =new ThreeStats(document.body);
 sceneManager.addTickable(stats);
 
