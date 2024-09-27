@@ -2,7 +2,7 @@ import { ActiveCollisionTypes, ActiveEvents, ColliderDesc, JointData, RigidBody,
 import { IBody } from "../../../../engine/MB/IBody";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { RapierBasedBody } from "../../../../engine/MB/rapier/RapierBasedBody";
-import { createArenaBuffer32Array } from "../../../../tools";
+import { createArenaBuffer32Array, createCircleBuffer32Array } from "../../../../tools";
 import { IActor } from "../../../../engine/base/Actor/IActor";
 import { IObject2D } from "../../../../engine/base/IObject2D";
 
@@ -55,8 +55,9 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
         const groundBodyDesc = RigidBodyDesc.fixed().setCcdEnabled(true);
         const rigidBody = this._world.createRigidBody(groundBodyDesc);
 
-        const polyLine = createArenaBuffer32Array(20, 50);
-        const wallColider = this._world.createCollider(ColliderDesc.polyline(polyLine), rigidBody);
+        //const polyLine = createArenaBuffer32Array(20, 50);
+        const polyLine = createCircleBuffer32Array(62)
+        const wallColider = this._world.createCollider(ColliderDesc.polyline(polyLine.verticies), rigidBody);
         wallColider.setActiveEvents(ActiveEvents.COLLISION_EVENTS);
         
         wallColider.setRestitution(1);
