@@ -58,14 +58,15 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new Pointer("pointer",threebasedMesh,targetObject,sourceActor);
     }
     async createWalls(): Promise<IMesh> {
-        const buffer = createArenaBuffer32Array3D(20, 50, this._zHeight);
-        const geometry = new BufferGeometry();
-        geometry.setAttribute('position', new BufferAttribute(buffer, 3));
+        // const buffer = createArenaBuffer32Array3D(20, 50, this._zHeight);
+        // const geometry = new BufferGeometry();
+        //geometry.setAttribute('position', new BufferAttribute(buffer, 3));
         const material = new MeshBasicMaterial({
             color: "blue"
             ,wireframe: true
         });
-        const mesh = new Mesh(geometry, material);
+        const ringGeom = new TorusGeometry(70,0.1*70,12,48);
+        const mesh = new Mesh(ringGeom, material);
         this._sceneManager.getScene().add(mesh);
         return new ThreeBasedMesh(mesh);
     }
