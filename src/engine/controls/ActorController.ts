@@ -1,35 +1,24 @@
 import { IActor } from "../base/Actor/IActor";
 import { ITickable } from "../base/ITickable";
-import { InputController } from "./BaseInput";
 
 export abstract class ActorController<TGameActions, TActor extends IActor> implements ITickable  {
 
     protected _actor:TActor;
 
-    private readonly _inputControllers:InputController<TGameActions>[]=[];
-
     constructor(actor: TActor) {
 
         this._actor = actor;
-        
     }
-    public addInputController(controller:InputController<TGameActions> ){
-        if(this._inputControllers.indexOf(controller)<0){
-        this._inputControllers.push(controller);
-        // init inputs
-        controller.addOnInputChangeHandler(async (action, started) => {
-            try {
-               await this._applyAction(action,started);
-            } catch (ex) {
-                console.log(ex)
-            }
-        });
-        }
+  
+    public async tick(elapsedTime: number, deltaTime: number): Promise<void>{
+       
     }
-    public abstract tick(elapsedTime: number, deltaTime: number): Promise<void>;
     public setActor(actor: TActor){
         this._actor = actor;
     }
+    public getActor():TActor{
+        return this._actor; 
+    }
 
-    protected abstract _applyAction(actionType: TGameActions, started?: boolean):Promise<void>
+    public abstract applyAction(actionType: TGameActions, started?: boolean):Promise<void>
 }

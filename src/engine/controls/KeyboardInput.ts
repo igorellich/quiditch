@@ -1,16 +1,18 @@
 import { GameInputActions, KeyboardInputMap } from "../../quiditch/constants";
+import { IActor } from "../base/Actor/IActor";
+import { ActorController } from "./ActorController";
 import { InputController } from "./BaseInput";
 
 
-export class KeyboardInputController extends InputController<GameInputActions>{
+export class KeyboardInputController<TGameActions> extends InputController<GameInputActions>{
 
-    constructor(keyboardInputMap: KeyboardInputMap) {
+    constructor(keyboardInputMap: KeyboardInputMap, actorController:ActorController<TGameActions,IActor>) {
         super();
         document.addEventListener('keydown', (e) => {
             
             const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].includes(e.key))[0];
             if (action) {
-                this._onInputChange(action as unknown as GameInputActions, true)
+                actorController.applyAction(action as unknown as TGameActions, true)
             }
         })
 
@@ -18,7 +20,7 @@ export class KeyboardInputController extends InputController<GameInputActions>{
             const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].includes(e.key))[0];
 
             if (action) {
-                this._onInputChange(action as unknown as GameInputActions, false)
+                actorController.applyAction(action as unknown as TGameActions, false)
             }
         })
     }

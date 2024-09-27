@@ -30,7 +30,7 @@ export abstract class SceneManager {
 
 
     protected async tick() {
-        console.log("scene manager tick");
+        // console.log("scene manager tick");
         const elapsedTime = this._getElapsedTime();
         const deltaTime = elapsedTime - (this._prevTime);
         this._prevTime = elapsedTime;

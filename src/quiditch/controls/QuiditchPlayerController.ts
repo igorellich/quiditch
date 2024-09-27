@@ -1,8 +1,8 @@
-import { ActorController } from "../engine/controls/ActorController";
-import { InputController } from "../engine/controls/BaseInput";
-import { GameInputActions as QuiditchInputActions } from "./constants";
-import { IActor } from "../engine/base/Actor/IActor";
-import { PlayerActor } from "./factory/MB/components/PlayerActor";
+import { ActorController } from "../../engine/controls/ActorController";
+import { InputController } from "../../engine/controls/BaseInput";
+import { GameInputActions as QuiditchInputActions } from "../constants";
+import { IActor } from "../../engine/base/Actor/IActor";
+import { PlayerActor } from "../factory/MB/components/PlayerActor";
 
 export class QuiditchPlayerController extends ActorController<QuiditchInputActions, IActor>{
     
@@ -19,7 +19,7 @@ export class QuiditchPlayerController extends ActorController<QuiditchInputActio
         this._actor = actor;
         //this._characterController = world.createCharacterController(0.1);
     }
-    protected async _applyAction(actionType: QuiditchInputActions, started?: boolean | undefined): Promise<void> {
+    public async applyAction(actionType: QuiditchInputActions, started?: boolean | undefined): Promise<void> {
         
        
         switch (actionType) {
