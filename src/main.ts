@@ -70,7 +70,7 @@ const arena = new Arena({
   collisionMemberGroups:[CollisionGroups.wall]
 }, 7,10)
 
-const inputController: InputController<GameInputActions> = new KeyboardInputController({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] });
+//const inputController: InputController<GameInputActions> = new KeyboardInputController({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] });
 
 
 
@@ -89,7 +89,7 @@ const character = new Character(
   }
 )
 //const aiCharacter = new AICharacterController(character,store,scene, debugObj);
-const charController = new CharacterController(character, inputController, debugObj);
+//const charController = new CharacterController(character, inputController, debugObj);
 
 
 const contactBall = new ContactBall({
