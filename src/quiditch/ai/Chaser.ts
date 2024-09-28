@@ -17,35 +17,23 @@ export class Chaser extends Patroller<Vector2d> {
         this._gameManager = gameManager;
 
     }
+
+  
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
+       
         if (!this._isControlled) {
-            this.setPatrolling(false);
+            // this.setPatrolling(true);
+            // await super.tick(elapsedTime, deltaTime);
+            // return;
             const actor = this.getActor();
 
             if (actor && actor instanceof PlayerActor) {
-                const actorPos = await actor.getPosition();
+               
                 const joints = await actor.getJoints();
                 let hasQuaffle = false;
                 for (const j of joints) {
                     if (j instanceof Quaffle) {
-                        hasQuaffle = true;
-
-                        await this._targetPointer.setTargetPoint(undefined);
-                        const enemyGates = await this._gameManager.getEnemyGates(actor);
-                        const gates = await this._gameManager.getClosestTarget(actor, enemyGates, this._zone);
-                        if (gates) {
-                            if (await this._toAttackPos(actor, gates)) {
-                                const gatesPos = await gates.getPosition();
-                                const angle = await actor.getAngelToTarget(gatesPos);
-
-                                if (Math.abs(angle) > Math.PI / 1800) {
-                                    this._targetPointer.setTargetAngle(angle);
-                                } else {
-
-                                    actor.attack();
-                                }
-                            }
-                        }
+                        hasQuaffle = true;  
                         break;
                     }
                 }
@@ -56,6 +44,23 @@ export class Chaser extends Patroller<Vector2d> {
 
                     } else {
                         this.setPatrolling(true);
+                    }
+                }else{
+                    this.setPatrolling(false);
+                    const enemyGates = await this._gameManager.getEnemyGates(actor);
+                    const gates = await this._gameManager.getClosestTarget(actor, enemyGates, this._zone);
+                    if (gates) {
+                        if (await this._toAttackPos(actor, gates)) {
+                            const gatesPos = await gates.getPosition();
+                            const angle = await actor.getAngelToTarget(gatesPos);
+
+                            if (Math.abs(angle) > Math.PI / 180) {
+                                this._targetPointer.setTargetAngle(angle);
+                            } else {
+
+                                actor.attack();
+                            }
+                        }
                     }
                 }
 
@@ -98,10 +103,12 @@ export class Chaser extends Patroller<Vector2d> {
         const quafflePos = await quaffle.getPosition();
 
         if (joints.length > 0) {
+           
             const quaffleHolderTeam = this._gameManager.getActorTeam(joints[0] as IActor);
             const actor  =this.getActor() as IActor
             const ourTeam = this._gameManager.getActorTeam(actor);
             if(quaffleHolderTeam!==ourTeam){
+            this.setPatrolling(false);
             const jpointPos = await quaffle.getPosition();
             const dirVec = await quaffle.getDirectionVector();
             await this._targetPointer.setTargetPoint(new Vector2d(jpointPos.x - dirVec.x * 10 * Math.random(), jpointPos.y - dirVec.y * 10 * Math.random()));
@@ -110,6 +117,7 @@ export class Chaser extends Patroller<Vector2d> {
             }
 
         } else {
+            this.setPatrolling(false);
             await this._targetPointer.setTargetPoint(quafflePos);
         }
     }

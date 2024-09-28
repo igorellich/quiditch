@@ -63,8 +63,8 @@ export class RapierBasedBody implements IBody{
     async move(backward: boolean, delta:number): Promise<void> {
         const speed = backward?-this._speed:this._speed;
         const directionVector = new Vector2d(
-            -Math.sin(await this.getRotation()) * speed * this._rigidBody.mass()*2000*delta,
-            Math.cos(await this.getRotation()) * speed* this._rigidBody.mass()*2000*delta
+            -Math.sin(await this.getRotation()) * speed * this._rigidBody.mass()*2000*(delta>5/60?5/60:delta),
+            Math.cos(await this.getRotation()) * speed* this._rigidBody.mass()*2000*(delta>5/60?5/60:delta)
         )
         // this._rigidBody.setLinearDamping(10)
         // this._rigidBody.setAngularDamping(1)
@@ -72,7 +72,7 @@ export class RapierBasedBody implements IBody{
         this._rigidBody.applyImpulse(directionVector,true);
     }
     async rotate(right: boolean, delta:number): Promise<void> {
-        const rotatingSpeed = right?-this._rotationSpeed*delta*60:this._rotationSpeed*delta*60;
+        const rotatingSpeed = right?-this._rotationSpeed*delta*60:this._rotationSpeed*(delta>5/60?5/60:delta)*60;
         const newRotation = await this.getRotation() + rotatingSpeed/2;
         await this.setRotation(newRotation);
     }

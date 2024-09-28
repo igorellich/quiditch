@@ -60,7 +60,7 @@ export class TargetPointInputController implements ITickable, ITargetPointer<Vec
 
             const distance = actorPosition?.distanceTo(this._targetPoint);
 
-            if (distance > 0 || (this._targetAngle && this._targetAngle > 0)) {
+            if (distance > 0.001 || (this._targetAngle && this._targetAngle > 0.001)) {
 
                 this._targetReached = false;
                 // move                       
@@ -72,7 +72,7 @@ export class TargetPointInputController implements ITickable, ITargetPointer<Vec
                         this._moveAction = GameInputActions.moveForward;
                     }
                 } else {
-                    if (this._moveAction != null) {
+                    if (this._moveAction) {
 
                         await this._actorController.applyAction(this._moveAction, false);
                         this._moveAction = undefined;
@@ -85,7 +85,7 @@ export class TargetPointInputController implements ITickable, ITargetPointer<Vec
             }
 
         } else {
-            if (this._moveAction != null) {
+            if (this._moveAction) {
 
                 await this._actorController.applyAction(this._moveAction, false);
                 this._moveAction = undefined;
