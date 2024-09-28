@@ -10,8 +10,8 @@ export interface IMovable extends IObject2D{
     setSpeed(speed:number):void;
     setRotationSpeed(rotationSpeed:number):void;
 
-    join(target: IMovable):Promise<void>;
-    unjoin(target: IMovable):Promise<void>;
+    join(target: IMovable, context?:IMovable):Promise<void>;
+    unjoin(target: IMovable,context?:IMovable):Promise<void>;
 
     onJoin(target: IMovable):Promise<void>;
 

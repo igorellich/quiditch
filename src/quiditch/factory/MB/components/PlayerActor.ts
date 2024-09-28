@@ -1,6 +1,4 @@
 import { BodyActorDecorator } from "../../../../engine/MB/Actor/BodyActorDecorator";
-import { IActor } from "../../../../engine/base/Actor/IActor";
-
 
 export class PlayerActor extends BodyActorDecorator {
 

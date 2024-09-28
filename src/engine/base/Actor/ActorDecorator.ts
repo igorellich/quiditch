@@ -30,10 +30,10 @@ export class ActorDecorator implements IActor {
         return this._baseActor.getName();
     }
     unjoin(target: IMovable): Promise<void> {
-       return this._baseActor.unjoin(target);
+       return this._baseActor.unjoin(target, this);
     }
     join(target: IMovable): Promise<void> {
-        return this._baseActor.join(target);
+        return this._baseActor.join(target, this);
     }
     move(backward: boolean, delta:number): Promise<void> {
         return this._baseActor.move(backward, delta);

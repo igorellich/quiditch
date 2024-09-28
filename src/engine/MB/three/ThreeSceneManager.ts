@@ -100,7 +100,7 @@ export class ThreeSceneManager extends SceneManager {
         this._renderer.setAnimationLoop(null);
     }
     protected _getElapsedTime(): number {
-        console.log(this._clock.getElapsedTime())
+        // console.log(this._clock.getElapsedTime())
         return this._clock.getElapsedTime();
     }
     protected _getDelta(): number {

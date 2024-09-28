@@ -42,14 +42,14 @@ export abstract class Actor implements IActor {
     getName(): string {
         return this._name;
     }
-    public async unjoin(target: IMovable): Promise<void>{
+    public async unjoin(target: IMovable, context?:IMovable): Promise<void>{
       
         this.onUnjoin(target);
-        target.onUnjoin(this);
+        target.onUnjoin(context?context:this);
     };
-    public async join(target: IMovable): Promise<void>{
+    public async join(target: IMovable, context?:IMovable): Promise<void>{
         this.onJoin(target);
-        target.onJoin(this);
+        target.onJoin(context?context:this);
     };
     abstract getSpeed(): number;
     abstract getRotationSpeed(): number;

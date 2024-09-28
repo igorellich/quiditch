@@ -1,4 +1,4 @@
-import { AnimationMixer, BufferAttribute, BufferGeometry, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, Object3D, Object3DEventMap, PlaneGeometry, Scene, SpotLight, TorusGeometry } from "three";
+import { AnimationMixer, BufferAttribute, BufferGeometry, CircleGeometry, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, Scene, SpotLight, TorusGeometry } from "three";
 import { IMesh } from "../../../../engine/MB/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { ThreeBasedMesh } from "../../../../engine/MB/three/ThreeBasedMesh";
@@ -106,6 +106,14 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
            
             mesh = new Group() as unknown as Mesh;
             mesh.add(model);
+            const circle = new CircleGeometry(3);
+            const circleMaterial = new MeshBasicMaterial({
+                color:"blue",
+                opacity:0.3,
+                transparent:true
+            })
+            const cicleMesh = new Mesh(circle,circleMaterial);
+            mesh.add(cicleMesh);
             this._prototypesMeshesMap.set("player", mesh);
         }
         return mesh.clone();

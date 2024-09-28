@@ -50,11 +50,11 @@ export class GameManager{
     }
 
     public async getEnemyGates(player:IActor):Promise<Gates[]>{
-        const playerTeam = this._getActorTeam(player);
+        const playerTeam = this.getActorTeam(player);
         let result:Gates[] = [];
         if(playerTeam){
             const gates:Gates[] = await this._sceneManager.getActorsByName(ActorNames.gates) as Gates[];
-            result = gates.filter(g=>this._getActorTeam(g)&&this._getActorTeam(g)!==playerTeam);
+            result = gates.filter(g=>this.getActorTeam(g)&&this.getActorTeam(g)!==playerTeam);
         }
         return result;
     }
@@ -62,7 +62,7 @@ export class GameManager{
     public async getClosestTarget(source:IActor, targets:IActor[], zone?:IZone<Vector2d>){
         return await this._sceneManager.getClosestActor(await source.getPosition(),targets,zone);
     }
-    private _getActorTeam(actor:IActor):Team|undefined{
+    public getActorTeam(actor:IActor):Team|undefined{
             return this._teams.find(t=>t.isActorInTeam(actor));
     }
 

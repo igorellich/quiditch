@@ -10,9 +10,15 @@ export class MBActor extends Actor implements IBodiedActor{
     async onCollision(collision: Collision): Promise<void> {
         
     }
-    unjoin(target: IMovable): Promise<void> {
-        super.unjoin(target);
+    unjoin(target: IMovable, context?:IMovable): Promise<void> {
+        super.unjoin(target,context);
         return this._body.unjoin(target);
+    }
+
+    async join(target: IMovable, context?:IMovable): Promise<void> {
+        //console.log("on join")
+        super.join(target, context);
+        this._body.join(target);
     }
     getSpeed(): number {
         return this._body.getSpeed();
@@ -50,11 +56,7 @@ export class MBActor extends Actor implements IBodiedActor{
     getName(): string {
         return this._name;
     }
-    async join(target: IMovable): Promise<void> {
-        //console.log("on join")
-        super.join(target);
-        this._body.join(target);
-    }
+ 
     async move(backward: boolean, delta:number): Promise<void> {
         await this._body.move(backward,delta);
     }
