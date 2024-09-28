@@ -6,24 +6,18 @@ import { MBQuiditchFactory } from "./factory/MB/MBQuiditchActorFactory";
 import { ThreeMeshFactory } from "./factory/MB/three-rapier/ThreeMeshFactory";
 import { ThreeSceneManager } from "../engine/MB/three/ThreeSceneManager";
 import { KeyboardInputController } from "../engine/controls/KeyboardInput";
-import { QuiditchPlayerController } from "./controls/QuiditchPlayerController";
 import { RapierPhysicsManager } from "../engine/MB/rapier/RapierPhysicsManager";
 import { RapierDebugRenderer } from "../utils/debugRenderer";
 import { TargetPointInputController } from "./controls/TargetPointInputController";
 import { Vector2d } from "../engine/base/Vector2d";
 import { ThreeStats } from "../utils/threeStats";
-import { RectZone } from "../engine/ai/zone/RectZone";
-import { Chaser } from "./ai/Chaser";
 import { GameInputActions } from "./constants";
+import { GameManager } from "./game/GameManager";
 
 
 
 const attackButton = document.createElement("div");
-attackButton.addEventListener("click", (evt) => {
-    evt.preventDefault();
-    evt.stopPropagation();
-    targetPointInputController.attack();
-})
+
 attackButton.className="attack";
 document.body.appendChild(attackButton)
 
@@ -44,14 +38,7 @@ const joy = nipplejs.default.create({
 
 });
 
-(joy as nipplejs.Joystick).on("move",async (evt, data)=>{
-    const playerPos = await player.getPosition();
-    targetPointInputController.setTargetPoint(new Vector2d(playerPos.x+data.vector.x*1000, playerPos.y+data.vector.y*1000));
-});
 
-(joy as nipplejs.Joystick).on("end",async (evt, data)=>{
-    targetPointInputController.setTargetPoint(undefined);
-});
 
 
 let gravity = { x: 0.0, y: 0.0 };
@@ -67,22 +54,53 @@ const bodyFactory = new RapierBodyFactory(world);
 const meshFactory = new ThreeMeshFactory(sceneManager, 5);
 const quiditchFactory = new MBQuiditchFactory(bodyFactory, meshFactory,sceneManager);
 
+const gameManager = new GameManager(sceneManager,quiditchFactory,async ()=>{
+    const playerChaser = await gameManager.getPlayerChaser();
+    const player = playerChaser?.getActor();
+    if (player) {
+        const actorController = playerChaser?.getActorController();
+        if(actorController){
+            const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] }, actorController);
+        }
+        sceneManager.setCameraTarget(player);
+
+        const ball = await quiditchFactory.createQuaffle();
+        ball.setPosition(0, 0);
+        sceneManager.addTickable(ball);
+
+        const poiner = await quiditchFactory.createPointer(ball, player);
+        sceneManager.addTickable(poiner);
+        const targetPointer = playerChaser?.getTargetPointer();
+        if(targetPointer){
+        (joy as nipplejs.Joystick).on("move",async (evt, data)=>{
+            const playerPos = await player.getPosition();
+            targetPointer.setTargetPoint(new Vector2d(playerPos.x+data.vector.x*1000, playerPos.y+data.vector.y*1000));
+        });
+        
+        (joy as nipplejs.Joystick).on("end",async (evt, data)=>{
+            targetPointer.setTargetPoint(undefined);
+        });
+        attackButton.addEventListener("click", (evt) => {
+            evt.preventDefault();
+            evt.stopPropagation();
+            (targetPointer as TargetPointInputController)?.attack();
+        })
+    }
+        sceneManager.startTime();
+        
+    }
+});
+
 //3d models
-const player = await quiditchFactory.createPlayer();
-player.setPosition(10,10)
-sceneManager.setCameraTarget(player);
-
-sceneManager.addTickable(player);
 
 
 
 
-const ball = await quiditchFactory.createQuaffle();
-ball.setPosition(0,0);
-sceneManager.addTickable(ball);
 
-const poiner = await quiditchFactory.createPointer(ball, player);
-sceneManager.addTickable(poiner);
+
+
+
+
 
 const plane = await quiditchFactory.createGround();
 sceneManager.addTickable(plane);
@@ -90,54 +108,20 @@ sceneManager.addTickable(plane);
 const walls = await quiditchFactory.createWalls();
 sceneManager.addTickable(walls);
 
-const gates = await quiditchFactory.createGates(2);
-sceneManager.addTickable(gates);
-await gates.setPosition(-20,0);
-await gates.setRotation(-Math.PI/2);
+
 
 // Controls
-const quiditchPlayerController = new QuiditchPlayerController(player);
-const targetPointInputController = new TargetPointInputController(quiditchPlayerController);
-
-sceneManager.addTickable(quiditchPlayerController);
 
 
-sceneManager.addTickable(targetPointInputController);
-
-const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] }, quiditchPlayerController);
 
 
-sceneManager.startTime();
+
+
 
 //const debugRenderer = new RapierDebugRenderer(scene, world, 5);
 //sceneManager.addTickable(debugRenderer);
 const stats =new ThreeStats(document.body);
 sceneManager.addTickable(stats);
-
-//AI
-const zone = new RectZone(new Vector2d(-45,45),new Vector2d(45,-45));
-const  createChaser = async (zone:RectZone, x: number, y:number):Promise<Chaser>=>{
-    
-    const aiPlayer =  await quiditchFactory.createPlayer();
-    await aiPlayer.setSpeed(await aiPlayer.getSpeed()*0.5);
-    await aiPlayer.setRotationSpeed(await aiPlayer.getRotationSpeed()*0.5);
-    sceneManager.addTickable(aiPlayer);
-    
-    const aiPlayerController = new QuiditchPlayerController(aiPlayer); //actor controller
-    sceneManager.addTickable(aiPlayerController);
-    
-    const aiTargetPointInputController = new TargetPointInputController(aiPlayerController);
-    sceneManager.addTickable(aiTargetPointInputController);
-    
-    
-        const chaser = new Chaser(zone,aiTargetPointInputController,1,sceneManager); //ai
-        sceneManager.addTickable(chaser);
-        aiPlayer.setPosition(x,y);
-        return chaser;
-    
-}
-createChaser(zone,-6,-6);
-createChaser(zone,6,6);
 
 
 

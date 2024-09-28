@@ -87,22 +87,22 @@ export abstract class SceneManager {
         return result;
     }
 
-    public async getClosestActor(sourcePos: Vector2d, name: string, zone?: IZone<Vector2d>): Promise<IActor | undefined> {
+    public async getClosestActor(sourcePos: Vector2d, targetActors: IActor[], zone?: IZone<Vector2d>): Promise<IActor | undefined> {
         let result: IActor | undefined;
-        let namedActors = await this.getActorsByName(name);
+        
         let fileredActors: IActor[] = [];
         if (zone) {
-            for (const a of namedActors) {
+            for (const a of targetActors) {
                 if (await zone.belongs(await a.getPosition())){
                     fileredActors.push(a);
                 }
             }
 
         } else {
-            fileredActors = namedActors;
+            fileredActors = targetActors;
         }
         let distance: number | undefined;
-        for (let a of namedActors) {
+        for (let a of targetActors) {
             const currDist = await sourcePos.distanceTo(await a.getPosition());
             if (!distance || currDist < distance) {
                 distance = currDist;

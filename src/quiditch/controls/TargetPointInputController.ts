@@ -5,7 +5,7 @@ import { ActorController } from "../../engine/controls/ActorController";
 import { GameInputActions } from "../constants";
 import { ITargetPointer } from "./ITargetPointer";
 
-export class TargetPointInputController implements ITickable, ITargetPointer<Vector2d> {
+export class TargetPointInputController implements ITickable, ITargetPointer<Vector2d, GameInputActions, IActor> {
     private _targetPoint?: Vector2d;
 
 
@@ -17,6 +17,9 @@ export class TargetPointInputController implements ITickable, ITargetPointer<Vec
     constructor(actorController: ActorController<GameInputActions, IActor>) {
         this._actorController = actorController;
 
+    }
+    getActorController(): ActorController<GameInputActions, IActor> {
+        return this._actorController;
     }
     getActor(): IActor {
         return this._actorController.getActor();

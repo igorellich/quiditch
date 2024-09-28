@@ -56,11 +56,17 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
         const rigidBody = this._world.createRigidBody(groundBodyDesc);
 
         //const polyLine = createArenaBuffer32Array(20, 50);
-        const polyLine = createCircleBuffer32Array(62)
-        const wallColider = this._world.createCollider(ColliderDesc.polyline(polyLine.verticies), rigidBody);
-        wallColider.setActiveEvents(ActiveEvents.COLLISION_EVENTS);
+        const polyLine1 = createCircleBuffer32Array(62)
+        const polyLine2 = createCircleBuffer32Array(62.1)
+        const wallColider1 = this._world.createCollider(ColliderDesc.polyline(polyLine1.verticies), rigidBody);
+        wallColider1.setActiveEvents(ActiveEvents.COLLISION_EVENTS);
         
-        wallColider.setRestitution(1);
+        wallColider1.setRestitution(1);
+
+        const wallColider2 = this._world.createCollider(ColliderDesc.polyline(polyLine2.verticies), rigidBody);
+        wallColider2.setActiveEvents(ActiveEvents.COLLISION_EVENTS);
+        
+        wallColider2.setRestitution(1);
         
         return  new RapierBasedBody(rigidBody, this._world);
     }

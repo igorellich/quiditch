@@ -18,5 +18,7 @@ export class Team{
             this._members.splice(index, 1);
         }
     }
-
+    public isActorInTeam(actor:IActor):boolean{
+        return this._members.includes(actor);
+    }
 }

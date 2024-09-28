@@ -4,16 +4,17 @@ import { Quaffle } from "../factory/MB/components/balls/Quaffle";
 import { PlayerActor } from "../factory/MB/components/PlayerActor";
 import { IZone } from "../../engine/ai/zone/IZone";
 import { ITargetPointer } from "../controls/ITargetPointer";
-import { SceneManager } from "../../engine/base/SceneManager";
-import { ActorNames } from "../constants";
 import { IActor } from "../../engine/base/Actor/IActor";
 import { normaliseAngle } from "../../utils/geometryUtils";
+import { GameManager } from "../game/GameManager";
+import { ActorController } from "../../engine/controls/ActorController";
+import { GameInputActions } from "../constants";
 
 export class Chaser extends Patroller<Vector2d> {
-    private readonly _sceneManager: SceneManager;
-    constructor(zone: IZone<Vector2d>, targetPointer: ITargetPointer<Vector2d>, reachInterval: number, sceneManager: SceneManager) {
+    private readonly _gameManager: GameManager;
+    constructor(zone: IZone<Vector2d>, targetPointer: ITargetPointer<Vector2d, GameInputActions, IActor>, reachInterval: number, gameManager: GameManager) {
         super(zone, targetPointer, reachInterval);
-        this._sceneManager = sceneManager;
+        this._gameManager = gameManager;
 
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
@@ -29,7 +30,8 @@ export class Chaser extends Patroller<Vector2d> {
                     hasQuaffle = true;
 
                     await this._targetPointer.setTargetPoint(undefined);
-                    const gates = await this._sceneManager.getClosestActor(actorPos, ActorNames.gates, this._zone);
+                    const enemyGates = await this._gameManager.getEnemyGates(actor);
+                    const gates = await this._gameManager.getClosestTarget(actor,enemyGates,this._zone);
                     if (gates) {
                         if (await this._toAttackPos(actor, gates)) {
                             const gatesPos = await gates.getPosition();
@@ -47,7 +49,7 @@ export class Chaser extends Patroller<Vector2d> {
                 }
             }
             if (!hasQuaffle) {
-                const closestQuaffle = await this._sceneManager.getClosestActor(actorPos, ActorNames.quaffle, this._zone);
+                const closestQuaffle = await this._gameManager.getQuaffle();
                 if (closestQuaffle) {
                     this._chaseQuaffle(actor, closestQuaffle);
 
@@ -102,5 +104,16 @@ export class Chaser extends Patroller<Vector2d> {
         } else {
             await this._targetPointer.setTargetPoint(quafflePos);
         }
+    }
+
+    getActor(): IActor | undefined {
+        return this._targetPointer.getActor();
+    }
+
+    public getActorController():ActorController<GameInputActions, IActor>{
+        return this._targetPointer.getActorController();
+    }
+    public getTargetPointer():ITargetPointer<Vector2d, GameInputActions, IActor>{
+        return this._targetPointer;
     }
 }

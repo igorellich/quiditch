@@ -1,9 +1,11 @@
+import { GameInputActions } from "../../../quiditch/constants";
 import { ITargetPointer } from "../../../quiditch/controls/ITargetPointer";
+import { IActor } from "../../base/Actor/IActor";
 import { ITickable } from "../../base/ITickable";
 import { IZone } from "../zone/IZone";
 
 export class Patroller<TPoint> implements ITickable{
-    protected readonly _targetPointer:ITargetPointer<TPoint>;
+    protected readonly _targetPointer:ITargetPointer<TPoint, GameInputActions, IActor>;
     private readonly _reachInterval: number;
     protected readonly _zone:IZone<TPoint>;
 
@@ -21,7 +23,7 @@ export class Patroller<TPoint> implements ITickable{
     }
 
     private _reachTime: number;
-    constructor(zone: IZone<TPoint>, targetPointer:ITargetPointer<TPoint>, reachInterval: number){
+    constructor(zone: IZone<TPoint>, targetPointer:ITargetPointer<TPoint, GameInputActions, IActor>, reachInterval: number){
         this._targetPointer = targetPointer;
         this._reachInterval = reachInterval;
         this._zone = zone;
