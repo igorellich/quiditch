@@ -52,7 +52,7 @@ export class Chaser extends Patroller<Vector2d> {
                 if (!hasQuaffle) {
                     const closestQuaffle = await this._gameManager.getQuaffle();
                     if (closestQuaffle) {
-                        this._chaseQuaffle(closestQuaffle);
+                        await this._chaseQuaffle(closestQuaffle);
 
                     } else {
                         this.setPatrolling(true);

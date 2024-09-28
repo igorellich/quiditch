@@ -17,9 +17,7 @@ export class Patroller<TPoint> implements ITickable{
 
     public setPatrolling(patrolling: boolean): void{
         this._patrolling = patrolling;
-        // if(!patrolling){
-        //     this._targetPointer.setTargetPoint(undefined);
-        // }
+        
     }
 
     private _reachTime: number;
@@ -30,7 +28,9 @@ export class Patroller<TPoint> implements ITickable{
         this._reachTime = reachInterval;
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-        if (this._patrolling && this._targetPointer.isTargetReached()) {
+        if (this._patrolling
+             && this._targetPointer.isTargetReached()
+            ) {
             if (this._reachTime >= this._reachInterval) {
                 this._reachTime = 0;
                 const newPoint = await this._zone.getRandomPoint();
