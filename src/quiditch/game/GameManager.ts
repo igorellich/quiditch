@@ -1,3 +1,4 @@
+import { CircleZone } from "../../engine/ai/zone/CircleZone";
 import { IZone } from "../../engine/ai/zone/IZone";
 import { RectZone } from "../../engine/ai/zone/RectZone";
 import { IActor } from "../../engine/base/Actor/IActor";
@@ -33,12 +34,21 @@ export class GameManager{
     private async _init(){
         this._teams.push(await this._createQuiditchTeam(70,true));
         this._teams.push(await this._createQuiditchTeam(70,false));
-        this._playerChaser = this._chasers[0];
+        this.setPlayerChaser(this._chasers[0]);
         if (this._onInit) {
             this._onInit();
         }
 
     }
+
+    setPlayerChaser(chaser:Chaser){
+        if(this._playerChaser){
+            this._playerChaser.setIsControlled(false);
+        }
+        this._playerChaser = chaser;
+        this._playerChaser.setIsControlled(true);
+    }
+
     public async getEnemyGates(player:IActor):Promise<Gates[]>{
         const playerTeam = this._getActorTeam(player);
         let result:Gates[] = [];
@@ -69,13 +79,14 @@ export class GameManager{
             await gates.setRotation(isLeft?-Math.PI/2:Math.PI/2);
             team.AddMember(gates);
         }
+        const zone  = new CircleZone(70,new Vector2d(0,0));
         for (let i = 0; i < 3; i++) {
 
-            const zone = new RectZone(new Vector2d(
-                isLeft ? (-i - 1) * fieldRadius / 3 : i * fieldRadius / 3, fieldRadius), new Vector2d(
-                    isLeft ? -i * fieldRadius / 3 : (i + 1) * fieldRadius / 3, -fieldRadius
-                )
-            );
+            // const zone = new RectZone(new Vector2d(
+            //     isLeft ? (-i - 1) * fieldRadius / 3 : i * fieldRadius / 3, fieldRadius), new Vector2d(
+            //         isLeft ? -i * fieldRadius / 3 : (i + 1) * fieldRadius / 3, -fieldRadius
+            //     )
+            // );
             const chaser = await this._createChaser(zone);
             this._chasers.push(chaser);
             const player = await chaser.getActor();
@@ -93,7 +104,7 @@ export class GameManager{
         return gates;
     }
 
-    private async _createChaser(zone: RectZone): Promise<Chaser> {
+    private async _createChaser(zone: IZone<Vector2d>): Promise<Chaser> {
 
         const player = await this._quiditchFactory.createPlayer();
         await player.setSpeed(await player.getSpeed() * 0.5);

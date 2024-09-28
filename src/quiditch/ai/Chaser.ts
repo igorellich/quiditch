@@ -18,48 +18,50 @@ export class Chaser extends Patroller<Vector2d> {
 
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-        this.setPatrolling(false);
-        const actor = this.getActor();
+        if (!this._isControlled) {
+            this.setPatrolling(false);
+            const actor = this.getActor();
 
-        if (actor && actor instanceof PlayerActor) {
-            const actorPos = await actor.getPosition();
-            const joints = await actor.getJoints();
-            let hasQuaffle = false;
-            for (const j of joints) {
-                if (j instanceof Quaffle) {
-                    hasQuaffle = true;
+            if (actor && actor instanceof PlayerActor) {
+                const actorPos = await actor.getPosition();
+                const joints = await actor.getJoints();
+                let hasQuaffle = false;
+                for (const j of joints) {
+                    if (j instanceof Quaffle) {
+                        hasQuaffle = true;
 
-                    await this._targetPointer.setTargetPoint(undefined);
-                    const enemyGates = await this._gameManager.getEnemyGates(actor);
-                    const gates = await this._gameManager.getClosestTarget(actor,enemyGates,this._zone);
-                    if (gates) {
-                        if (await this._toAttackPos(actor, gates)) {
-                            const gatesPos = await gates.getPosition();
-                            const angle = await actor.getAngelToTarget(gatesPos);
+                        await this._targetPointer.setTargetPoint(undefined);
+                        const enemyGates = await this._gameManager.getEnemyGates(actor);
+                        const gates = await this._gameManager.getClosestTarget(actor, enemyGates, this._zone);
+                        if (gates) {
+                            if (await this._toAttackPos(actor, gates)) {
+                                const gatesPos = await gates.getPosition();
+                                const angle = await actor.getAngelToTarget(gatesPos);
 
-                            if (Math.abs(angle) > Math.PI / 1800) {
-                                this._targetPointer.setTargetAngle(angle);
-                            } else {
-                                
-                                actor.attack();
+                                if (Math.abs(angle) > Math.PI / 1800) {
+                                    this._targetPointer.setTargetAngle(angle);
+                                } else {
+
+                                    actor.attack();
+                                }
                             }
                         }
+                        break;
                     }
-                    break;
                 }
-            }
-            if (!hasQuaffle) {
-                const closestQuaffle = await this._gameManager.getQuaffle();
-                if (closestQuaffle) {
-                    this._chaseQuaffle(actor, closestQuaffle);
+                if (!hasQuaffle) {
+                    const closestQuaffle = await this._gameManager.getQuaffle();
+                    if (closestQuaffle) {
+                        this._chaseQuaffle(actor, closestQuaffle);
 
-                } else {
-                    this.setPatrolling(true);
+                    } else {
+                        this.setPatrolling(true);
+                    }
                 }
-            }
 
+            }
+            await super.tick(elapsedTime, deltaTime);
         }
-        await super.tick(elapsedTime, deltaTime);
     }
 
     private async _toAttackPos(actor: IActor, gates: IActor): Promise<boolean> {
@@ -115,5 +117,9 @@ export class Chaser extends Patroller<Vector2d> {
     }
     public getTargetPointer():ITargetPointer<Vector2d, GameInputActions, IActor>{
         return this._targetPointer;
+    }
+    private _isControlled:boolean = false;
+    public setIsControlled(control:boolean){
+        this._isControlled = control;
     }
 }
