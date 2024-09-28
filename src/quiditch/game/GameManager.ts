@@ -44,9 +44,11 @@ export class GameManager{
     setPlayerChaser(chaser:Chaser){
         if(this._playerChaser){
             this._playerChaser.setIsControlled(false);
+
         }
         this._playerChaser = chaser;
         this._playerChaser.setIsControlled(true);
+        
     }
 
     public async getEnemyGates(player:IActor):Promise<Gates[]>{
@@ -82,35 +84,44 @@ export class GameManager{
     }
 
     private async _createQuiditchTeam(fieldRadius:number, isLeft:boolean):Promise<Team>{
-        const team = new Team(isLeft?"left":"right");
-        for(let i = 0; i<3;i++){
-            const gates = await this._createGates();
-            await gates.setPosition(isLeft?-fieldRadius*0.8:fieldRadius*0.8,(i-1)*fieldRadius*0.1);
-            await gates.setRotation(isLeft?-Math.PI/2:Math.PI/2);
-            team.AddMember(gates);
-        }
-        const zone  = new CircleZone(70,new Vector2d(0,0));
-        for (let i = 0; i < 3; i++) {
-
-            // const zone = new RectZone(new Vector2d(
-            //     isLeft ? (-i - 1) * fieldRadius / 3 : i * fieldRadius / 3, fieldRadius), new Vector2d(
-            //         isLeft ? -i * fieldRadius / 3 : (i + 1) * fieldRadius / 3, -fieldRadius
-            //     )
-            // );
-            const chaser = await this._createChaser(zone, isLeft);
-            this._chasers.push(chaser);
-            const player = await chaser.getActor();
-            if (player) {
-                team.AddMember(player);
-                const pos = await zone.getRandomPoint();
-                await player?.setPosition(pos.x, pos.y);
+        return new Promise( async (res, rej)=>{
+            const team = new Team(isLeft?"left":"right");
+            for(let i = 0; i<3;i++){
+                const gates = await this._createGates();
+                
+                await gates.setPosition(isLeft?-fieldRadius*0.8:fieldRadius*0.8,(i-1)*fieldRadius*0.1);
+                await gates.setRotation(isLeft?-Math.PI/2:Math.PI/2);
+                this._sceneManager.addTickable(gates);
+                team.AddMember(gates);
             }
-        }
-        return team;
+            setTimeout( async()=>{
+                const zone  = new CircleZone(70,new Vector2d(0,0));
+                for (let i = 0; i < 3; i++) {
+        
+                    // const zone = new RectZone(new Vector2d(
+                    //     isLeft ? (-i - 1) * fieldRadius / 3 : i * fieldRadius / 3, fieldRadius), new Vector2d(
+                    //         isLeft ? -i * fieldRadius / 3 : (i + 1) * fieldRadius / 3, -fieldRadius
+                    //     )
+                    // );
+                    const chaser = await this._createChaser(zone, isLeft);
+                    this._chasers.push(chaser);
+                    const player = await chaser.getActor();
+                    if (player) {
+                        team.AddMember(player);
+                        
+                        await player?.setPosition(isLeft ? -30 : 30, (i - 1) * 30);
+                        this._sceneManager.addTickable(player);
+                    }
+                }
+                return res(team);
+            },200)
+
+        })
+        
     }
     private async _createGates():Promise<IActor>{
         const gates = await this._quiditchFactory.createGates(2) as Gates;
-        this._sceneManager.addTickable(gates);
+        
         gates.setOnGoal(()=>{
             //  this._goalsCount++;
             // const goalsEl =document.querySelector(".goals");
@@ -126,7 +137,7 @@ export class GameManager{
         const player = await this._quiditchFactory.createPlayer(isLeft?"red":"blue");
         await player.setSpeed(await player.getSpeed() * 0.5);
         await player.setRotationSpeed(await player.getRotationSpeed() * 0.5);
-        this._sceneManager.addTickable(player);
+        
 
         const playerController = new QuiditchPlayerController(player); //actor controller
         this._sceneManager.addTickable(playerController);

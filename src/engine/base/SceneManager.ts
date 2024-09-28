@@ -38,6 +38,7 @@ export abstract class SceneManager {
             await actor.tick(elapsedTime, deltaTime);
         }
         if (this._physicsManager) {
+           
             this._physicsManager.step(deltaTime);
             const collisions = this._physicsManager.getCollisions(this._tickers);
 

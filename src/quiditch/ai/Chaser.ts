@@ -143,5 +143,8 @@ export class Chaser extends Patroller<Vector2d> {
     private _isControlled:boolean = false;
     public setIsControlled(control:boolean){
         this._isControlled = control;
+        if(this._isControlled){
+            this._targetPointer.setTargetPoint(undefined);
+        }
     }
 }

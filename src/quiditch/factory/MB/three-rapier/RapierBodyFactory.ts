@@ -44,10 +44,10 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
         const middleCollider = this._world.createCollider(middleColliderDesc, body);
         //middleCollider.setCollisionGroups(this._filterGroups)
         middleCollider.setSensor(true);
-        let leftJoint = JointData.fixed({ x: 0.0, y: 0.0 }, 0, { x: -ringRadius, y: 0.0 },0);
-        this._world.createImpulseJoint(leftJoint, leftBorderBody, body as RigidBody, false);
-         const rightJointParams = JointData.fixed({ x: 0.0, y: 0.0 }, 0, { x: ringRadius, y: 0.0 }, 0);
-       this._world.createImpulseJoint(rightJointParams, rightBorderBody, body as RigidBody, true);
+            let leftJoint = JointData.fixed({ x: 0.0, y: 0.0 }, 0, { x: -ringRadius, y: 0.0 },0);
+            this._world.createImpulseJoint(leftJoint, leftBorderBody, body as RigidBody, false);
+             const rightJointParams = JointData.fixed({ x: 0.0, y: 0.0 }, 0, { x: ringRadius, y: 0.0 }, 0);
+           this._world.createImpulseJoint(rightJointParams, rightBorderBody, body as RigidBody, true);
        return result;
     }
    

@@ -74,7 +74,7 @@ export class MBActor extends Actor implements IBodiedActor{
     }
 
     public async setPosition(x: number, y: number): Promise<void> {
-       this._body.setPosition(x,y);
+       await this._body.setPosition(x,y);
       
     }
 
@@ -83,7 +83,7 @@ export class MBActor extends Actor implements IBodiedActor{
     }
 
     public async setRotation(rotation: number): Promise<void> {
-        this._body.setRotation(rotation);           
+       await this._body.setRotation(rotation);           
     }
 
     public getRotation(): Promise<number> {

@@ -30,7 +30,7 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
     async createGates(radius: number): Promise<Gates> {
         const mesh = await this._meshFactory.createGates(radius);
         const body = await this._bodyFactory.createGates(radius);
-        body.setCollisions([CollisionGroups.gates], [CollisionGroups.character, CollisionGroups.ball])
+        await body.setCollisions([CollisionGroups.gates], [CollisionGroups.character, CollisionGroups.ball])
         const baseActor = new MBActor(body, mesh, 0, 0,"gates");
         return new Gates(baseActor, this._sceneManager);
        

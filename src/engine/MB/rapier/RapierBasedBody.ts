@@ -87,7 +87,7 @@ export class RapierBasedBody implements IBody{
         }
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-        
+        //console.log(this._rigidBody.translation());
     }
    
     async setPosition(x: number, y: number): Promise<void> {
@@ -95,6 +95,8 @@ export class RapierBasedBody implements IBody{
             this._rigidBody.setNextKinematicTranslation({ x, y });
         } else {
             this._rigidBody.setTranslation({ x, y }, true);
+            this._rigidBody.resetForces(true);
+            this._rigidBody.resetTorques(true);
         }
 
     }
