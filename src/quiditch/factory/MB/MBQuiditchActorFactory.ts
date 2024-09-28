@@ -60,10 +60,10 @@ export class MBQuiditchFactory implements IQuiditchFactory<IActor> {
         return ball;
 
     }
-    async createPlayer(): Promise<PlayerActor> {
+    async createPlayer(color?:string): Promise<PlayerActor> {
         const body = await this._bodyFactory.createPlayer();
         body.setCollisions([CollisionGroups.character], [CollisionGroups.character, CollisionGroups.ball, CollisionGroups.gates, CollisionGroups.wall])
-        const mesh = await this._meshFactory.createPlayer();
+        const mesh = await this._meshFactory.createPlayer(color);
         const baseActor = new MBActor(body, mesh, 0.15, 0.25,"player");
         return new PlayerActor(baseActor, this._sceneManager);
     }

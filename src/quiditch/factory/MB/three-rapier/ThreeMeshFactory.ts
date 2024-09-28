@@ -89,14 +89,14 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         mesh.position.z = this._zHeight;
         return new ThreeBasedMesh(mesh);
     }
-    async createPlayer(): Promise<IMesh> {
-        const mesh = await this._createPlayerMesh();
+    async createPlayer(color?:string): Promise<IMesh> {
+        const mesh = await this._createPlayerMesh(color);
         this._sceneManager.getScene().add(mesh);
         mesh.position.z = this._zHeight;
         return new ThreeBasedMesh(mesh);
     }
 
-    private async _createPlayerMesh():Promise<Mesh>{
+    private async _createPlayerMesh(color?:string):Promise<Mesh>{
         let mesh = this._prototypesMeshesMap.get("player")
         if(!mesh){
             const model = await this._loadGltfModel('assets/glb/hover_bike/scene.glb');
@@ -106,17 +106,20 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
            
             mesh = new Group() as unknown as Mesh;
             mesh.add(model);
-            const circle = new CircleGeometry(3);
-            const circleMaterial = new MeshBasicMaterial({
-                color:"blue",
-                opacity:0.3,
-                transparent:true
-            })
-            const cicleMesh = new Mesh(circle,circleMaterial);
-            mesh.add(cicleMesh);
+           
             this._prototypesMeshesMap.set("player", mesh);
         }
-        return mesh.clone();
+        const clone :Mesh = mesh.clone();
+        const circle = new CircleGeometry(3);
+        const circleMaterial = new MeshBasicMaterial({
+            color:color||"blue",
+            opacity:0.3,
+            transparent:true
+        })
+        const cicleMesh = new Mesh(circle,circleMaterial);
+        clone.add(cicleMesh);
+        
+        return clone;
        
     }
     private async _createBallMesh(): Promise<Mesh> {

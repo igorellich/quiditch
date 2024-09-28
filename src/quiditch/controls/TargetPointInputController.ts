@@ -93,7 +93,7 @@ export class TargetPointInputController implements ITickable, ITargetPointer<Vec
         }
 
         // rotate
-        if (this._targetAngle && Math.abs(this._targetAngle) > 0) {
+        if (this._targetAngle && Math.abs(this._targetAngle) > 0.001) {
             if (Math.abs(this._targetAngle) > Math.PI / 18) {
                 const rotateAction = this._targetAngle > 0 ? GameInputActions.turnLeft : GameInputActions.turnRight;
                 if (this._rotateAction !== rotateAction) {

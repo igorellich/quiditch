@@ -1,6 +1,5 @@
 import { CircleZone } from "../../engine/ai/zone/CircleZone";
 import { IZone } from "../../engine/ai/zone/IZone";
-import { RectZone } from "../../engine/ai/zone/RectZone";
 import { IActor } from "../../engine/base/Actor/IActor";
 import { SceneManager } from "../../engine/base/SceneManager";
 import { Vector2d } from "../../engine/base/Vector2d";
@@ -12,6 +11,7 @@ import { TargetPointInputController } from "../controls/TargetPointInputControll
 import { IQuiditchFactory } from "../factory/IQuiditchActorFactory";
 import { Quaffle } from "../factory/MB/components/balls/Quaffle";
 import { Gates } from "../factory/MB/components/Gates";
+import { PlayerActor } from "../factory/MB/components/PlayerActor";
 
 export class GameManager{
     private readonly _sceneManager:SceneManager;
@@ -59,6 +59,16 @@ export class GameManager{
         return result;
     }
 
+    public async getTeamByPlayer(player:IActor):Promise<PlayerActor[]>{
+        const playerTeam = this.getActorTeam(player);
+        let result:PlayerActor[] = [];
+        if(playerTeam){
+            const players:PlayerActor[] = await this._sceneManager.getActorsByName(ActorNames.player) as PlayerActor[];
+            result = players.filter(p=>this.getActorTeam(p)&&this.getActorTeam(p)===playerTeam);
+        }
+        return result;
+    }
+
     public async getClosestTarget(source:IActor, targets:IActor[], zone?:IZone<Vector2d>){
         return await this._sceneManager.getClosestActor(await source.getPosition(),targets,zone);
     }
@@ -87,7 +97,7 @@ export class GameManager{
             //         isLeft ? -i * fieldRadius / 3 : (i + 1) * fieldRadius / 3, -fieldRadius
             //     )
             // );
-            const chaser = await this._createChaser(zone);
+            const chaser = await this._createChaser(zone, isLeft);
             this._chasers.push(chaser);
             const player = await chaser.getActor();
             if (player) {
@@ -104,9 +114,9 @@ export class GameManager{
         return gates;
     }
 
-    private async _createChaser(zone: IZone<Vector2d>): Promise<Chaser> {
+    private async _createChaser(zone: IZone<Vector2d>, isLeft:boolean): Promise<Chaser> {
 
-        const player = await this._quiditchFactory.createPlayer();
+        const player = await this._quiditchFactory.createPlayer(isLeft?"red":"blue");
         await player.setSpeed(await player.getSpeed() * 0.5);
         await player.setRotationSpeed(await player.getRotationSpeed() * 0.5);
         this._sceneManager.addTickable(player);

@@ -24,7 +24,6 @@ export class PlayerActor extends BodyActorDecorator {
         for(const j of joints){
             this.unjoin(j);
             await j.move(false, 1/60);
-        }
-       
+        }       
     }
 }

@@ -2,7 +2,7 @@ import { IActor } from "../../engine/base/Actor/IActor";
 import { IObject2D } from "../../engine/base/IObject2D";
 
 export interface IQuiditchFactory<T>{
-    createPlayer():Promise<T>;
+    createPlayer(color?:string):Promise<T>;
     createQuaffle():Promise<T>;
     createGround():Promise<T>;
     

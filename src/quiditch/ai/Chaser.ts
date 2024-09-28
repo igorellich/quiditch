@@ -105,14 +105,22 @@ export class Chaser extends Patroller<Vector2d> {
         if (joints.length > 0) {
            
             const quaffleHolderTeam = this._gameManager.getActorTeam(joints[0] as IActor);
-            const actor  =this.getActor() as IActor
+            const actor = this.getActor() as IActor
             const ourTeam = this._gameManager.getActorTeam(actor);
-            if(quaffleHolderTeam!==ourTeam){
-            this.setPatrolling(false);
-            const jpointPos = await quaffle.getPosition();
-            const dirVec = await quaffle.getDirectionVector();
-            await this._targetPointer.setTargetPoint(new Vector2d(jpointPos.x - dirVec.x * 10 * Math.random(), jpointPos.y - dirVec.y * 10 * Math.random()));
-            }else{
+            if (quaffleHolderTeam !== ourTeam) {
+                const playerTeam = await this._gameManager.getTeamByPlayer(actor);
+                const closestPlayer = await this._gameManager.getClosestTarget(quaffle, playerTeam, this._zone);
+                if (closestPlayer === actor) {
+                    this.setPatrolling(false);
+                    const jpointPos = await quaffle.getPosition();
+                    const dirVec = await quaffle.getDirectionVector();
+                    await this._targetPointer.setTargetPoint(new Vector2d(jpointPos.x - dirVec.x * 10 * Math.random(), jpointPos.y - dirVec.y * 10 * Math.random()));
+                } else {
+                    this.setPatrolling(true);
+                }
+
+
+            } else {
                 this.setPatrolling(true);
             }
 
