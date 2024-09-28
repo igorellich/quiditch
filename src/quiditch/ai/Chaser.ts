@@ -54,7 +54,7 @@ export class Chaser extends Patroller<Vector2d> {
                             const gatesPos = await gates.getPosition();
                             const angle = await actor.getAngelToTarget(gatesPos);
 
-                            if (Math.abs(angle) > Math.PI / 180) {
+                            if (Math.abs(angle) > Math.PI / 180*2) {
                                 this._targetPointer.setTargetAngle(angle);
                             } else {
 
@@ -79,7 +79,7 @@ export class Chaser extends Patroller<Vector2d> {
         const angle = await actor.getAngelToTarget(gatesPos);
         const attackAngle= normaliseAngle(Math.PI - (gatesRotation - (actorRotation+angle)));
 
-        if ((distance-0.1 < 15 && distance+0.1 > 10) && Math.abs(attackAngle )< Math.PI / 4) {
+        if ((distance-0.1 < 30 && distance+0.1 > 20) && Math.abs(attackAngle )< Math.PI / 4) {
             result = true;
         } else {
             const attackLine = await this._getGatesAttackLine(gates);
@@ -94,8 +94,8 @@ export class Chaser extends Patroller<Vector2d> {
    private async _getGatesAttackLine(gates:IActor):Promise<Vector2d[]>{
         const gatesDir = await gates.getDirectionVector();
         const gatesPos = await gates.getPosition();
-        const closePoint = new Vector2d(gatesPos.x+gatesDir.x*10, gatesPos.y+gatesDir.y*10);
-        const farPoint = new Vector2d(gatesPos.x+gatesDir.x*15, gatesPos.y+gatesDir.y*15);
+        const closePoint = new Vector2d(gatesPos.x+gatesDir.x*20, gatesPos.y+gatesDir.y*20);
+        const farPoint = new Vector2d(gatesPos.x+gatesDir.x*30, gatesPos.y+gatesDir.y*30);
         return [closePoint,farPoint];
     }
     private async _chaseQuaffle(quaffle: IActor) {

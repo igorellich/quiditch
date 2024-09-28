@@ -109,8 +109,15 @@ export class GameManager{
         return team;
     }
     private async _createGates():Promise<IActor>{
-        const gates = await this._quiditchFactory.createGates(2);
+        const gates = await this._quiditchFactory.createGates(2) as Gates;
         this._sceneManager.addTickable(gates);
+        gates.setOnGoal(()=>{
+            //  this._goalsCount++;
+            // const goalsEl =document.querySelector(".goals");
+            // if(goalsEl){
+            //     goalsEl.innerHTML = this._goalsCount.toString();
+            // }
+        });
         return gates;
     }
 
