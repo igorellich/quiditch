@@ -43,7 +43,7 @@ export class Patroller<TPoint> implements ITickable{
             if (this._reachTime >= this._reachInterval) {
                 this._reachTime = 0;
                 const newPoint = await this._zone.getRandomPoint();
-                console.log(newPoint);
+                // console.log(newPoint);
                 await this._targetPointer.setTargetPoint(newPoint);
             } else {
                 this._reachTime += deltaTime;

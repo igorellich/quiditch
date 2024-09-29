@@ -94,9 +94,10 @@ export class RapierBasedBody implements IBody{
         if (this._rigidBody.isKinematic()) {
             this._rigidBody.setNextKinematicTranslation({ x, y });
         } else {
-            this._rigidBody.setTranslation({ x, y }, true);
+            this._rigidBody.setTranslation({ x, y }, false);
             this._rigidBody.resetForces(true);
             this._rigidBody.resetTorques(true);
+            this._rigidBody.sleep();
         }
 
     }

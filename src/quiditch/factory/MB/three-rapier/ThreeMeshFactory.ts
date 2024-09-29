@@ -110,12 +110,14 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
             this._prototypesMeshesMap.set("player", mesh);
         }
         const clone :Mesh = mesh.clone();
+        
         const circle = new CircleGeometry(3);
         const circleMaterial = new MeshBasicMaterial({
             color:color||"blue",
             opacity:0.3,
             transparent:true
         })
+       
         const cicleMesh = new Mesh(circle,circleMaterial);
         clone.add(cicleMesh);
         

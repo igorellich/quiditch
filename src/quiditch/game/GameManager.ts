@@ -23,6 +23,7 @@ export class GameManager{
 
     private _playerChaser?: Chaser;
     private _chasers:Chaser[]=[];
+    private _hideQuaffle: boolean = false;
 
     constructor(sceneManager:SceneManager, quiditchFactory:IQuiditchFactory<IActor>, onInit?:()=>void){
         this._sceneManager = sceneManager;
@@ -78,9 +79,11 @@ export class GameManager{
             return this._teams.find(t=>t.isActorInTeam(actor));
     }
 
-    public async getQuaffle():Promise<Quaffle | undefined>{
-        const quaffles =await this._sceneManager.getActorsByName(ActorNames.quaffle);
-        return quaffles.length>0?quaffles[0] as Quaffle:undefined;        
+    public async getQuaffle(): Promise<Quaffle | undefined> {
+        if (!this._hideQuaffle) {
+            const quaffles = await this._sceneManager.getActorsByName(ActorNames.quaffle);
+            return quaffles.length > 0 ? quaffles[0] as Quaffle : undefined;
+        }
     }
 
     private async _createQuiditchTeam(fieldRadius:number, isLeft:boolean):Promise<Team>{
@@ -122,14 +125,29 @@ export class GameManager{
     private async _createGates():Promise<IActor>{
         const gates = await this._quiditchFactory.createGates(2) as Gates;
         
-        gates.setOnGoal(()=>{
+        gates.setOnGoal(async ()=>{
             //  this._goalsCount++;
             // const goalsEl =document.querySelector(".goals");
             // if(goalsEl){
             //     goalsEl.innerHTML = this._goalsCount.toString();
             // }
+            const quaffle = await this.getQuaffle();
+           //quaffle?.setSpeed(0);
+           this.setHideQuaffle(true);
+           
+            this._playerChaser?.setIsControlled(false);
+            await quaffle?.setPosition(75,0);
+            setTimeout(async ()=>{
+                await quaffle?.setPosition(0,0);
+                this._playerChaser?.setIsControlled(true);
+                this.setHideQuaffle(false);
+            },3000)
+            
         });
         return gates;
+    }
+    setHideQuaffle(arg0: boolean) {
+        this._hideQuaffle = arg0;
     }
 
     private async _createChaser(zone: IZone<Vector2d>, isLeft:boolean): Promise<Chaser> {
@@ -146,7 +164,7 @@ export class GameManager{
         this._sceneManager.addTickable(targetPointInputController);
 
 
-        const chaser = new Chaser(zone, targetPointInputController, 1, this); //ai
+        const chaser = new Chaser(zone, targetPointInputController, 0.2, this); //ai
         this._sceneManager.addTickable(chaser);
         
         return chaser;

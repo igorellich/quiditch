@@ -56,6 +56,7 @@ export class Chaser extends Patroller<Vector2d> {
 
                             if (Math.abs(angle) > Math.PI / 180*2) {
                                 this._targetPointer.setTargetAngle(angle);
+                                // console.log(angle)
                             } else {
 
                                 actor.attack();
@@ -125,8 +126,15 @@ export class Chaser extends Patroller<Vector2d> {
             }
 
         } else {
+            const actor = this.getActor() as IActor
+            const playerTeam = await this._gameManager.getTeamByPlayer(actor);
+            const closestPlayer = await this._gameManager.getClosestTarget(quaffle, playerTeam, this._zone);
+            if (closestPlayer === actor) {
             this.setPatrolling(false);
             await this._targetPointer.setTargetPoint(quafflePos);
+            }else{
+                this.setPatrolling(true);
+            }
         }
     }
 
@@ -146,5 +154,6 @@ export class Chaser extends Patroller<Vector2d> {
         if(this._isControlled){
             this._targetPointer.setTargetPoint(undefined);
         }
+        this.getActorController().setIsControlled(control);
     }
 }
