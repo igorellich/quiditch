@@ -39,14 +39,19 @@ export class ThreeSceneManager extends SceneManager {
         this._renderer.setSize(this._size.width, this._size.height);
 
         const camera = new PerspectiveCamera(75, this._size.width / this._size.height, 0.1, 100);        
-        camera.position.z = 50;
+        camera.position.z = -10;
+        camera.position.y = -20;
+        
+        
+        
+       
 
         this._persuingCamera = new PersuingCamera(camera, 7);
         this.addTickable(this._persuingCamera);
 
         const controls = new OrbitControls(camera, this._renderer.domElement);
         controls.enableDamping = true;
-        controls.enableRotate=false;
+        // /controls.enableRotate=false;
 
         const light = new AmbientLight();
         scene.add(light);

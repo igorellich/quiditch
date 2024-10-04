@@ -1,4 +1,4 @@
-import { AnimationMixer, BufferAttribute, BufferGeometry, CircleGeometry, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, Scene, SpotLight, TorusGeometry } from "three";
+import { AnimationMixer, BufferAttribute, BufferGeometry, CircleGeometry, Color, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, RawShaderMaterial, Scene, ShaderMaterial, SpotLight, TextureLoader, TorusGeometry, Vector2 } from "three";
 import { IMesh } from "../../../../engine/MB/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { ThreeBasedMesh } from "../../../../engine/MB/three/ThreeBasedMesh";
@@ -10,6 +10,10 @@ import { ITickable } from "../../../../engine/base/ITickable";
 import { Pointer } from "../components/Pointer";
 import { IObject2D } from "../../../../engine/base/IObject2D";
 import { IActor } from "../../../../engine/base/Actor/IActor";
+import { GroundMaterial } from "./materials/groundMaterial";
+import { RagingSeaMaterial } from "./materials/ragingSeaMaterial";
+
+
 
 export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     private readonly _sceneManager:ThreeSceneManager;
@@ -75,9 +79,12 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new ThreeBasedMesh(mesh);
     }
     async createGround(): Promise<IMesh> {
-        const planeMesh = new Mesh(new PlaneGeometry(500, 500, this._zHeight), new MeshBasicMaterial({
-            color: 'green'
-        }));
+        const textureLoader = new TextureLoader()
+        const flagTexture = textureLoader.load('textures/flag-french.jpg')
+        const shaderMaterial = new RagingSeaMaterial(flagTexture);
+        this._sceneManager.addTickable(shaderMaterial);
+        const planeMesh = new Mesh(new PlaneGeometry(20, 20, 128, 128), shaderMaterial.getMaterial());
+        //  planeMesh.rotation.x = - Math.PI * 0.5
         this._sceneManager.getScene().add(planeMesh);
         //planeMesh.position.z = this._zHeight;
         return new ThreeBasedMesh(planeMesh);

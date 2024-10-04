@@ -16,27 +16,27 @@ import { GameManager } from "./game/GameManager";
 
 
 
-const attackButton = document.createElement("div");
+// const attackButton = document.createElement("div");
 
-attackButton.className="attack";
-document.body.appendChild(attackButton)
+// attackButton.className="attack";
+// document.body.appendChild(attackButton)
 
-const goalsCounter = document.createElement("div");
-goalsCounter.className="goals";
-document.body.appendChild(goalsCounter);
-const stickZone = document.createElement("div");
-stickZone.className="stickZone";
-document.body.appendChild(stickZone)
+// const goalsCounter = document.createElement("div");
+// goalsCounter.className="goals";
+// document.body.appendChild(goalsCounter);
+// const stickZone = document.createElement("div");
+// stickZone.className="stickZone";
+// document.body.appendChild(stickZone)
 
 
-//@ts-ignore
-const joy = nipplejs.default.create({
-    mode: "semi",
-    catchDistance: 150,
-    zone: document.querySelector(".stickZone") as HTMLElement,
-    size: 200
+// //@ts-ignore
+// const joy = nipplejs.default.create({
+//     mode: "semi",
+//     catchDistance: 150,
+//     zone: document.querySelector(".stickZone") as HTMLElement,
+//     size: 200
 
-});
+// });
 
 
 
@@ -57,57 +57,57 @@ const quiditchFactory = new MBQuiditchFactory(bodyFactory, meshFactory,sceneMana
 const plane = await quiditchFactory.createGround();
 sceneManager.addTickable(plane);
 
-const walls = await quiditchFactory.createWalls();
-sceneManager.addTickable(walls);
+// const walls = await quiditchFactory.createWalls();
+// sceneManager.addTickable(walls);
 sceneManager.startTime();   
 
-    const gameManager = new GameManager(sceneManager, quiditchFactory, async () => {
-        const playerChaser = await gameManager.getPlayerChaser();
+    // const gameManager = new GameManager(sceneManager, quiditchFactory, async () => {
+    //     const playerChaser = await gameManager.getPlayerChaser();
 
-        const ball = await quiditchFactory.createQuaffle();
-        ball.setPosition(0, 0);
+    //     const ball = await quiditchFactory.createQuaffle();
+    //     ball.setPosition(0, 0);
 
-        sceneManager.addTickable(ball);
-
-
-
-        const player = playerChaser?.getActor();
-        if (player) {
-            const actorController = playerChaser?.getActorController();
-            if (actorController) {
-                const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] }, actorController);
-            }
-            sceneManager.setCameraTarget(player);
+    //     sceneManager.addTickable(ball);
 
 
-            const poiner = await quiditchFactory.createPointer(ball, player);
-            sceneManager.addTickable(poiner);
+
+    //     const player = playerChaser?.getActor();
+    //     if (player) {
+    //         const actorController = playerChaser?.getActorController();
+    //         if (actorController) {
+    //             const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] }, actorController);
+    //         }
+    //         sceneManager.setCameraTarget(player);
 
 
-            const targetPointer = playerChaser?.getTargetPointer();
-            if (targetPointer) {
-                (joy as nipplejs.Joystick).on("move", async (evt, data) => {
-                    if(actorController?.isControlled()){
-                    const playerPos = await player.getPosition();
-                    targetPointer.setTargetPoint(new Vector2d(playerPos.x + data.vector.x * 1000, playerPos.y + data.vector.y * 1000));
-                    }
-                });
+    //         const poiner = await quiditchFactory.createPointer(ball, player);
+    //         sceneManager.addTickable(poiner);
 
-                (joy as nipplejs.Joystick).on("end", async (evt, data) => {
-                    if(actorController?.isControlled()){
-                    targetPointer.setTargetPoint(undefined);
-                    }
-                });
-                attackButton.addEventListener("click", (evt) => {
-                    if(actorController?.isControlled()){
-                    evt.preventDefault();
-                    evt.stopPropagation();
-                    (targetPointer as TargetPointInputController)?.attack();
-                    }
-                })
-            }
-        }
-    });
+
+    //         const targetPointer = playerChaser?.getTargetPointer();
+    //         if (targetPointer) {
+    //             (joy as nipplejs.Joystick).on("move", async (evt, data) => {
+    //                 if(actorController?.isControlled()){
+    //                 const playerPos = await player.getPosition();
+    //                 targetPointer.setTargetPoint(new Vector2d(playerPos.x + data.vector.x * 1000, playerPos.y + data.vector.y * 1000));
+    //                 }
+    //             });
+
+    //             (joy as nipplejs.Joystick).on("end", async (evt, data) => {
+    //                 if(actorController?.isControlled()){
+    //                 targetPointer.setTargetPoint(undefined);
+    //                 }
+    //             });
+    //             attackButton.addEventListener("click", (evt) => {
+    //                 if(actorController?.isControlled()){
+    //                 evt.preventDefault();
+    //                 evt.stopPropagation();
+    //                 (targetPointer as TargetPointInputController)?.attack();
+    //                 }
+    //             })
+    //         }
+    //     }
+    // });
     
 
 
