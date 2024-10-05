@@ -1,4 +1,4 @@
-import { AnimationMixer, BufferAttribute, BufferGeometry, CircleGeometry, Color, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, RawShaderMaterial, Scene, ShaderMaterial, SpotLight, TextureLoader, TorusGeometry, Vector2 } from "three";
+import { AdditiveBlending, AnimationMixer, BoxGeometry, BufferAttribute, BufferGeometry, CircleGeometry, Color, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, Points, RawShaderMaterial, Scene, ShaderMaterial, SpotLight, TextureLoader, TorusGeometry, Vector2 } from "three";
 import { IMesh } from "../../../../engine/MB/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { ThreeBasedMesh } from "../../../../engine/MB/three/ThreeBasedMesh";
@@ -12,6 +12,7 @@ import { IObject2D } from "../../../../engine/base/IObject2D";
 import { IActor } from "../../../../engine/base/Actor/IActor";
 import { GroundMaterial } from "./materials/groundMaterial";
 import { RagingSeaMaterial } from "./materials/ragingSeaMaterial";
+import { GalaxyMaterial } from "./materials/galaxyMaterial";
 
 
 
@@ -30,6 +31,77 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('/examples/jsm/libs/draco/');
         this._gltfLoader.setDRACOLoader(dracoLoader);
+    }
+    async createGalaxy(): Promise<Points> {
+        const parameters: any = {}
+        parameters.count = 200000
+        parameters.size = 0.005
+        parameters.radius = 50
+        parameters.branches = 3
+        parameters.spin = 1
+        parameters.randomness = 0.5
+        parameters.randomnessPower = 3
+        parameters.insideColor = '#ff6030'
+        parameters.outsideColor = '#1b3984'
+        const geometry = new BufferGeometry()
+
+    const positions = new Float32Array(parameters.count * 3)
+    const colors = new Float32Array(parameters.count * 3)
+
+    const insideColor = new Color(parameters.insideColor)
+    const outsideColor = new Color(parameters.outsideColor)
+
+    for(let i = 0; i < parameters.count; i++)
+    {
+        const i3 = i * 3
+
+        // Position
+        const radius = Math.random() * parameters.radius
+
+        const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2
+
+        const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+
+        positions[i3    ] = Math.cos(branchAngle) * radius + randomX
+        positions[i3 + 1] = randomY
+        positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ
+
+        // Color
+        const mixedColor = insideColor.clone()
+        mixedColor.lerp(outsideColor, radius / parameters.radius)
+
+        colors[i3    ] = mixedColor.r
+        colors[i3 + 1] = mixedColor.g
+        colors[i3 + 2] = mixedColor.b
+    }
+
+    geometry.setAttribute('position', new BufferAttribute(positions, 3))
+    geometry.setAttribute('color', new BufferAttribute(colors, 3))
+
+    /**
+     * Material
+     */
+    const material = new GalaxyMaterial(
+    //     {
+    //     size: parameters.size,
+    //     sizeAttenuation: true,
+    //     depthWrite: false,
+    //     blending: AdditiveBlending,
+    //     vertexColors: true
+    // }
+    )
+
+    /**
+     * Points
+     */
+    const box = new BoxGeometry(2,2,2);
+    const points = new Points(geometry, material.getMaterial());
+   
+   
+    
+         return points;
     }
     async createGates(ringRadius: number): Promise<IMesh> {
         const mesh = new Group();
@@ -81,13 +153,21 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     async createGround(): Promise<IMesh> {
         const textureLoader = new TextureLoader()
         const flagTexture = textureLoader.load('textures/flag-french.jpg')
+        
+        const res = new Group();
+        
         const shaderMaterial = new RagingSeaMaterial(flagTexture);
         this._sceneManager.addTickable(shaderMaterial);
+
+
         const planeMesh = new Mesh(new PlaneGeometry(20, 20, 128, 128), shaderMaterial.getMaterial());
+        const galaxy = await this.createGalaxy();
+        res.add(planeMesh);
+        res.add(galaxy);
         //  planeMesh.rotation.x = - Math.PI * 0.5
-        this._sceneManager.getScene().add(planeMesh);
+        this._sceneManager.getScene().add(res);
         //planeMesh.position.z = this._zHeight;
-        return new ThreeBasedMesh(planeMesh);
+        return new ThreeBasedMesh(res);
     }
     async createQuaffle(): Promise<IMesh> {
         

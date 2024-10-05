@@ -48,6 +48,7 @@ export class ThreeSceneManager extends SceneManager {
 
         this._persuingCamera = new PersuingCamera(camera, 7);
         this.addTickable(this._persuingCamera);
+        
 
         const controls = new OrbitControls(camera, this._renderer.domElement);
         controls.enableDamping = true;
