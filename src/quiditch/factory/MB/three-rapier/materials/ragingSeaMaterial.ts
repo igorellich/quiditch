@@ -8,7 +8,9 @@ export class RagingSeaMaterial implements ITickable{
     private readonly _shaderMaterial:ShaderMaterial;
     public readonly gui: GUI = new GUI({
         width: 300,
-        title: "Nice"
+        title: "Nice",
+    
+
     });
    
     constructor (texture:Texture){
@@ -43,38 +45,39 @@ export class RagingSeaMaterial implements ITickable{
                 
             }
         })
-        this.gui.add(this._shaderMaterial.uniforms.uBigWavesElevation,'value')
+       const gui_water =  this.gui.addFolder("water");
+        gui_water.add(this._shaderMaterial.uniforms.uBigWavesElevation,'value')
         .min(0).max(1).step(0.001).name('uBigWavesElevation')
-        this.gui.add(this._shaderMaterial.uniforms.uBigWavesFrequency.value,'x')
+        gui_water.add(this._shaderMaterial.uniforms.uBigWavesFrequency.value,'x')
         .min(0).max(10).step(0.001).name('uBigWavesFrequency.x')
-        this.gui.add(this._shaderMaterial.uniforms.uBigWavesFrequency.value,'y')
+        gui_water.add(this._shaderMaterial.uniforms.uBigWavesFrequency.value,'y')
         .min(0).max(10).step(0.001).name('uBigWavesFrequency.y')
 
-        this.gui.add(this._shaderMaterial.uniforms.uBigWavesSpeed,'value')
+        gui_water.add(this._shaderMaterial.uniforms.uBigWavesSpeed,'value')
         .min(0).max(10).step(0.001).name('uBigWavesSpeed')
 
-        this.gui.addColor(debugObject, 'depthColor').name('depthColor')
+        gui_water.addColor(debugObject, 'depthColor').name('depthColor')
             .onChange(
                 () => this._shaderMaterial.uniforms.uDepthColor.value.set(debugObject.depthColor)
             )
-        this.gui.addColor(debugObject, 'surfaceColor').name('surfaceColor')
+        gui_water.addColor(debugObject, 'surfaceColor').name('surfaceColor')
             .onChange(
                 () => this._shaderMaterial.uniforms.uSurfaceColor.value.set(debugObject.surfaceColor)
             )
-        this.gui.add(this._shaderMaterial.uniforms.uColorOffset, 'value')
+        gui_water.add(this._shaderMaterial.uniforms.uColorOffset, 'value')
             .min(0).max(1).step(0.001).name('uColorOffset')
-        this.gui.add(this._shaderMaterial.uniforms.uColorMultiplier, 'value')
+        gui_water.add(this._shaderMaterial.uniforms.uColorMultiplier, 'value')
             .min(0).max(10).step(0.001).name('uColorMultiplier')
 
-            this.gui.add(this._shaderMaterial.uniforms.uSmallWavesElevation, 'value')
+            gui_water.add(this._shaderMaterial.uniforms.uSmallWavesElevation, 'value')
             .min(0).max(1).step(0.001).name('uSmallWavesElevation')
-            this.gui.add(this._shaderMaterial.uniforms.uSmallWavesFrequency, 'value')
+            gui_water.add(this._shaderMaterial.uniforms.uSmallWavesFrequency, 'value')
             .min(0).max(10).step(0.001).name('uSmallWavesFrequency')
 
-            this.gui.add(this._shaderMaterial.uniforms.uSmallWavesSpeed, 'value')
+            gui_water.add(this._shaderMaterial.uniforms.uSmallWavesSpeed, 'value')
             .min(0).max(1).step(0.001).name('uSmallWavesSpeed')
 
-            this.gui.add(this._shaderMaterial.uniforms.uSmallWavesIterations, 'value')
+            gui_water.add(this._shaderMaterial.uniforms.uSmallWavesIterations, 'value')
             .min(0).max(10).step(1).name('uSmallWavesIterations')
 
 

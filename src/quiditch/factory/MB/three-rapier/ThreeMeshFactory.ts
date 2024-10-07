@@ -36,7 +36,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         const parameters: any = {}
         parameters.count = 200000
         parameters.size = 0.005
-        parameters.radius = 50
+        parameters.radius = 5
         parameters.branches = 3
         parameters.spin = 1
         parameters.randomness = 0.5
@@ -47,7 +47,8 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
 
     const positions = new Float32Array(parameters.count * 3)
     const colors = new Float32Array(parameters.count * 3)
-
+    const scales = new Float32Array(parameters.count)
+    const randomness = new Float32Array(parameters.count*3)
     const insideColor = new Color(parameters.insideColor)
     const outsideColor = new Color(parameters.outsideColor)
 
@@ -60,13 +61,13 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
 
         const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2
 
-        const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
-        const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
-        const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        randomness[i3] = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        randomness[i3+1] = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        randomness[i3+2] = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
 
-        positions[i3    ] = Math.cos(branchAngle) * radius + randomX
-        positions[i3 + 1] = randomY
-        positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ
+        positions[i3    ] = Math.cos(branchAngle) * radius
+        positions[i3 + 1] = 0.0
+        positions[i3 + 2] = Math.sin(branchAngle) * radius
 
         // Color
         const mixedColor = insideColor.clone()
@@ -75,30 +76,31 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         colors[i3    ] = mixedColor.r
         colors[i3 + 1] = mixedColor.g
         colors[i3 + 2] = mixedColor.b
+
+        // Scale
+        scales[i]= Math.random()
+
     }
 
     geometry.setAttribute('position', new BufferAttribute(positions, 3))
     geometry.setAttribute('color', new BufferAttribute(colors, 3))
+    geometry.setAttribute('aScale', new BufferAttribute(scales, 1))
+    geometry.setAttribute('aRandomness', new BufferAttribute(randomness, 3))
 
     /**
      * Material
      */
-    const material = new GalaxyMaterial(
-    //     {
-    //     size: parameters.size,
-    //     sizeAttenuation: true,
-    //     depthWrite: false,
-    //     blending: AdditiveBlending,
-    //     vertexColors: true
-    // }
-    )
-
+    const pixelRatio = this._sceneManager.getPixelRatio();
+    const material = new GalaxyMaterial(pixelRatio);
+    this._sceneManager.addTickable(material)
     /**
      * Points
      */
-    const box = new BoxGeometry(2,2,2);
+    
     const points = new Points(geometry, material.getMaterial());
-   
+    //points.rotation.x = Math.PI/2;
+    points.rotation.y = Math.PI/2;
+    points.position.z = 0
    
     
          return points;
@@ -161,8 +163,9 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
 
 
         const planeMesh = new Mesh(new PlaneGeometry(20, 20, 128, 128), shaderMaterial.getMaterial());
+        //  /res.add(planeMesh);
         const galaxy = await this.createGalaxy();
-        res.add(planeMesh);
+       
         res.add(galaxy);
         //  planeMesh.rotation.x = - Math.PI * 0.5
         this._sceneManager.getScene().add(res);
