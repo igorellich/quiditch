@@ -1,4 +1,4 @@
-import { AdditiveBlending, AnimationMixer, BoxGeometry, BufferAttribute, BufferGeometry, CircleGeometry, Color, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, Points, RawShaderMaterial, Scene, ShaderMaterial, SpotLight, TextureLoader, TorusGeometry, Vector2 } from "three";
+import { AdditiveBlending, AnimationMixer, BoxGeometry, BufferAttribute, BufferGeometry, CircleGeometry, Color, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, Points, RawShaderMaterial, Scene, ShaderMaterial, SphereGeometry, SpotLight, TextureLoader, TorusGeometry, Vector2 } from "three";
 import { IMesh } from "../../../../engine/MB/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { ThreeBasedMesh } from "../../../../engine/MB/three/ThreeBasedMesh";
@@ -13,6 +13,8 @@ import { IActor } from "../../../../engine/base/Actor/IActor";
 import { GroundMaterial } from "./materials/groundMaterial";
 import { RagingSeaMaterial } from "./materials/ragingSeaMaterial";
 import { GalaxyMaterial } from "./materials/galaxyMaterial";
+import { SmokeMaterial } from "./materials/smokeMaterial";
+import { HologramMaterial } from "./materials/hologramMaterial";
 
 
 
@@ -36,7 +38,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         const parameters: any = {}
         parameters.count = 200000
         parameters.size = 0.005
-        parameters.radius = 50
+        parameters.radius = 5
         parameters.branches = 3
         parameters.spin = 1
         parameters.randomness = 0.5
@@ -47,7 +49,8 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
 
     const positions = new Float32Array(parameters.count * 3)
     const colors = new Float32Array(parameters.count * 3)
-
+    const scales = new Float32Array(parameters.count)
+    const randomness = new Float32Array(parameters.count*3)
     const insideColor = new Color(parameters.insideColor)
     const outsideColor = new Color(parameters.outsideColor)
 
@@ -60,13 +63,13 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
 
         const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2
 
-        const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
-        const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
-        const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        randomness[i3] = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        randomness[i3+1] = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
+        randomness[i3+2] = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : - 1) * parameters.randomness * radius
 
-        positions[i3    ] = Math.cos(branchAngle) * radius + randomX
-        positions[i3 + 1] = randomY
-        positions[i3 + 2] = Math.sin(branchAngle) * radius + randomZ
+        positions[i3    ] = Math.cos(branchAngle) * radius
+        positions[i3 + 1] = 0.0
+        positions[i3 + 2] = Math.sin(branchAngle) * radius
 
         // Color
         const mixedColor = insideColor.clone()
@@ -75,30 +78,31 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         colors[i3    ] = mixedColor.r
         colors[i3 + 1] = mixedColor.g
         colors[i3 + 2] = mixedColor.b
+
+        // Scale
+        scales[i]= Math.random()
+
     }
 
     geometry.setAttribute('position', new BufferAttribute(positions, 3))
     geometry.setAttribute('color', new BufferAttribute(colors, 3))
+    geometry.setAttribute('aScale', new BufferAttribute(scales, 1))
+    geometry.setAttribute('aRandomness', new BufferAttribute(randomness, 3))
 
     /**
      * Material
      */
-    const material = new GalaxyMaterial(
-    //     {
-    //     size: parameters.size,
-    //     sizeAttenuation: true,
-    //     depthWrite: false,
-    //     blending: AdditiveBlending,
-    //     vertexColors: true
-    // }
-    )
-
+    const pixelRatio = this._sceneManager.getPixelRatio();
+    const material = new GalaxyMaterial(pixelRatio);
+    this._sceneManager.addTickable(material)
     /**
      * Points
      */
-    const box = new BoxGeometry(2,2,2);
+    
     const points = new Points(geometry, material.getMaterial());
-   
+    //points.rotation.x = Math.PI/2;
+    points.rotation.y = Math.PI/2;
+    points.position.z = 0
    
     
          return points;
@@ -151,23 +155,52 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new ThreeBasedMesh(mesh);
     }
     async createGround(): Promise<IMesh> {
-        const textureLoader = new TextureLoader()
-        const flagTexture = textureLoader.load('textures/flag-french.jpg')
+       
+        
         
         const res = new Group();
+        const textureLoader = new TextureLoader()
+        // const flagTexture = textureLoader.load('textures/flag-french.jpg')
+        // const shaderMaterial = new GroundMaterial(flagTexture);
+
+        // const shaderMaterial = new RagingSeaMaterial(flagTexture);
+
+        // this._sceneManager.addTickable(shaderMaterial);
+        // const planeMesh = new Mesh(new PlaneGeometry(20, 20, 128, 128), shaderMaterial.getMaterial());
+        // res.add(planeMesh);
+
+        //const galaxy = await this.createGalaxy();   
+        //res.add(galaxy);        
+       
+
+        // const smokeMesh = this._createSmoke();
+        // smokeMesh.position.z = -3;
+        // res.add(smokeMesh);
+
+        const holoMesh = this._createHologram();
+        res.add(holoMesh);
         
-        const shaderMaterial = new RagingSeaMaterial(flagTexture);
-        this._sceneManager.addTickable(shaderMaterial);
-
-
-        const planeMesh = new Mesh(new PlaneGeometry(20, 20, 128, 128), shaderMaterial.getMaterial());
-        const galaxy = await this.createGalaxy();
-        res.add(planeMesh);
-        res.add(galaxy);
-        //  planeMesh.rotation.x = - Math.PI * 0.5
         this._sceneManager.getScene().add(res);
-        //planeMesh.position.z = this._zHeight;
         return new ThreeBasedMesh(res);
+    }
+    private _createSmoke():Mesh {
+        const smokeGeometry = new PlaneGeometry(1, 1, 16, 64);
+        smokeGeometry.translate(0, 0.5, 0)
+        smokeGeometry.scale(1.5, 6, 1.5)
+
+        const smokeMaterial = new SmokeMaterial();
+        this._sceneManager.addTickable(smokeMaterial);
+        smokeGeometry.rotateX(Math.PI/2)
+        return new Mesh(smokeGeometry, smokeMaterial.getMaterial());
+    }
+    private _createHologram():Mesh {
+        const smokeGeometry = new SphereGeometry(2,32,64);
+        smokeGeometry.rotateX(-Math.PI)
+        
+        const smokeMaterial = new HologramMaterial();
+        this._sceneManager.addTickable(smokeMaterial);
+      
+        return new Mesh(smokeGeometry, smokeMaterial.getMaterial());
     }
     async createQuaffle(): Promise<IMesh> {
         

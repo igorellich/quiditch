@@ -14,6 +14,10 @@ export class ThreeSceneManager extends SceneManager {
     private readonly _persuingCamera: PersuingCamera;
 
     private readonly _renderer: WebGLRenderer;
+    
+    public getPixelRatio():number{
+        return this._renderer.getPixelRatio();
+    }
 
     private _clock: Clock = new Clock();
 
@@ -39,8 +43,8 @@ export class ThreeSceneManager extends SceneManager {
         this._renderer.setSize(this._size.width, this._size.height);
 
         const camera = new PerspectiveCamera(75, this._size.width / this._size.height, 0.1, 100);        
-        camera.position.z = -10;
-        camera.position.y = -20;
+        camera.position.z = 0;
+        camera.position.y = -5;
         
         
         
