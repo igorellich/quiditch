@@ -1,4 +1,4 @@
-import { AdditiveBlending, AnimationMixer, BoxGeometry, BufferAttribute, BufferGeometry, CircleGeometry, Color, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, Points, RawShaderMaterial, Scene, ShaderMaterial, SpotLight, TextureLoader, TorusGeometry, Vector2 } from "three";
+import { AdditiveBlending, AnimationMixer, BoxGeometry, BufferAttribute, BufferGeometry, CircleGeometry, Color, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, Points, RawShaderMaterial, Scene, ShaderMaterial, SphereGeometry, SpotLight, TextureLoader, TorusGeometry, Vector2 } from "three";
 import { IMesh } from "../../../../engine/MB/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { ThreeBasedMesh } from "../../../../engine/MB/three/ThreeBasedMesh";
@@ -13,6 +13,10 @@ import { IActor } from "../../../../engine/base/Actor/IActor";
 import { GroundMaterial } from "./materials/groundMaterial";
 import { RagingSeaMaterial } from "./materials/ragingSeaMaterial";
 import { GalaxyMaterial } from "./materials/galaxyMaterial";
+import { SmokeMaterial } from "./materials/smokeMaterial";
+import { HologramMaterial } from "./materials/hologramMaterial";
+import { Grassmaterial } from "./materials/grassMaterial";
+import { TextMaterial } from "./materials/textMaterial";
 
 
 
@@ -153,24 +157,73 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new ThreeBasedMesh(mesh);
     }
     async createGround(): Promise<IMesh> {
-        const textureLoader = new TextureLoader()
-        const flagTexture = textureLoader.load('textures/flag-french.jpg')
+       
+        
         
         const res = new Group();
-        
-        const shaderMaterial = new RagingSeaMaterial(flagTexture);
-        this._sceneManager.addTickable(shaderMaterial);
+        const textureLoader = new TextureLoader()
+        // const flagTexture = textureLoader.load('textures/flag-french.jpg')
+        // const shaderMaterial = new GroundMaterial(flagTexture);
 
+        // const shaderMaterial = new RagingSeaMaterial(flagTexture);
 
-        const planeMesh = new Mesh(new PlaneGeometry(20, 20, 128, 128), shaderMaterial.getMaterial());
-        //  /res.add(planeMesh);
-        const galaxy = await this.createGalaxy();
+        // this._sceneManager.addTickable(shaderMaterial);
+        // const planeMesh = new Mesh(new PlaneGeometry(20, 20, 128, 128), shaderMaterial.getMaterial());
+        // res.add(planeMesh);
+
+        //const galaxy = await this.createGalaxy();   
+        //res.add(galaxy);        
        
-        res.add(galaxy);
-        //  planeMesh.rotation.x = - Math.PI * 0.5
+
+        // const smokeMesh = this._createSmoke();
+        // smokeMesh.position.z = -3;
+        // res.add(smokeMesh);
+
+        // const holoMesh = this._createHologram();
+        // res.add(holoMesh);
+
+        // const grassMesh = this._createGrass();
+        // res.add(grassMesh);
+
+         const textMesh = this._createText();
+        res.add(textMesh);
+        
         this._sceneManager.getScene().add(res);
-        //planeMesh.position.z = this._zHeight;
         return new ThreeBasedMesh(res);
+    }
+
+    _createGrass(){
+        const grassGeometry = new PlaneGeometry(1, 1, 16, 64);
+        grassGeometry.rotateX(Math.PI/2)
+        const grassMaterial = new Grassmaterial();
+        this._sceneManager.addTickable(grassMaterial);
+        return new Mesh(grassGeometry, grassMaterial.getMaterial());
+    }
+    _createText(){
+        const textGeometry = new PlaneGeometry(5, 5, 16, 64);
+        textGeometry.rotateX(Math.PI/2)
+        const textMaterial = new TextMaterial();
+        this._sceneManager.addTickable(textMaterial);
+        return new Mesh(textGeometry, textMaterial.getMaterial());
+    }
+    private _createSmoke():Mesh {
+        const smokeGeometry = new PlaneGeometry(1, 1, 16, 64);
+        smokeGeometry.translate(0, 0.5, 0)
+        smokeGeometry.scale(1.5, 6, 1.5)
+
+        const smokeMaterial = new SmokeMaterial();
+        this._sceneManager.addTickable(smokeMaterial);
+        smokeGeometry.rotateX(Math.PI/2)
+        return new Mesh(smokeGeometry, smokeMaterial.getMaterial());
+    }
+    private _createHologram():Mesh {
+        const smokeGeometry = new SphereGeometry(2,32,64);
+        smokeGeometry.rotateX(-Math.PI)
+        
+        const smokeMaterial = new HologramMaterial();
+        this._sceneManager.addTickable(smokeMaterial);
+      
+        return new Mesh(smokeGeometry, smokeMaterial.getMaterial());
     }
     async createQuaffle(): Promise<IMesh> {
         

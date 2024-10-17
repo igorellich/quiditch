@@ -8,12 +8,12 @@ export class RagingSeaMaterial implements ITickable{
     private readonly _shaderMaterial:ShaderMaterial;
     public readonly gui: GUI = new GUI({
         width: 300,
-        title: "Nice",
+        title: "Grass",
     
 
     });
    
-    constructor (texture:Texture){
+    constructor (){
         const debugObject = {
             depthColor: "#186691",
             surfaceColor: "#9bd8ff"
