@@ -19,8 +19,8 @@ export class TextMaterial implements ITickable{
         }
         const textureLoader = new TextureLoader();
         const textTexture = textureLoader.load("textures/text.png");
-        // textTexture.wrapS = RepeatWrapping;
-        // textTexture.wrapT = RepeatWrapping;
+         textTexture.wrapS = RepeatWrapping;
+         textTexture.wrapT = RepeatWrapping;
         this._shaderMaterial = new ShaderMaterial({
             vertexShader:vertexGround,
             fragmentShader:fragmentGrond,

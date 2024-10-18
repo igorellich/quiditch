@@ -9,13 +9,15 @@ varying vec2 vUv;
 
 void main()
 {
-    float scale = 5.;
+    float repeats = 30.;
     vec2 textUV = vUv;
-    textUV.x *= scale;
-    textUV.y *= scale;
+    textUV.x *= repeats;
+    textUV.y *= repeats;
    
-    textUV.x-=(sin(uTime*2.)+1.)*(scale-1.)/2.;
-    textUV.y-=(scale-1.)/2.;
+    //textUV.x-=(sin(uTime*2.)+1.)*(repeats-1.)/2.;// from start to begin and backward
+    float movementSped = 0.2;
+    textUV.x-=uTime*movementSped;// circle movement
+    textUV.y-=(repeats-1.)/2.;//offset
     vec4 textureColor = texture(uTextTexture, textUV);
     // textureColor.rgb *= vElevation * 2.0 + 0.65;
     // gl_FragColor = textureColor;
@@ -23,8 +25,10 @@ void main()
      //gl_FragColor = vec4(textureColor.rgb, 1.0);
      vec3 color1 = vec3(1.,0,0);
      vec3 color2 = vec3(0.,1.,0);
-     vec3 color = mix(color1, color2, vec3(cos(uTime)));
+     vec3 textColor = mix(color1, color2, vec3(cos(uTime+textUV.x*2.)));
     float opacity = step(0.45, 1. - textureColor.r);
-    gl_FragColor = vec4(opacity==1.?color:vec3(0.,vUv.y,1.-vUv.y), 1.);
+    vec3 backColor = vec3(0.3,max(1.-vUv.y, 0.4),max((sin(uTime*movementSped*3.)+1.)*0.5, 0.4));
+    
+    gl_FragColor = vec4(opacity==1.?textColor:backColor, 1.);
     //gl_FragColor = vec4(vec3(0.),1.0);
 }
