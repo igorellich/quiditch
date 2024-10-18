@@ -200,7 +200,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new Mesh(grassGeometry, grassMaterial.getMaterial());
     }
     _createText(){
-        const textGeometry = new PlaneGeometry(5, 5, 16, 64);
+        const textGeometry = new PlaneGeometry(5, 5, 64, 16);
         textGeometry.rotateX(Math.PI/2)
         const textMaterial = new TextMaterial();
         this._sceneManager.addTickable(textMaterial);

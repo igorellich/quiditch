@@ -24,6 +24,10 @@ export class TextMaterial implements ITickable{
         this._shaderMaterial = new ShaderMaterial({
             vertexShader:vertexGround,
             fragmentShader:fragmentGrond,
+            side:2,
+            blendAlpha: 0,
+            transparent:true,
+            //wireframe:true,
             uniforms:
             {
                 

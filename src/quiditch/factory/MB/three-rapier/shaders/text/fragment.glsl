@@ -25,5 +25,6 @@ void main()
      vec3 color2 = vec3(0.,1.,0);
      vec3 color = mix(color1, color2, vec3(cos(uTime)));
     float opacity = step(0.45, 1. - textureColor.r);
-    gl_FragColor = vec4(opacity==1.?color:vec3(0.,0.,1.0), 1.0);
+    gl_FragColor = vec4(opacity==1.?color:vec3(0.,vUv.y,1.-vUv.y), 1.);
+    //gl_FragColor = vec4(vec3(0.),1.0);
 }
