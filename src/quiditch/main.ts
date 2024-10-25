@@ -28,19 +28,19 @@ goalsCounter.className="goals";
 
 
 document.body.appendChild(goalsCounter);
-const stickZone = document.createElement("div");
-stickZone.className="stickZone";
-document.body.appendChild(stickZone)
+// const stickZone = document.createElement("div");
+// stickZone.className="stickZone";
+// document.body.appendChild(stickZone)
 
 
 //@ts-ignore
-const joy = nipplejs.default.create({
-    mode: "semi",
-    catchDistance: 150,
-    zone: document.querySelector(".stickZone") as HTMLElement,
-    size: 200
+// const joy = nipplejs.default.create({
+//     mode: "semi",
+//     catchDistance: 150,
+//     zone: document.querySelector(".stickZone") as HTMLElement,
+//     size: 200
 
-});
+// });
 
 
 
@@ -118,18 +118,18 @@ sceneManager.startTime();
 
             const targetPointer = playerChaser?.getTargetPointer();
             if (targetPointer) {
-                (joy as nipplejs.Joystick).on("move", async (evt, data) => {
-                    if(actorController?.isControlled()){
-                    const playerPos = await player.getPosition();
-                    targetPointer.setTargetPoint(new Vector2d(playerPos.x + data.vector.x * 1000, playerPos.y + data.vector.y * 1000));
-                    }
-                });
+                // (joy as nipplejs.Joystick).on("move", async (evt, data) => {
+                //     if(actorController?.isControlled()){
+                //     const playerPos = await player.getPosition();
+                //     targetPointer.setTargetPoint(new Vector2d(playerPos.x + data.vector.x * 1000, playerPos.y + data.vector.y * 1000));
+                //     }
+                // });
 
-                (joy as nipplejs.Joystick).on("end", async (evt, data) => {
-                    if(actorController?.isControlled()){
-                    targetPointer.setTargetPoint(undefined);
-                    }
-                });
+                // (joy as nipplejs.Joystick).on("end", async (evt, data) => {
+                //     if(actorController?.isControlled()){
+                //     targetPointer.setTargetPoint(undefined);
+                //     }
+                // });
                 attackButton.addEventListener("click", (evt) => {
                     if(actorController?.isControlled()){
                     evt.preventDefault();

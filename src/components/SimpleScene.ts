@@ -58,8 +58,10 @@ export default class SimpleScene extends THREE.Scene {
         this.renderer = new THREE.WebGLRenderer({
             canvas: canvas,
             antialias: true,
-            alpha: true
+            alpha: true,
+            
         });
+        this.renderer.shadowMap.enabled = true;
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.setSize(this.sizes.width, this.sizes.height);
 

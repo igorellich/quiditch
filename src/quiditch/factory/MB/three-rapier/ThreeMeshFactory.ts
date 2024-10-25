@@ -11,6 +11,7 @@ import { Pointer } from "../components/Pointer";
 import { IObject2D } from "../../../../engine/base/IObject2D";
 import { IActor } from "../../../../engine/base/Actor/IActor";
 import { Grassmaterial } from "./materials/grassMaterial";
+import { TextMaterial } from "./materials/textMaterial";
 
 export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     private readonly _sceneManager:ThreeSceneManager;
@@ -30,20 +31,23 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     }
     async createGates(ringRadius: number): Promise<IMesh> {
         const mesh = new Group();
-        const material = new MeshBasicMaterial({
+        const material = new MeshStandardMaterial({
             color:'gold'
         });
         const ringGeom = new TorusGeometry(ringRadius,0.1*ringRadius,12,48);
         const ringHeight = -ringRadius+this._zHeight;
         const ringMesh = new Mesh(ringGeom,material);
+        ringMesh.castShadow = true;
         ringMesh.position.z = ringRadius+ringHeight;
         ringMesh.rotation.x = -Math.PI/2;
         
         const basementGeom = new CylinderGeometry(0.1, 0.1, ringHeight);
         const basementMesh = new Mesh(basementGeom, material);
         basementMesh.position.z=ringHeight/2;
+        basementMesh.castShadow = true;
         basementMesh.rotation.x = -Math.PI/2;
         this._sceneManager.getScene().add(mesh);
+       
         mesh.add(ringMesh,basementMesh)
         const threebasedMesh = new ThreeBasedMesh(mesh);
         return threebasedMesh;
@@ -64,23 +68,30 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         // const buffer = createArenaBuffer32Array3D(20, 50, this._zHeight);
         // const geometry = new BufferGeometry();
         //geometry.setAttribute('position', new BufferAttribute(buffer, 3));
-        const material = new MeshBasicMaterial({
-            color: "blue"
-            ,wireframe: true
-        });
-        const ringGeom = new TorusGeometry(70,0.1*70,12,48);
+        // const material = new MeshBasicMaterial({
+        //     color: "blue"
+        //     ,wireframe: true
+        // });
+        const material = new TextMaterial();
+        this._sceneManager.addTickable(material);
+        const ringGeom = new PlaneGeometry(1,1,20,20);
         
-        const mesh = new Mesh(ringGeom, material);
+        const mesh = new Mesh(ringGeom, material.getMaterial());
         mesh.position.z = this._zHeight*2;
         this._sceneManager.getScene().add(mesh);
         return new ThreeBasedMesh(mesh);
     }
     async createGround(): Promise<IMesh> {
 
-        const grassMaterial  = new Grassmaterial();
-        this._sceneManager.addTickable(grassMaterial);
-        const planeMesh = new Mesh(new PlaneGeometry(500, 500, this._zHeight), grassMaterial.getMaterial());
-
+        //const grassMaterial  = new Grassmaterial();
+        //this._sceneManager.addTickable(grassMaterial);
+        const grassMaterial = new MeshStandardMaterial({
+            color:"green",
+            
+        })
+        const planeMesh = new Mesh(new PlaneGeometry(500, 500, this._zHeight), grassMaterial);
+        planeMesh.receiveShadow = true;
+        
         this._sceneManager.getScene().add(planeMesh);
         //planeMesh.position.z = this._zHeight;
         return new ThreeBasedMesh(planeMesh);
@@ -115,15 +126,16 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         const clone :Mesh = mesh.clone();
         
         const circle = new CircleGeometry(3);
-        const circleMaterial = new MeshBasicMaterial({
+        const circleMaterial = new MeshStandardMaterial({
             color:color||"blue",
             opacity:0.3,
             transparent:true
         })
        
         const cicleMesh = new Mesh(circle,circleMaterial);
+        cicleMesh.castShadow=true;
         clone.add(cicleMesh);
-        
+        clone.castShadow = true;
         return clone;
        
     }

@@ -1,4 +1,4 @@
-import { AmbientLight, Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
+import { AmbientLight, CameraHelper, Clock, DirectionalLight, DirectionalLightHelper, PerspectiveCamera, PointLight, Scene, SpotLight, WebGLRenderer } from "three";
 import { SceneManager, Size } from "../../base/SceneManager"
 import { IPhysicsManager } from "../../base/IPhysicsManager";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -34,11 +34,12 @@ export class ThreeSceneManager extends SceneManager {
             alpha: true,
 
         });
+        this._renderer.shadowMap.enabled = true;
         
         this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this._renderer.setSize(this._size.width, this._size.height);
 
-        const camera = new PerspectiveCamera(75, this._size.width / this._size.height, 0.1, 100);        
+        const camera = new PerspectiveCamera(75, this._size.width / this._size.height, 0.1, 200);        
         camera.position.z = 50;
 
         this._persuingCamera = new PersuingCamera(camera, 7);
@@ -46,12 +47,37 @@ export class ThreeSceneManager extends SceneManager {
 
         const controls = new OrbitControls(camera, this._renderer.domElement);
         controls.enableDamping = true;
-        controls.enableRotate=false;
+        controls.enableRotate=true;
 
-        const light = new AmbientLight();
-        scene.add(light);
+         //const light = new AmbientLight();
+       const directionalLight = new DirectionalLight(0xffffff,3);
+    
+        directionalLight.castShadow = true;
+        directionalLight.position.set(70,0,100)
         
+        scene.add(directionalLight.target);
+        directionalLight.target.position.set(0,0,0);
+        directionalLight.target.updateMatrixWorld();
+        
+        scene.add(directionalLight);
+        const helper = new DirectionalLightHelper( directionalLight, 5 );
+scene.add( helper );
 
+        
+       //Set up shadow properties for the light
+       directionalLight.shadow.mapSize.width = 1024; // default
+       directionalLight.shadow.mapSize.height = 1024; // default
+       directionalLight.shadow.camera.near = 50; // default
+       directionalLight.shadow.camera.far = 170; // default
+       directionalLight.shadow.camera.left = -100; // default
+       directionalLight.shadow.camera.right = 100; // default
+       directionalLight.shadow.camera.top = 100; // default
+       directionalLight.shadow.camera.bottom = -100; // default
+        //scene.add(directionalLight.target);
+        const directionalLightCameraHelper = new CameraHelper(directionalLight.shadow.camera)
+        scene.add(directionalLightCameraHelper)
+        directionalLightCameraHelper.update();
+        directionalLightCameraHelper.updateMatrixWorld();
         window.addEventListener('resize', () => {
             this._size.height = window.innerHeight;
             this._size.width = window.innerWidth;

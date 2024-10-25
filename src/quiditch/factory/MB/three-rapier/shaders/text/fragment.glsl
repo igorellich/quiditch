@@ -9,10 +9,10 @@ varying vec2 vUv;
 
 void main()
 {
-    float repeats = 30.;
+    float repeats = 1.;
     vec2 textUV = vUv;
-    textUV.x *= repeats;
-    textUV.y *= repeats;
+    textUV.x *= repeats*200.;
+    textUV.y *= repeats*10.;
    
     //textUV.x-=(sin(uTime*2.)+1.)*(repeats-1.)/2.;// from start to begin and backward
     float movementSped = 0.2;

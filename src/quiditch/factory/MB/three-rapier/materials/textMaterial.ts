@@ -33,6 +33,7 @@ export class TextMaterial implements ITickable{
                 
                 uTextTexture:new Uniform(textTexture),
                 uTime: { value: 0 },
+                uRadius: new Uniform(70)
                           
             }
         })
