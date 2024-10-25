@@ -47,7 +47,7 @@ export class ThreeSceneManager extends SceneManager {
 
         const controls = new OrbitControls(camera, this._renderer.domElement);
         controls.enableDamping = true;
-        controls.enableRotate=true;
+        controls.enableRotate=false;
 
          //const light = new AmbientLight();
        const directionalLight = new DirectionalLight(0xffffff,3);
@@ -62,7 +62,7 @@ export class ThreeSceneManager extends SceneManager {
         scene.add(directionalLight);
         const helper = new DirectionalLightHelper( directionalLight, 5 );
 scene.add( helper );
-
+        helper.visible = false;
         
        //Set up shadow properties for the light
        directionalLight.shadow.mapSize.width = 1024; // default
@@ -78,6 +78,7 @@ scene.add( helper );
         scene.add(directionalLightCameraHelper)
         directionalLightCameraHelper.update();
         directionalLightCameraHelper.updateMatrixWorld();
+        directionalLightCameraHelper.visible = false;
         window.addEventListener('resize', () => {
             this._size.height = window.innerHeight;
             this._size.width = window.innerWidth;
