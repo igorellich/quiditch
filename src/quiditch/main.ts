@@ -13,6 +13,7 @@ import { Vector2d } from "../engine/base/Vector2d";
 import { ThreeStats } from "../utils/threeStats";
 import { GameInputActions } from "./constants";
 import { GameManager } from "./game/GameManager";
+import { Team } from "../engine/game/Team";
 
 
 
@@ -23,6 +24,9 @@ document.body.appendChild(attackButton)
 
 const goalsCounter = document.createElement("div");
 goalsCounter.className="goals";
+
+
+
 document.body.appendChild(goalsCounter);
 const stickZone = document.createElement("div");
 stickZone.className="stickZone";
@@ -62,6 +66,34 @@ sceneManager.addTickable(walls);
 sceneManager.startTime();   
 
     const gameManager = new GameManager(sceneManager, quiditchFactory, async () => {
+        const score:any={
+
+        }
+        const teams = gameManager.getTeams();
+        for (const team of teams) {
+            score[team.getId()] = 0;
+        }
+        const setScore = (team?: Team) => {
+            const goalsEl = document.querySelector(".goals");
+            let scoreStr = "";
+            if (team) {
+                const teamId = team.getId();
+                score[teamId]++;
+            }
+            for (let teamId in score) {
+                scoreStr += score[teamId] + ' ';
+            }
+            scoreStr = scoreStr.trim();
+            scoreStr = scoreStr.replace(' ', ':');
+
+
+            if (goalsEl) {
+                goalsEl.innerHTML = scoreStr;
+            }
+        }
+        setScore();
+        gameManager.addOnGoalHandler(setScore);
+      
         const playerChaser = await gameManager.getPlayerChaser();
 
         const ball = await quiditchFactory.createQuaffle();

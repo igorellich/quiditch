@@ -21,4 +21,11 @@ export class Team{
     public isActorInTeam(actor:IActor):boolean{
         return this._members.includes(actor);
     }
+
+    public getMembers():IActor[]{
+        return [...this._members];
+    }
+    public getId(){
+        return this._id;
+    }
 }

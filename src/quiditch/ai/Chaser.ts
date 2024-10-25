@@ -17,6 +17,11 @@ export class Chaser extends Patroller<Vector2d> {
         this._gameManager = gameManager;
 
     }
+    private _initilaPos:Vector2d|undefined = undefined;
+
+    public setInitialPos(pos:Vector2d):void{
+        this._initilaPos = pos;
+    };
 
   
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
@@ -43,7 +48,10 @@ export class Chaser extends Patroller<Vector2d> {
                         await this._chaseQuaffle(closestQuaffle);
 
                     } else {
-                        this.setPatrolling(true);
+                        // no quaffle
+                        if (this._initilaPos) {
+                            this._targetPointer.setTargetPoint(this._initilaPos);
+                        }
                     }
                 }else{
                     this.setPatrolling(false);
@@ -100,12 +108,12 @@ export class Chaser extends Patroller<Vector2d> {
         return [closePoint,farPoint];
     }
     private async _chaseQuaffle(quaffle: IActor) {
-        const joints = await quaffle.getJoints();
+        const quaffleJoints = await quaffle.getJoints();
         const quafflePos = await quaffle.getPosition();
 
-        if (joints.length > 0) {
-           
-            const quaffleHolderTeam = this._gameManager.getActorTeam(joints[0] as IActor);
+        if (quaffleJoints.length > 0) {
+            const quaffleHolder = quaffleJoints[0] as IActor;
+            const quaffleHolderTeam = this._gameManager.getActorTeam(quaffleHolder);
             const actor = this.getActor() as IActor
             const ourTeam = this._gameManager.getActorTeam(actor);
             if (quaffleHolderTeam !== ourTeam) {
@@ -113,9 +121,9 @@ export class Chaser extends Patroller<Vector2d> {
                 const closestPlayer = await this._gameManager.getClosestTarget(quaffle, playerTeam, this._zone);
                 if (closestPlayer === actor) {
                     this.setPatrolling(false);
-                    const jpointPos = await quaffle.getPosition();
-                    const dirVec = await quaffle.getDirectionVector();
-                    await this._targetPointer.setTargetPoint(new Vector2d(jpointPos.x - dirVec.x * 10 * Math.random(), jpointPos.y - dirVec.y * 10 * Math.random()));
+                    const chasePos = await quaffleHolder.getPosition();
+                    const dirVec = await quaffleHolder.getDirectionVector();
+                    await this._targetPointer.setTargetPoint(new Vector2d(chasePos.x - dirVec.x * 2 * (Math.random() - 1), chasePos.y - dirVec.y * 2 * (Math.random() -1)));
                 } else {
                     this.setPatrolling(true);
                 }

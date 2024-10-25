@@ -24,6 +24,11 @@ export class GameManager{
     private _playerChaser?: Chaser;
     private _chasers:Chaser[]=[];
     private _hideQuaffle: boolean = false;
+    private readonly _goalHandlers:((team:Team)=>void)[] = [];
+
+    public addOnGoalHandler(handler:(team:Team)=>void){
+        this._goalHandlers.push(handler);
+    }
 
     constructor(sceneManager:SceneManager, quiditchFactory:IQuiditchFactory<IActor>, onInit?:()=>void){
         this._sceneManager = sceneManager;
@@ -36,18 +41,40 @@ export class GameManager{
         this._teams.push(await this._createQuiditchTeam(70,true));
         this._teams.push(await this._createQuiditchTeam(70,false));
         this.setPlayerChaser(this._chasers[0]);
+      
+        this.addOnGoalHandler((team:Team)=>this._onGoal());
         if (this._onInit) {
             this._onInit();
         }
 
     }
 
+    private async _onGoal():Promise<void>{
+        const quaffle = await this.getQuaffle();        
+        this.setHideQuaffle(true);
+        
+         this._playerChaser?.setIsControlled(false);
+         
+         await quaffle?.setPosition(75,0);
+         setTimeout(async ()=>{
+             
+             await quaffle?.setPosition(0,0);
+             this._playerChaser?.setIsControlled(true);
+             this.setHideQuaffle(false);
+         },10000)
+    }
+
     setPlayerChaser(chaser:Chaser){
+        let actor = this._playerChaser?.getActor();
         if(this._playerChaser){
+            
+            actor?.setSpeed(actor.getSpeed()*0.5);
             this._playerChaser.setIsControlled(false);
 
         }
         this._playerChaser = chaser;
+        actor = this._playerChaser.getActor();
+        actor?.setSpeed(actor.getSpeed()*2);
         this._playerChaser.setIsControlled(true);
         
     }
@@ -106,13 +133,14 @@ export class GameManager{
                     //         isLeft ? -i * fieldRadius / 3 : (i + 1) * fieldRadius / 3, -fieldRadius
                     //     )
                     // );
-                    const chaser = await this._createChaser(zone, isLeft);
+                    const pos = new Vector2d(isLeft ? -30 : 30, (i - 1) * 30);
+                    const chaser = await this._createChaser(zone, isLeft, pos);
                     this._chasers.push(chaser);
                     const player = await chaser.getActor();
                     if (player) {
                         team.AddMember(player);
                         
-                        await player?.setPosition(isLeft ? -30 : 30, (i - 1) * 30);
+                        
                         this._sceneManager.addTickable(player);
                     }
                 }
@@ -125,19 +153,23 @@ export class GameManager{
     private async _createGates():Promise<IActor>{
         const gates = await this._quiditchFactory.createGates(2) as Gates;
         
-        gates.setOnGoal(async ()=>{
-            //  this._goalsCount++;
-            // const goalsEl =document.querySelector(".goals");
-            // if(goalsEl){
-            //     goalsEl.innerHTML = this._goalsCount.toString();
-            // }
+        gates.setOnGoal(async () => {
+            const team = await this.getActorTeam(gates);
+            if (team) {
+                for (const handler of this._goalHandlers) {
+                    handler(team);
+                }
+            }
+      
             const quaffle = await this.getQuaffle();
            //quaffle?.setSpeed(0);
            this.setHideQuaffle(true);
            
             this._playerChaser?.setIsControlled(false);
+            
             await quaffle?.setPosition(75,0);
             setTimeout(async ()=>{
+                
                 await quaffle?.setPosition(0,0);
                 this._playerChaser?.setIsControlled(true);
                 this.setHideQuaffle(false);
@@ -146,11 +178,13 @@ export class GameManager{
         });
         return gates;
     }
+
+
     setHideQuaffle(arg0: boolean) {
         this._hideQuaffle = arg0;
     }
 
-    private async _createChaser(zone: IZone<Vector2d>, isLeft:boolean): Promise<Chaser> {
+    private async _createChaser(zone: IZone<Vector2d>, isLeft:boolean, initialPos:Vector2d): Promise<Chaser> {
 
         const player = await this._quiditchFactory.createPlayer(isLeft?"red":"blue");
         await player.setSpeed(await player.getSpeed() * 0.5);
@@ -165,10 +199,16 @@ export class GameManager{
 
 
         const chaser = new Chaser(zone, targetPointInputController, 0.2, this); //ai
+        await player.setPosition(initialPos.x, initialPos.y);
+        chaser.setInitialPos(initialPos);
         this._sceneManager.addTickable(chaser);
         
         return chaser;
 
+    }
+
+    public getTeams():Team[]{
+        return [...this._teams];
     }
     public async getPlayerChaser(): Promise<Chaser | undefined> {
        return this._playerChaser;
