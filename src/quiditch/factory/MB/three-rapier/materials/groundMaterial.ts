@@ -9,6 +9,7 @@ export class GroundMaterial implements ITickable{
         this._shaderMaterial = new ShaderMaterial({
             vertexShader:vertexGround,
             fragmentShader:fragmentGrond,
+            
             uniforms:
             {
                 uFrequency: { value: new Vector2(10, 5) },

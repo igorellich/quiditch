@@ -78,6 +78,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         
         const mesh = new Mesh(ringGeom, material.getMaterial());
         mesh.position.z = this._zHeight*2;
+        mesh.frustumCulled = false
         this._sceneManager.getScene().add(mesh);
         return new ThreeBasedMesh(mesh);
     }
