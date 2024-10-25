@@ -179,14 +179,14 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         // smokeMesh.position.z = -3;
         // res.add(smokeMesh);
 
-        // const holoMesh = this._createHologram();
-        // res.add(holoMesh);
+        const holoMesh = this._createHologram();
+        res.add(holoMesh);
 
         // const grassMesh = this._createGrass();
         // res.add(grassMesh);
 
-         const textMesh = this._createText();
-        res.add(textMesh);
+        //  const textMesh = this._createText();
+        // res.add(textMesh);
         
         this._sceneManager.getScene().add(res);
         return new ThreeBasedMesh(res);
