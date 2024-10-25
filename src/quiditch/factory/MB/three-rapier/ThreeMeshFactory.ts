@@ -10,6 +10,7 @@ import { ITickable } from "../../../../engine/base/ITickable";
 import { Pointer } from "../components/Pointer";
 import { IObject2D } from "../../../../engine/base/IObject2D";
 import { IActor } from "../../../../engine/base/Actor/IActor";
+import { Grassmaterial } from "./materials/grassMaterial";
 
 export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
     private readonly _sceneManager:ThreeSceneManager;
@@ -75,9 +76,11 @@ export class ThreeMeshFactory implements IQuiditchFactory<IMesh>{
         return new ThreeBasedMesh(mesh);
     }
     async createGround(): Promise<IMesh> {
-        const planeMesh = new Mesh(new PlaneGeometry(500, 500, this._zHeight), new MeshBasicMaterial({
-            color: 'green'
-        }));
+
+        const grassMaterial  = new Grassmaterial();
+        this._sceneManager.addTickable(grassMaterial);
+        const planeMesh = new Mesh(new PlaneGeometry(500, 500, this._zHeight), grassMaterial.getMaterial());
+
         this._sceneManager.getScene().add(planeMesh);
         //planeMesh.position.z = this._zHeight;
         return new ThreeBasedMesh(planeMesh);
