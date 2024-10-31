@@ -2,7 +2,7 @@ import { World } from "@dimforge/rapier2d";
 import * as nipplejs from "nipplejs";
 import {Scene} from "three";
 import { RapierBodyFactory } from "./factory/MB/three-rapier/RapierBodyFactory";
-import { MBQuiditchFactory } from "./factory/MB/MBQuiditchActorFactory";
+import { QuiditchFactory } from "./factory/MB/QuiditchActorFactory";
 import { ThreeMeshFactory } from "./factory/MB/three-rapier/ThreeMeshFactory";
 import { ThreeSceneManager } from "../engine/MB/three/ThreeSceneManager";
 import { KeyboardInputController } from "../engine/controls/KeyboardInput";
@@ -14,6 +14,7 @@ import { ThreeStats } from "../utils/threeStats";
 import { GameInputActions } from "./constants";
 import { GameManager } from "./game/GameManager";
 import { Team } from "../engine/game/Team";
+import { StateSynchroniser } from "./game/StateSynchroniser";
 
 
 
@@ -56,16 +57,21 @@ const physicsManager = new RapierPhysicsManager(world);
 const sceneManager = new ThreeSceneManager({ height: window.innerHeight, width: window.innerWidth }, canvas, scene, physicsManager);
 const bodyFactory = new RapierBodyFactory(world);
 const meshFactory = new ThreeMeshFactory(sceneManager, 5);
-const quiditchFactory = new MBQuiditchFactory(bodyFactory, meshFactory,sceneManager);
+const quiditchFactory = new QuiditchFactory(bodyFactory, meshFactory,sceneManager);
 
-const plane = await quiditchFactory.createGround();
-sceneManager.addTickable(plane);
+// const plane = await quiditchFactory.createGround();
+// sceneManager.addTickable(plane);
 
 const walls = await quiditchFactory.createWalls();
 sceneManager.addTickable(walls);
-sceneManager.startTime();   
 
-    const gameManager = new GameManager(sceneManager, quiditchFactory, async () => {
+
+const stateSync = new StateSynchroniser(meshFactory);
+sceneManager.addTickable(stateSync);
+        
+sceneManager.startTime();   
+    
+    const gameManager = new GameManager(sceneManager, quiditchFactory, stateSync, async () => {
         const score:any={
 
         }
@@ -139,6 +145,7 @@ sceneManager.startTime();
                 })
             }
         }
+        
     });
     
 

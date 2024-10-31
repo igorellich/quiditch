@@ -1,6 +1,8 @@
 import { CircleZone } from "../../engine/ai/zone/CircleZone";
 import { IZone } from "../../engine/ai/zone/IZone";
+import { ActorState } from "../../engine/base/Actor/Actor";
 import { IActor } from "../../engine/base/Actor/IActor";
+import { ITickable } from "../../engine/base/ITickable";
 import { SceneManager } from "../../engine/base/SceneManager";
 import { Vector2d } from "../../engine/base/Vector2d";
 import { Team } from "../../engine/game/Team";
@@ -12,8 +14,9 @@ import { IQuiditchFactory } from "../factory/IQuiditchActorFactory";
 import { Quaffle } from "../factory/MB/components/balls/Quaffle";
 import { Gates } from "../factory/MB/components/Gates";
 import { PlayerActor } from "../factory/MB/components/PlayerActor";
+import { StateSynchroniser } from "./StateSynchroniser";
 
-export class GameManager{
+export class GameManager implements ITickable{
     private readonly _sceneManager:SceneManager;
     private readonly _teams:Team[]=[];
 
@@ -26,15 +29,24 @@ export class GameManager{
     private _hideQuaffle: boolean = false;
     private readonly _goalHandlers:((team:Team)=>void)[] = [];
 
+    
+    private _stateWatchActors:IActor[]=[];
+
     public addOnGoalHandler(handler:(team:Team)=>void){
         this._goalHandlers.push(handler);
     }
-
-    constructor(sceneManager:SceneManager, quiditchFactory:IQuiditchFactory<IActor>, onInit?:()=>void){
+    private readonly _stateSync:StateSynchroniser;
+    constructor(sceneManager:SceneManager, quiditchFactory:IQuiditchFactory<IActor>, stateSync:StateSynchroniser, onInit?:()=>void){
         this._sceneManager = sceneManager;
+        this._stateSync = stateSync;
         this._quiditchFactory = quiditchFactory;
         this._onInit = onInit;
         this._init();
+        this._sceneManager.addTickable(this);
+    }
+    async tick(elapsedTime: number, deltaTime: number): Promise<void> {
+        const newStates = await Promise.all(this._stateWatchActors.map(a=>a.getState()));
+        this._stateSync.setStates(newStates);       
     }
 
     private async _init(){
@@ -190,7 +202,7 @@ export class GameManager{
         await player.setSpeed(await player.getSpeed() * 0.5);
         await player.setRotationSpeed(await player.getRotationSpeed() * 0.5);
         
-
+        this._stateWatchActors.push(player);
         const playerController = new QuiditchPlayerController(player); //actor controller
         this._sceneManager.addTickable(playerController);
 
@@ -213,5 +225,7 @@ export class GameManager{
     public async getPlayerChaser(): Promise<Chaser | undefined> {
        return this._playerChaser;
     }
+
+   
 
 }

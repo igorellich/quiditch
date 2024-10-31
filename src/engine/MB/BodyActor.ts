@@ -3,10 +3,10 @@ import { IBodiedActor } from "./Actor/IBodiedActor";
 import { IMovable } from "../base/Imoveable";
 import { Vector2d } from "../base/Vector2d";
 import { IBody } from "./IBody";
-import { IMesh } from "./IMesh";
 import { Collision } from "../base/Collision";
 
-export class MBActor extends Actor implements IBodiedActor{
+export class BodyActor extends Actor implements IBodiedActor{
+   
     async onCollision(collision: Collision): Promise<void> {
         
     }
@@ -42,12 +42,11 @@ export class MBActor extends Actor implements IBodiedActor{
     
     
     private readonly _body:IBody;
-    private readonly _mesh:IMesh;
 
-    public constructor(body:IBody, mesh:IMesh, speed:number, rotationSpeed:number, name:string){       
+    public constructor(body:IBody, speed:number, rotationSpeed:number, name:string, id: string){       
        
-        super(name, speed, rotationSpeed);
-        this._mesh = mesh;
+        super(name, speed, rotationSpeed,id);
+        
         this._body = body;
         this._body.setSpeed(speed);
         this._body.setRotationSpeed(rotationSpeed);
@@ -65,12 +64,7 @@ export class MBActor extends Actor implements IBodiedActor{
     }
     public async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         this._body.tick(elapsedTime, deltaTime);
-        const position = await this._body.getPosition();
-        this._mesh.setPosition(position.x, position.y);
-
-        const rotation = await this._body.getRotation();
-        this._mesh.setRotation(rotation);
-        
+      
     }
 
     public async setPosition(x: number, y: number): Promise<void> {

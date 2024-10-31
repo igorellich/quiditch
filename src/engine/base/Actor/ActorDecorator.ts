@@ -2,12 +2,21 @@ import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
 import { IMovable } from "../Imoveable";
 import { Collision } from "../Collision";
-import { IObject2D } from "../IObject2D";
+import { ActorState } from "./Actor";
 
 export class ActorDecorator implements IActor {
     protected readonly _baseActor: IActor;
     constructor(baseActor: IActor) {
         this._baseActor = baseActor;
+    }
+    getId(): string {
+       return this._baseActor.getId();
+    }
+    async getState(): Promise<ActorState> {
+        return this._baseActor.getState();
+    }
+    async setState(state: ActorState): Promise<void> {
+        this._baseActor.setState(state);
     }
     getJoints(): Promise<IMovable[]> {
         return this._baseActor.getJoints();

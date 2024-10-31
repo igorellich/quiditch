@@ -1,8 +1,8 @@
 import { Collision } from "../Collision";
 import { IMovable } from "../Imoveable";
-import { IObject2D } from "../IObject2D";
 import { ITickable } from "../ITickable";
 import { Vector2d } from "../Vector2d";
+import { ActorState } from "./Actor";
 
 export interface IActor extends ITickable, IMovable{
   
@@ -14,5 +14,10 @@ export interface IActor extends ITickable, IMovable{
      onCollision(collision:Collision, elapsedTime: number):Promise<void>;
 
      getJoints():Promise<IMovable[]>;
+
+     getState():Promise<ActorState>;
+     setState(state:ActorState):Promise<void>;
+
+     getId():string;
     
 }

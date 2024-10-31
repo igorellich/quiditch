@@ -1,5 +1,4 @@
 import { IZone } from "../ai/zone/IZone";
-import { Actor } from "./Actor/Actor";
 import { IActor } from "./Actor/IActor";
 import { IPhysicsManager, RayCastResult } from "./IPhysicsManager";
 import { ITickable } from "./ITickable";

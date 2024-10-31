@@ -11,8 +11,8 @@ export class MeshBasedActor extends Actor{
  
     private readonly _mesh:IMesh
    
-    constructor(name: string, mesh:IMesh){
-        super(name);
+    constructor(name: string, mesh:IMesh, id: string){
+        super(name,undefined, undefined,id);
         this._mesh = mesh;
         
     }

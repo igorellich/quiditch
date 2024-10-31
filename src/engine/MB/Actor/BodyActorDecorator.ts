@@ -9,11 +9,11 @@ export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
     private readonly _sceneManager: SceneManager;
     private readonly _id:number=Math.random();
 
-    constructor(mfActor: IBodiedActor, sceneManager: SceneManager) {
-        super(mfActor);
-        this._sceneManager = sceneManager;
-       
-    }
+        constructor(mfActor: IBodiedActor, sceneManager: SceneManager) {
+            super(mfActor);
+            this._sceneManager = sceneManager;
+        
+        }
     
   
     getBody(): IBody {

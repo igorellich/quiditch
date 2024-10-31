@@ -11,8 +11,8 @@ export class Pointer extends MeshBasedActor{
     private _targetObject?: IObject2D;
 
     private _sourceActor?: IActor;
-    constructor(name: string, mesh:IMesh, targetObject?: IObject2D, sourceActor?:IActor){
-        super(name, mesh);
+    constructor(name: string, mesh:IMesh, id:string, targetObject?: IObject2D, sourceActor?:IActor){
+        super(name, mesh, id);
         this._targetObject = targetObject;
         this._sourceActor = sourceActor;
     }

@@ -2,17 +2,21 @@ import { IActor } from "./IActor";
 import { Vector2d } from "../Vector2d";
 import { IMovable } from "../Imoveable";
 import { Collision } from "../Collision";
-import { IObject2D } from "../IObject2D";
 import {normaliseAngle} from "../../../utils/geometryUtils"
 
 export abstract class Actor implements IActor {
 
 
     public readonly _name: string;
-    constructor(name: string, speed: number = 0, rotationSpeed: number = 0) {
+    private readonly _id: string;
+    constructor(name: string, speed: number = 0, rotationSpeed: number = 0, id: string) {
+        this._id = id;
         this.setSpeed(speed);
         this._name = name;
         this.setRotationSpeed(rotationSpeed);
+    }
+    getId(): string {
+       return this._id;
     }
     async getJoints(): Promise<IMovable[]> {
         //console.log(this._joints);
@@ -92,4 +96,28 @@ export abstract class Actor implements IActor {
 
     public abstract setCollisions<TCollision>(memberGroups: TCollision[], filterGroup: TCollision[]): Promise<void>;
 
+    public async getState(): Promise<ActorState> {
+        const pos = await this.getPosition();
+
+        const state: ActorState = {
+            position: {x:pos.x, y:pos.y},
+            rotation: await this.getRotation(),
+            name:this.getName(),
+            id:this.getId()
+        }
+        return state;
+    }
+    public async setState(state:ActorState):Promise<void>{
+        
+        await this.setRotation(state.rotation);
+        await this.setPosition(state.position.x, state.position.y);
+    }
+
+}
+
+export type ActorState={
+    position: {x:number, y:number};
+    rotation: number;
+    name: string;
+    id: string;
 }
