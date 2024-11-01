@@ -60,7 +60,11 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
         group.add(mesh);
         this._sceneManager.getScene().add(group);
         const threebasedMesh = new ThreeBasedMesh(group);
-        return new MeshBasedActor(ActorNames.pointer,threebasedMesh,id as string);
+        const pointer = new Pointer(ActorNames.pointer, threebasedMesh, id as string, targetObject, sourceActor);
+        this._sceneManager.addTickable(pointer);
+        
+        return pointer;
+       
         
     }
     async createWalls( id?:string): Promise<MeshBasedActor> {

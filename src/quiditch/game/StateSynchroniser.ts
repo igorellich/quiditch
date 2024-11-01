@@ -1,5 +1,4 @@
 import { ITickable } from "../../engine/base/ITickable";
-import { SceneManager } from "../../engine/base/SceneManager";
 import { ThreeMeshFactory } from "../factory/MB/three-rapier/ThreeMeshFactory";
 import { ActorState } from "../../engine/base/Actor/Actor";
 import { ActorNames } from "../constants";
@@ -18,17 +17,17 @@ export class StateSynchroniser implements ITickable {
 
     }
     public setStates(states: ActorState[]): void {
-       
-        if (this._statesUpdated && !this._syncStarted) {  
+
+        if (this._statesUpdated && !this._syncStarted) {
             //console.log("update states");         
             this._states = states;
             this._statesUpdated = false;
 
-       }
+        }
     }
-    _syncStarted:boolean = false;
+    _syncStarted: boolean = false;
     private async _syncStates(): Promise<void> {
-       
+
         if (!this._statesUpdated && !this._syncStarted) {
             this._syncStarted = true;
             //console.log("sync States");
@@ -40,20 +39,25 @@ export class StateSynchroniser implements ITickable {
                             const playerState = state as PlayerState;
                             meshActor = await this._meshFactory.createPlayer(playerState.color, state.id);
                             this._meshesMap[state.id as string] = meshActor;
+
+
+                            //const poiner = await this._meshFactory.createPointer(ball, meshActor, Math.random().toString());
+
+
                             break;
 
                         case ActorNames.quaffle:
                             meshActor = await this._meshFactory.createQuaffle(state.id);
                             this._meshesMap[state.id as string] = meshActor;
                             break;
-                            case ActorNames.gates:
-                                meshActor = await this._meshFactory.createGates(2,state.id);
-                                this._meshesMap[state.id as string] = meshActor;
-                                break;
-                                case ActorNames.walls:
-                                    meshActor = await this._meshFactory.createWalls(state.id);
-                                    this._meshesMap[state.id as string] = meshActor;
-                                    break;
+                        case ActorNames.gates:
+                            meshActor = await this._meshFactory.createGates(2, state.id);
+                            this._meshesMap[state.id as string] = meshActor;
+                            break;
+                        case ActorNames.walls:
+                            meshActor = await this._meshFactory.createWalls(state.id);
+                            this._meshesMap[state.id as string] = meshActor;
+                            break;
                     }
                 }
                 if (meshActor) {

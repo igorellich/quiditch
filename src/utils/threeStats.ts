@@ -8,7 +8,7 @@ export class ThreeStats implements ITickable{
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         
-        this._stats.update()
+        //this._stats.update()
     }
     
 }

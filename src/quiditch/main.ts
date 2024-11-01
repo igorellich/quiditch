@@ -16,22 +16,56 @@ import { GameManager } from "./game/GameManager";
 import { Team } from "../engine/game/Team";
 import { StateSynchroniser } from "./game/StateSynchroniser";
 import { SceneManager } from "../engine/base/SceneManager";
+import { ActorState } from "../engine/base/Actor/Actor";
 
 
+let gameManager:GameManager|undefined=undefined;
+const stateSyncs:StateSynchroniser[] = [];
+const init = async (isServer:boolean)=>{
+    const scene = new Scene();
+    const canvas = document.createElement("canvas") as HTMLCanvasElement;
+    document.body.appendChild(canvas)
+    const sceneManager = new ThreeSceneManager({ height: 400, width: window.innerWidth }, canvas, scene);
+    const attackButton = document.createElement("div");
 
+    attackButton.className="attack";
+    document.body.appendChild(attackButton)
+    
+    const goalsCounter = document.createElement("div");
+    goalsCounter.className="goals";
+    
+    
+    
+    document.body.appendChild(goalsCounter);
+    const stickZone = document.createElement("div");
+    stickZone.className="stickZone";
+    document.body.appendChild(stickZone)
+    
+    
+    //@ts-ignore
+    const joy = nipplejs.default.create({
+        mode: "semi",
+        catchDistance: 150,
+        zone: document.querySelector(".stickZone") as HTMLElement,
+        size: 200
+    
+    });
+    if(isServer){
+    gameManager = initServer(sceneManager, attackButton, joy);
+    }
+    stateSyncs.push(await initClient(sceneManager));
+}
 
-
-
-const initServer = (sceneManager:SceneManager, meshFactory:ThreeMeshFactory, stateSync:StateSynchroniser, attackButton:HTMLElement, joy:nipplejs.Joystick)=>{
+const initServer = (sceneManager:SceneManager, attackButton:HTMLElement, joy:nipplejs.Joystick):GameManager=>{
 
     let gravity = { x: 0.0, y: 0.0 };
     let world = new World(gravity);
     const physicsManager = new RapierPhysicsManager(world, sceneManager);
     sceneManager.addTickable(physicsManager);
     const bodyFactory = new RapierBodyFactory(world);
-    const quiditchFactory = new QuiditchFactory(bodyFactory, meshFactory, physicsManager);
+    const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
 
-    const gameManager = new GameManager(sceneManager, quiditchFactory, stateSync, async () => {
+    const gameManager = new GameManager(sceneManager, quiditchFactory,  async () => {
         const score:any={
 
         }
@@ -61,10 +95,6 @@ const initServer = (sceneManager:SceneManager, meshFactory:ThreeMeshFactory, sta
         gameManager.addOnGoalHandler(setScore);
       
         const playerChaser = await gameManager.getPlayerChaser();
-
-   
-
-
 
         const player = playerChaser?.getActor();
         if (player) {
@@ -99,67 +129,38 @@ const initServer = (sceneManager:SceneManager, meshFactory:ThreeMeshFactory, sta
         }
         
     });
+    return gameManager;
 }
 
 
-const initClient = async (sourceEl:HTMLElement|undefined, server:boolean)=>{
+const initClient = async (sceneManager: ThreeSceneManager): Promise<StateSynchroniser> => {
 
-    const scene = new Scene();
-const canvas = document.querySelector("#app") as HTMLCanvasElement;
+    const meshFactory = new ThreeMeshFactory(sceneManager, 5);
+    // const plane = await meshFactory.createGround();
+    // if (plane) {
+    //     sceneManager.addTickable(plane);
+    // }
+    const meshWalls = await meshFactory.createWalls();
+    const stateSync = new StateSynchroniser(meshFactory);
+    sceneManager.addTickable(stateSync);
 
-const sceneManager = new ThreeSceneManager({ height: window.innerHeight, width: window.innerWidth }, canvas, scene);
-
-const meshFactory = new ThreeMeshFactory(sceneManager, 5);
-
-
-// const plane = await meshFactory.createGround();
-// if (plane) {
-//     sceneManager.addTickable(plane);
-// }
-const meshWalls = await meshFactory.createWalls();
-
-
-
-
-const stateSync = new StateSynchroniser(meshFactory);
-sceneManager.addTickable(stateSync);
-        
-sceneManager.startTime();   
-const stats =new ThreeStats(document.body);
-sceneManager.addTickable(stats); 
-
-    const attackButton = document.createElement("div");
-
-    attackButton.className="attack";
-    document.body.appendChild(attackButton)
-    
-    const goalsCounter = document.createElement("div");
-    goalsCounter.className="goals";
-    
-    
-    
-    document.body.appendChild(goalsCounter);
-    const stickZone = document.createElement("div");
-    stickZone.className="stickZone";
-    document.body.appendChild(stickZone)
-    
-    
-    //@ts-ignore
-    const joy = nipplejs.default.create({
-        mode: "semi",
-        catchDistance: 150,
-        zone: document.querySelector(".stickZone") as HTMLElement,
-        size: 200
-    
-    });
-   
-    if(server){
-        initServer(sceneManager,meshFactory,stateSync, attackButton, joy);
-    }
+    sceneManager.startTime();
+    const stats = new ThreeStats(document.body);
+    sceneManager.addTickable(stats);
+    return stateSync;
 }
-initClient(undefined, true);
 
-    
+
+  
+await init(true);
+await init(false);
+if (gameManager) {
+    (gameManager as GameManager).onStatesUpdate = (async (states: ActorState[]) => {
+        await Promise.all(stateSyncs.map(s => {
+            s.setStates(states);
+        }))
+    })
+}
 
 
 //3d models

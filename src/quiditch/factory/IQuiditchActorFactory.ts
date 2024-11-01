@@ -8,7 +8,7 @@ export interface IQuiditchFactory<T>{
     
     createWalls(id?:string):Promise<T>;
 
-    createPointer(targetObject?: IObject2D, sourceActor?:IActor, id?:string):Promise<T>;
+    createPointer(targetObject?: IObject2D, sourceActor?:IActor, id?:string):Promise<T|undefined>;
 
     createGates(ringRadius:number,id?:string):Promise<T>;
 }

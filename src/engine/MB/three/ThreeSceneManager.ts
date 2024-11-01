@@ -53,8 +53,8 @@ export class ThreeSceneManager extends SceneManager {
         
 
         window.addEventListener('resize', () => {
-            this._size.height = window.innerHeight;
-            this._size.width = window.innerWidth;
+            this._size.height = canvas.height;
+            this._size.width = canvas.width;
 
             (this._persuingCamera.getMesh() as PerspectiveCamera).aspect = this._size.width / this._size.height;
             (this._persuingCamera.getMesh() as PerspectiveCamera).updateProjectionMatrix();

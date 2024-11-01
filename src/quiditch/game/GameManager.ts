@@ -1,5 +1,6 @@
 import { CircleZone } from "../../engine/ai/zone/CircleZone";
 import { IZone } from "../../engine/ai/zone/IZone";
+import { ActorState } from "../../engine/base/Actor/Actor";
 import { IActor } from "../../engine/base/Actor/IActor";
 import { ITickable } from "../../engine/base/ITickable";
 import { SceneManager } from "../../engine/base/SceneManager";
@@ -13,7 +14,6 @@ import { IQuiditchFactory } from "../factory/IQuiditchActorFactory";
 import { Quaffle } from "../factory/MB/components/balls/Quaffle";
 import { Gates } from "../factory/MB/components/Gates";
 import { PlayerActor } from "../factory/MB/components/PlayerActor";
-import { StateSynchroniser } from "./StateSynchroniser";
 
 export class GameManager implements ITickable{
     private readonly _sceneManager:SceneManager;
@@ -28,16 +28,17 @@ export class GameManager implements ITickable{
     private _hideQuaffle: boolean = false;
     private readonly _goalHandlers:((team:Team)=>void)[] = [];
 
+    private _states:ActorState[]=[];
     
     private _stateWatchActors:IActor[]=[];
 
     public addOnGoalHandler(handler:(team:Team)=>void){
         this._goalHandlers.push(handler);
     }
-    private readonly _stateSync:StateSynchroniser;
-    constructor(sceneManager:SceneManager, quiditchFactory:IQuiditchFactory<IActor>, stateSync:StateSynchroniser, onInit?:()=>void){
+    
+    constructor(sceneManager:SceneManager, quiditchFactory:IQuiditchFactory<IActor>, onInit?:()=>void){
         this._sceneManager = sceneManager;
-        this._stateSync = stateSync;
+        
         this._quiditchFactory = quiditchFactory;
         this._onInit = onInit;
         this._init();
@@ -45,7 +46,16 @@ export class GameManager implements ITickable{
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         const newStates = await Promise.all(this._stateWatchActors.map(a=>a.getState()));
-        this._stateSync.setStates(newStates);       
+        this._states = newStates;   
+        if(this.onStatesUpdate){
+             await this.onStatesUpdate(this.getStates());
+        }    
+    }
+
+    public onStatesUpdate:((states:ActorState[])=>Promise<void>)|undefined;
+
+    public getStates(){
+        return [...this._states];
     }
 
     private async _init(){
@@ -64,10 +74,7 @@ export class GameManager implements ITickable{
         this._sceneManager.addTickable(walls);
         //this._stateWatchActors.push(walls);
 
-        this.setPlayerChaser(this._chasers[0]);
-        const player = this._chasers[0]?.getActor();
-        const poiner = await this._quiditchFactory.createPointer(ball, player);
-        this._sceneManager.addTickable(poiner);
+        
       
         this.addOnGoalHandler((team:Team)=>this._onGoal());
         if (this._onInit) {

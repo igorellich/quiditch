@@ -17,14 +17,12 @@ import { IPhysicsManager } from "../../../engine/base/IPhysicsManager";
 export class QuiditchFactory implements IQuiditchFactory<IActor> {
 
     private readonly _bodyFactory: IQuiditchFactory<IBody>;
-    private readonly _meshFactory: IQuiditchFactory<IMesh>
 
     private readonly _physicsManager: IPhysicsManager;
    
 
-    constructor(bodyFactory: IQuiditchFactory<IBody>, meshFactory: IQuiditchFactory<IMesh>, physicsManager: IPhysicsManager) {
-        this._bodyFactory = bodyFactory;
-        this._meshFactory = meshFactory;
+    constructor(bodyFactory: IQuiditchFactory<IBody>, physicsManager: IPhysicsManager) {
+        this._bodyFactory = bodyFactory;        
         this._physicsManager = physicsManager;
     }
     async createGates(radius: number): Promise<Gates> {
@@ -36,29 +34,24 @@ export class QuiditchFactory implements IQuiditchFactory<IActor> {
         return new Gates(baseActor, this._physicsManager);
        
     }
-     async createPointer(targetObject?: IObject2D, sourceActor?:IActor): Promise<Pointer> {
-        const mesh = await this._meshFactory.createPointer(targetObject, sourceActor) as Pointer;
-        const id = Math.random().toString();
-        return new Pointer("pointer",mesh, id,targetObject,sourceActor);
+     async createPointer(targetObject?: IObject2D, sourceActor?:IActor): Promise<Pointer|undefined> {
+       return undefined;
        
     }
     async createWalls(): Promise<IActor> {
         const body = await this._bodyFactory.createWalls();
-        //const mesh = await this._meshFactory.createWalls();
+        
         body.setCollisions([CollisionGroups.wall], [CollisionGroups.character, CollisionGroups.ball])
         const id = Math.random().toString();
         const baseActor = new BodyActor(body, 0, 0,ActorNames.walls,id);
         return new BodyActorDecorator(baseActor, this._physicsManager);
     }
-    async createGround(): Promise<IActor|undefined> {
-        // const mesh = await this._meshFactory.createGround();
-        // const id = Math.random().toString();
-        // return new MeshBasedActor("ground", mesh,id);
+    async createGround(): Promise<IActor|undefined> {        
         return undefined;
     }
     async createQuaffle(): Promise<BodyActorDecorator> {
         const body = await this._bodyFactory.createQuaffle();
-        //const mesh = await this._meshFactory.createQuaffle();
+        
         body.setCollisions([CollisionGroups.ball], [CollisionGroups.character, CollisionGroups.gates, CollisionGroups.wall])
         const id = Math.random().toString();
         const baseActor = new BodyActor(body, 3, 3, ActorNames.quaffle,id);
@@ -70,7 +63,7 @@ export class QuiditchFactory implements IQuiditchFactory<IActor> {
     async createPlayer(color?:string): Promise<PlayerActor> {
         const body = await this._bodyFactory.createPlayer();
         body.setCollisions([CollisionGroups.character], [CollisionGroups.character, CollisionGroups.ball, CollisionGroups.gates, CollisionGroups.wall])
-        //const mesh = await this._meshFactory.createPlayer(color);
+        
         const id = Math.random().toString();
         const baseActor = new BodyActor(body, 0.15, 0.25,ActorNames.player,id);
         return new PlayerActor(baseActor, this._physicsManager,color);
