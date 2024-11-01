@@ -1,7 +1,7 @@
 import { BodyActorDecorator } from "../../../../engine/MB/Actor/BodyActorDecorator";
 import { IBodiedActor } from "../../../../engine/MB/Actor/IBodiedActor";
 import { Collision } from "../../../../engine/base/Collision";
-import { SceneManager } from "../../../../engine/base/SceneManager";
+import { IPhysicsManager } from "../../../../engine/base/IPhysicsManager";
 import { ActorNames } from "../../../constants";
 
 export class Gates extends BodyActorDecorator{
@@ -9,8 +9,8 @@ export class Gates extends BodyActorDecorator{
    
     private _onGoal?:()=>void;
 
-    constructor(mfActor: IBodiedActor, sceneManager: SceneManager, onGoal?:()=>void){
-        super(mfActor, sceneManager);
+    constructor(mfActor: IBodiedActor, physicsManager: IPhysicsManager, onGoal?:()=>void){
+        super(mfActor, physicsManager);
         this._onGoal = onGoal;
     }
     async onCollision(collision: Collision, elapsedTime: number): Promise<void> {

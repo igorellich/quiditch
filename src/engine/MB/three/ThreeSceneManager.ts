@@ -25,8 +25,8 @@ export class ThreeSceneManager extends SceneManager {
 
     }
 
-    constructor(size: Size, canvas: HTMLCanvasElement, scene: Scene, physicsManager?: IPhysicsManager) {
-        super(size, physicsManager);
+    constructor(size: Size, canvas: HTMLCanvasElement, scene: Scene) {
+        super(size);
         this._scene = scene;
         this._renderer = new WebGLRenderer({
             canvas: canvas,

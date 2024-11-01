@@ -46,6 +46,14 @@ export class StateSynchroniser implements ITickable {
                             meshActor = await this._meshFactory.createQuaffle(state.id);
                             this._meshesMap[state.id as string] = meshActor;
                             break;
+                            case ActorNames.gates:
+                                meshActor = await this._meshFactory.createGates(2,state.id);
+                                this._meshesMap[state.id as string] = meshActor;
+                                break;
+                                case ActorNames.walls:
+                                    meshActor = await this._meshFactory.createWalls(state.id);
+                                    this._meshesMap[state.id as string] = meshActor;
+                                    break;
                     }
                 }
                 if (meshActor) {

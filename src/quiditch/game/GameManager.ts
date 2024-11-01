@@ -1,6 +1,5 @@
 import { CircleZone } from "../../engine/ai/zone/CircleZone";
 import { IZone } from "../../engine/ai/zone/IZone";
-import { ActorState } from "../../engine/base/Actor/Actor";
 import { IActor } from "../../engine/base/Actor/IActor";
 import { ITickable } from "../../engine/base/ITickable";
 import { SceneManager } from "../../engine/base/SceneManager";
@@ -50,9 +49,25 @@ export class GameManager implements ITickable{
     }
 
     private async _init(){
+
+      
         this._teams.push(await this._createQuiditchTeam(70,true));
         this._teams.push(await this._createQuiditchTeam(70,false));
+
+
+        const ball = await this._quiditchFactory.createQuaffle();
+        ball.setPosition(0, 0);
+        this._stateWatchActors.push(ball);
+        this._sceneManager.addTickable(ball);
+
+        const walls = await this._quiditchFactory.createWalls();
+        this._sceneManager.addTickable(walls);
+        //this._stateWatchActors.push(walls);
+
         this.setPlayerChaser(this._chasers[0]);
+        const player = this._chasers[0]?.getActor();
+        const poiner = await this._quiditchFactory.createPointer(ball, player);
+        this._sceneManager.addTickable(poiner);
       
         this.addOnGoalHandler((team:Team)=>this._onGoal());
         if (this._onInit) {
@@ -138,7 +153,7 @@ export class GameManager implements ITickable{
             }
             setTimeout( async()=>{
                 const zone  = new CircleZone(70,new Vector2d(0,0));
-                for (let i = 0; i < 3; i++) {
+                for (let i = 0; i < 1; i++) {
         
                     // const zone = new RectZone(new Vector2d(
                     //     isLeft ? (-i - 1) * fieldRadius / 3 : i * fieldRadius / 3, fieldRadius), new Vector2d(
@@ -164,7 +179,7 @@ export class GameManager implements ITickable{
     }
     private async _createGates():Promise<IActor>{
         const gates = await this._quiditchFactory.createGates(2) as Gates;
-        
+        this._stateWatchActors.push(gates);
         gates.setOnGoal(async () => {
             const team = await this.getActorTeam(gates);
             if (team) {

@@ -7,25 +7,18 @@ import { Vector2d } from "./Vector2d";
 export abstract class SceneManager {
     private readonly _tickers: ITickable[] = [];
     protected _prevTime: number = 0;
-    protected _size: Size;
-    protected readonly _physicsManager?: IPhysicsManager;
-    constructor(size: Size, physicsManager?: IPhysicsManager) {
+    protected _size: Size;  
+    constructor(size: Size) {
 
         this._size = size;
-        this._physicsManager = physicsManager;
+        
 
     }
     public abstract startTime(): void;
     public abstract stopTime(): void;
     protected abstract _getElapsedTime(): number;
     protected abstract _draw(): void;
-    public async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: IActor): Promise<RayCastResult | undefined> {
-        if (this._physicsManager) {
-            return this._physicsManager.castRay(origin, dir, rayLength, sourceActor, this.getActors() as IActor[]);
-        }
-        return undefined;
-    }
-
+   
 
 
     protected async tick() {
@@ -36,23 +29,7 @@ export abstract class SceneManager {
         for (const actor of this._tickers) {
             await actor.tick(elapsedTime, deltaTime);
         }
-        if (this._physicsManager) {
-           
-            this._physicsManager.step(deltaTime);
-            const collisions = this._physicsManager.getCollisions(this._tickers);
 
-            if (collisions.length > 0) {
-                collisions.forEach(c => {
-                    if (c.actorB) {
-                        c.actorA?.onCollision(c, elapsedTime);
-                    }
-                    if (c.actorA) {
-                        c.actorB?.onCollision(c, elapsedTime);
-                    }
-
-                })
-            }
-        }
         this._draw()
     }
 
@@ -110,6 +87,10 @@ export abstract class SceneManager {
             }
         }
         return result;
+    }
+
+    public getTickers():ITickable[]{
+        return [...this._tickers];
     }
 
     abstract setCameraTarget(targer: IActor): void;

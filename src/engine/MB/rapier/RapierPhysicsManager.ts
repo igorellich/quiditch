@@ -6,12 +6,34 @@ import { Vector2d } from "../../base/Vector2d";
 import { Vector2 } from "three";
 import { IActor } from "../../base/Actor/IActor";
 import { IBodiedActor } from "../Actor/IBodiedActor";
+import { SceneManager } from "../../base/SceneManager";
 
 export class RapierPhysicsManager implements IPhysicsManager {
     private readonly _world: World;
     private _collisionInfos: CollisionInfo[] = [];
-    constructor(world: World) {
+
+    private readonly _sceneManager:SceneManager;
+    constructor(world: World, sceneManager:SceneManager) {
         this._world = world;
+        this._sceneManager = sceneManager;
+    }
+    async tick(elapsedTime: number, deltaTime: number): Promise<void> {
+      
+            this.step(deltaTime);
+            const collisions = this.getCollisions(this._sceneManager.getActors());
+
+            if (collisions.length > 0) {
+                collisions.forEach(c => {
+                    if (c.actorB) {
+                        c.actorA?.onCollision(c, elapsedTime);
+                    }
+                    if (c.actorA) {
+                        c.actorB?.onCollision(c, elapsedTime);
+                    }
+
+                })
+            }
+        
     }
     async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: IBodiedActor, targetActors?: IBodiedActor[]): Promise<RayCastResult> {
         const body = sourceActor?.getBody() as RapierBasedBody;

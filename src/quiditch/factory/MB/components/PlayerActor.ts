@@ -1,14 +1,13 @@
 import { BodyActorDecorator } from "../../../../engine/MB/Actor/BodyActorDecorator";
 import { IBodiedActor } from "../../../../engine/MB/Actor/IBodiedActor";
-import { ActorState } from "../../../../engine/base/Actor/Actor";
 import { Collision } from "../../../../engine/base/Collision";
-import { SceneManager } from "../../../../engine/base/SceneManager";
+import { IPhysicsManager } from "../../../../engine/base/IPhysicsManager";
 
 export class PlayerActor extends BodyActorDecorator {
 
     private readonly _color:string|undefined;
-    constructor(mfActor: IBodiedActor, sceneManager: SceneManager, color:string|undefined) {
-        super(mfActor,sceneManager);
+    constructor(mfActor: IBodiedActor, physicsManager: IPhysicsManager, color:string|undefined) {
+        super(mfActor,physicsManager);
         this._color = color;
        
     }

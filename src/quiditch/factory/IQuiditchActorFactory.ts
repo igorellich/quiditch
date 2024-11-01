@@ -4,7 +4,7 @@ import { IObject2D } from "../../engine/base/IObject2D";
 export interface IQuiditchFactory<T>{
     createPlayer(color?:string, id?:string):Promise<T>;
     createQuaffle(id?:string):Promise<T>;
-    createGround(id?:string):Promise<T>;
+    createGround(id?:string):Promise<T|undefined>;
     
     createWalls(id?:string):Promise<T>;
 

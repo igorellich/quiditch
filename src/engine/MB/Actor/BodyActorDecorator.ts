@@ -1,17 +1,17 @@
 import { ActorDecorator } from "../../base/Actor/ActorDecorator";
 import { IBodiedActor } from "./IBodiedActor";
-import { SceneManager } from "../../base/SceneManager";
 import { Vector2d } from "../../base/Vector2d";
 import { IBody } from "../IBody";
+import { IPhysicsManager } from "../../base/IPhysicsManager";
 
 export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
 
-    private readonly _sceneManager: SceneManager;
+    private readonly _physicsManager: IPhysicsManager;
     private readonly _id:number=Math.random();
 
-        constructor(mfActor: IBodiedActor, sceneManager: SceneManager) {
+        constructor(mfActor: IBodiedActor, physicsManager: IPhysicsManager) {
             super(mfActor);
-            this._sceneManager = sceneManager;
+            this._physicsManager = physicsManager;
         
         }
     
@@ -24,7 +24,7 @@ export class BodyActorDecorator extends ActorDecorator implements IBodiedActor {
             -Math.sin(await this.getRotation() + angleDelta),
             Math.cos(await this.getRotation() + angleDelta)).normalize();
 
-        return this._sceneManager.castRay(await this.getPosition(), dir, rayLength, this)
+        return this._physicsManager.castRay(await this.getPosition(), dir, rayLength, this)
     }
  
 }

@@ -1,4 +1,4 @@
-import { AnimationMixer, BoxGeometry, BufferAttribute, BufferGeometry, CircleGeometry, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, Scene, SpotLight, TorusGeometry } from "three";
+import { AnimationMixer, BoxGeometry, BufferAttribute, BufferGeometry, CapsuleGeometry, CircleGeometry, CylinderGeometry, Group, Light, Mesh, MeshBasicMaterial, MeshStandardMaterial, Object3D, Object3DEventMap, PlaneGeometry, Scene, SpotLight, TorusGeometry } from "three";
 import { IMesh } from "../../../../engine/MB/IMesh";
 import { IQuiditchFactory } from "../../IQuiditchActorFactory";
 import { ThreeBasedMesh } from "../../../../engine/MB/three/ThreeBasedMesh";
@@ -82,7 +82,9 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
 
         const grassMaterial  = new Grassmaterial();
         this._sceneManager.addTickable(grassMaterial);
-        const planeMesh = new Mesh(new PlaneGeometry(500, 500, this._zHeight), grassMaterial.getMaterial());
+        const planeMesh = new Mesh(new PlaneGeometry(200, 200, this._zHeight), new MeshBasicMaterial({
+            color:"green"
+        }))//grassMaterial.getMaterial());
 
         this._sceneManager.getScene().add(planeMesh);
         //planeMesh.position.z = this._zHeight;
@@ -104,9 +106,9 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
 
     private async _createPlayerMesh(color?:string):Promise<Mesh>{
         
-        // let mesh:Mesh = new Mesh(new BoxGeometry(2,2,2), new MeshBasicMaterial({color:color})) 
-        // return mesh;
-         let mesh = this._prototypesMeshesMap["player"];
+        let mesh:Mesh = new Mesh(new CapsuleGeometry(0.3,1.1,1), new MeshBasicMaterial({color:color})) 
+        return mesh;
+         //let mesh = this._prototypesMeshesMap["player"];
         if(!mesh){
             const model = await this._loadGltfModel('assets/glb/hover_bike/scene.glb');
             model.rotateX(Math.PI/2)
