@@ -48,50 +48,7 @@ export abstract class SceneManager {
         }
     }
 
-    public getActors(): IActor[] {
-        return this._tickers.filter(t => {
-            return (t as IActor).move;
-        }) as IActor[];
-    }
-    public async getActorsByName(name: string): Promise<IActor[]> {
-        const actors = await this.getActors();
-        const result: IActor[] = [];
-        for (const a of actors) {
-            if ((await a.getName()) === name) {
-                result.push(a);
-            }
-        }
-        return result;
-    }
-
-    public async getClosestActor(sourcePos: Vector2d, targetActors: IActor[], zone?: IZone<Vector2d>): Promise<IActor | undefined> {
-        let result: IActor | undefined;
-        
-        let fileredActors: IActor[] = [];
-        if (zone) {
-            for (const a of targetActors) {
-                if (await zone.belongs(await a.getPosition())){
-                    fileredActors.push(a);
-                }
-            }
-
-        } else {
-            fileredActors = targetActors;
-        }
-        let distance: number | undefined;
-        for (let a of targetActors) {
-            const currDist = await sourcePos.distanceTo(await a.getPosition());
-            if (!distance || currDist < distance) {
-                distance = currDist;
-                result = a;
-            }
-        }
-        return result;
-    }
-
-    public getTickers():ITickable[]{
-        return [...this._tickers];
-    }
+    
 
     abstract setCameraTarget(targer: IActor): void;
 

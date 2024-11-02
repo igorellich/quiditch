@@ -15,13 +15,75 @@ import { GameInputActions } from "./constants";
 import { GameManager } from "./game/GameManager";
 import { Team } from "../engine/game/Team";
 import { StateSynchroniser } from "./game/StateSynchroniser";
-import { SceneManager } from "../engine/base/SceneManager";
 import { ActorState } from "../engine/base/Actor/Actor";
+import { LocalServerCommunicator } from "./game/LocalServerCommunicator";
+import { IServerCommunicator } from "./game/IServerCommunicator";
 
 
 let gameManager:GameManager|undefined=undefined;
-const stateSyncs:StateSynchroniser[] = [];
-const init = async (isServer:boolean)=>{
+
+
+
+const initServer = ():GameManager=>{
+
+    let gravity = { x: 0.0, y: 0.0 };
+    let world = new World(gravity);
+    const bodyFactory = new RapierBodyFactory(world);
+    const physicsManager = new RapierPhysicsManager(world);
+    const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
+    const gameManager = new GameManager(quiditchFactory,  async () => {
+        // score handling
+        const score:any={
+
+        }
+        const teams = gameManager.getTeams();
+        for (const team of teams) {
+            score[team.getId()] = 0;
+        }
+        const setScore = (team?: Team) => {
+            const goalsEl = document.querySelector(".goals");
+            let scoreStr = "";
+            if (team) {
+                const teamId = team.getId();
+                score[teamId]++;
+            }
+            for (let teamId in score) {
+                scoreStr += score[teamId] + ' ';
+            }
+            scoreStr = scoreStr.trim();
+            scoreStr = scoreStr.replace(' ', ':');
+
+
+            if (goalsEl) {
+                goalsEl.innerHTML = scoreStr;
+            }
+        }
+        setScore();
+        gameManager.addOnGoalHandler(setScore);
+
+        // init controls
+        const playerChaser = gameManager.getChasers()[0];
+        playerChaser.setIsControlled(true,"1");
+        const player = playerChaser?.getActor();
+        if (player) {
+            const actorController = playerChaser?.getActorController();
+            if (actorController) {
+                const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] }, actorController);
+            }
+    
+        }
+
+    });
+    physicsManager.init(gameManager);
+   
+  
+
+ 
+    return gameManager;
+}
+
+
+const initClient = async (id:string): Promise<StateSynchroniser> => {
     const scene = new Scene();
     const canvas = document.createElement("canvas") as HTMLCanvasElement;
     document.body.appendChild(canvas)
@@ -50,90 +112,18 @@ const init = async (isServer:boolean)=>{
         size: 200
     
     });
-    if(isServer){
-    gameManager = initServer(sceneManager, attackButton, joy);
-    }
-    stateSyncs.push(await initClient(sceneManager));
-}
-
-const initServer = (sceneManager:SceneManager, attackButton:HTMLElement, joy:nipplejs.Joystick):GameManager=>{
-
-    let gravity = { x: 0.0, y: 0.0 };
-    let world = new World(gravity);
-    const physicsManager = new RapierPhysicsManager(world, sceneManager);
-    sceneManager.addTickable(physicsManager);
-    const bodyFactory = new RapierBodyFactory(world);
-    const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
-
-    const gameManager = new GameManager(sceneManager, quiditchFactory,  async () => {
-        const score:any={
-
-        }
-        const teams = gameManager.getTeams();
-        for (const team of teams) {
-            score[team.getId()] = 0;
-        }
-        const setScore = (team?: Team) => {
-            const goalsEl = document.querySelector(".goals");
-            let scoreStr = "";
-            if (team) {
-                const teamId = team.getId();
-                score[teamId]++;
-            }
-            for (let teamId in score) {
-                scoreStr += score[teamId] + ' ';
-            }
-            scoreStr = scoreStr.trim();
-            scoreStr = scoreStr.replace(' ', ':');
-
-
-            if (goalsEl) {
-                goalsEl.innerHTML = scoreStr;
-            }
-        }
-        setScore();
-        gameManager.addOnGoalHandler(setScore);
-        const playerChaser = gameManager.getChasers()[0];
-        playerChaser.setIsControlled(true,"1");
-        const player = playerChaser?.getActor();
-        if (player) {
-            const actorController = playerChaser?.getActorController();
-            if (actorController) {
-                const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] }, actorController);
-            }
-            sceneManager.setCameraTarget(player);
-
-            const targetPointer = playerChaser?.getTargetPointer();
-            if (targetPointer) {
-                // (joy as nipplejs.Joystick).on("move", async (evt, data) => {
-                //     if (actorController?.isControlled()) {
-                //         const playerPos = await player.getPosition();
-                //         targetPointer.setTargetPoint(new Vector2d(playerPos.x + data.vector.x * 1000, playerPos.y + data.vector.y * 1000));
-                //     }
-                // });
-
-                // (joy as nipplejs.Joystick).on("end", async (evt, data) => {
-                //     if (actorController?.isControlled()) {
-                //         targetPointer.setTargetPoint(undefined);
-                //     }
-                // });
-                // attackButton.addEventListener("click", (evt) => {
-                //     if (actorController?.isControlled()) {
-                //         evt.preventDefault();
-                //         evt.stopPropagation();
-                //         (targetPointer as TargetPointInputController)?.attack();
-                //     }
-                // })
-            }
-        }
-
+    (joy as nipplejs.Joystick).on("move", async (evt, data) => {
+        serverCommunicator.startDirectionMoving(id, data.vector.x, data.vector.y);
     });
-    return gameManager;
-}
 
-
-const initClient = async (sceneManager: ThreeSceneManager): Promise<StateSynchroniser> => {
-
+    (joy as nipplejs.Joystick).on("end", async (evt, data) => {
+        serverCommunicator.endDirectionMoving(id);
+    });
+    attackButton.addEventListener("click", (evt) => {
+        serverCommunicator.attack(id);
+        evt.preventDefault();
+        evt.stopPropagation();
+    })
     const meshFactory = new ThreeMeshFactory(sceneManager, 5);
     // const plane = await meshFactory.createGround();
     // if (plane) {
@@ -146,20 +136,20 @@ const initClient = async (sceneManager: ThreeSceneManager): Promise<StateSynchro
     sceneManager.startTime();
     const stats = new ThreeStats(document.body);
     sceneManager.addTickable(stats);
+    const serverCommunicator:IServerCommunicator = new LocalServerCommunicator(server, stateSync);
+    const controlledActorId = serverCommunicator.takeControl(id);
+    if(controlledActorId){
+    const controlledActor = stateSync.getActorById(controlledActorId);
+    sceneManager.setCameraTarget(controlledActor);
+    }
+    sceneManager.addTickable(serverCommunicator);
     return stateSync;
 }
 
 
   
-await init(true);
-await init(false);
-if (gameManager) {
-    (gameManager as GameManager).onStatesUpdate = (async (states: ActorState[]) => {
-        await Promise.all(stateSyncs.map(s => {
-            s.setStates(states);
-        }))
-    })
-}
+const server =  await initServer();
+const client = await initClient("1");
 
 
 //3d models

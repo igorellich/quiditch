@@ -4,8 +4,6 @@ import { ITickable } from "../base/ITickable";
 export abstract class ActorController<TGameActions, TActor extends IActor> implements ITickable  {
 
     protected _actor:TActor;
-    private _isControlled:boolean = false;
-
     constructor(actor: TActor) {
 
         this._actor = actor;

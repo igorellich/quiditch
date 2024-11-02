@@ -4,6 +4,7 @@ import { ActorState } from "../../engine/base/Actor/Actor";
 import { ActorNames } from "../constants";
 import { PlayerState } from "../factory/MB/components/PlayerActor";
 import { MeshBasedActor } from "../../engine/MB/three/MeshBasedActor";
+import { IActor } from "../../engine/base/Actor/IActor";
 
 export class StateSynchroniser implements ITickable {
     private _states: ActorState[] = [];
@@ -67,6 +68,10 @@ export class StateSynchroniser implements ITickable {
             this._statesUpdated = true
             this._syncStarted = false
         }
+    }
+
+    public getActorById(id:string):IActor{
+        return this._meshesMap[id];
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         await this._syncStates();

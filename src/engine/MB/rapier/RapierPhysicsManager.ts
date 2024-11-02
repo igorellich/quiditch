@@ -6,21 +6,26 @@ import { Vector2d } from "../../base/Vector2d";
 import { Vector2 } from "three";
 import { IActor } from "../../base/Actor/IActor";
 import { IBodiedActor } from "../Actor/IBodiedActor";
-import { SceneManager } from "../../base/SceneManager";
+import { GameManager } from "../../../quiditch/game/GameManager";
+
 
 export class RapierPhysicsManager implements IPhysicsManager {
     private readonly _world: World;
     private _collisionInfos: CollisionInfo[] = [];
 
-    private readonly _sceneManager:SceneManager;
-    constructor(world: World, sceneManager:SceneManager) {
+    private _gameManager:GameManager|undefined;
+    constructor(world: World) {
         this._world = world;
-        this._sceneManager = sceneManager;
+        
+    }
+    public init(gameManager:GameManager){
+        this._gameManager = gameManager;
+        gameManager.addTickable(this);
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-      
+            if(this._gameManager){
             this.step(deltaTime);
-            const collisions = this.getCollisions(this._sceneManager.getActors());
+            const collisions = this.getCollisions(this._gameManager.getActors());
 
             if (collisions.length > 0) {
                 collisions.forEach(c => {
@@ -33,6 +38,7 @@ export class RapierPhysicsManager implements IPhysicsManager {
 
                 })
             }
+        }
         
     }
     async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: IBodiedActor, targetActors?: IBodiedActor[]): Promise<RayCastResult> {

@@ -3,7 +3,6 @@ import { IZone } from "../../engine/ai/zone/IZone";
 import { ActorState } from "../../engine/base/Actor/Actor";
 import { IActor } from "../../engine/base/Actor/IActor";
 import { ITickable } from "../../engine/base/ITickable";
-import { SceneManager } from "../../engine/base/SceneManager";
 import { Vector2d } from "../../engine/base/Vector2d";
 import { Team } from "../../engine/game/Team";
 import { Chaser } from "../ai/Chaser";
@@ -15,13 +14,14 @@ import { Quaffle } from "../factory/MB/components/balls/Quaffle";
 import { Gates } from "../factory/MB/components/Gates";
 import { PlayerActor } from "../factory/MB/components/PlayerActor";
 
-export class GameManager implements ITickable{
-    private readonly _sceneManager:SceneManager;
+export class GameManager{    
     private readonly _teams:Team[]=[];
 
     private readonly _quiditchFactory:IQuiditchFactory<IActor>;
 
     private readonly _onInit?:()=>void;
+
+    private readonly _tickers:ITickable[]=[];
 
   
     private _chasers:Chaser[]=[];
@@ -41,27 +41,26 @@ export class GameManager implements ITickable{
         this._goalHandlers.push(handler);
     }
     
-    constructor(sceneManager:SceneManager, quiditchFactory:IQuiditchFactory<IActor>, onInit?:()=>void){
-        this._sceneManager = sceneManager;
-        
+    constructor(quiditchFactory:IQuiditchFactory<IActor>, onInit?:()=>void){
+               
         this._quiditchFactory = quiditchFactory;
         this._onInit = onInit;
-        this._init();
-        this._sceneManager.addTickable(this);
-    }
-    async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-        const newStates = await Promise.all(this._stateWatchActors.map(a=>a.getState()));
-        this._states = newStates;   
-        if(this.onStatesUpdate){
-             await this.onStatesUpdate(this.getStates());
-        }    
+        this._init();        
     }
 
-    public onStatesUpdate:((states:ActorState[])=>Promise<void>)|undefined;
+    public addTickable(tickable:ITickable){
+        if(!this._tickers.includes(tickable)){
+            this._tickers.push(tickable);
+        }
+        
+    }
+
 
     public getStates(){
         return [...this._states];
     }
+
+    private _tickInterval:number=0;
 
     private async _init(){
 
@@ -73,15 +72,26 @@ export class GameManager implements ITickable{
         const ball = await this._quiditchFactory.createQuaffle();
         ball.setPosition(0, 0);
         this._stateWatchActors.push(ball);
-        this._sceneManager.addTickable(ball);
+        this.addTickable(ball);
 
         const walls = await this._quiditchFactory.createWalls();
-        this._sceneManager.addTickable(walls);
+        this.addTickable(walls);
         //this._stateWatchActors.push(walls);
 
         
       
         this.addOnGoalHandler((team:Team)=>this._onGoal());
+        let elapsedTime = 0;
+        const freq = (1/60)*1000;
+        this._tickInterval = setInterval(async () => {
+            elapsedTime += freq;
+            for (const tickable of this._tickers) {
+                tickable.tick(elapsedTime, freq);
+            }
+            const newStates = await Promise.all(this._stateWatchActors.map(a => a.getState()));
+            this._states = newStates;
+        }, freq);
+
         if (this._onInit) {
             this._onInit();
         }
@@ -125,7 +135,7 @@ export class GameManager implements ITickable{
         const playerTeam = this.getActorTeam(player);
         let result:Gates[] = [];
         if(playerTeam){
-            const gates:Gates[] = await this._sceneManager.getActorsByName(ActorNames.gates) as Gates[];
+            const gates:Gates[] = await this.getActorsByName(ActorNames.gates) as Gates[];
             result = gates.filter(g=>this.getActorTeam(g)&&this.getActorTeam(g)!==playerTeam);
         }
         return result;
@@ -135,14 +145,14 @@ export class GameManager implements ITickable{
         const playerTeam = this.getActorTeam(player);
         let result:PlayerActor[] = [];
         if(playerTeam){
-            const players:PlayerActor[] = await this._sceneManager.getActorsByName(ActorNames.player) as PlayerActor[];
+            const players:PlayerActor[] = await this.getActorsByName(ActorNames.player) as PlayerActor[];
             result = players.filter(p=>this.getActorTeam(p)&&this.getActorTeam(p)===playerTeam);
         }
         return result;
     }
 
     public async getClosestTarget(source:IActor, targets:IActor[], zone?:IZone<Vector2d>){
-        return await this._sceneManager.getClosestActor(await source.getPosition(),targets,zone);
+        return await this.getClosestActor(await source.getPosition(),targets,zone);
     }
     public getActorTeam(actor:IActor):Team|undefined{
             return this._teams.find(t=>t.isActorInTeam(actor));
@@ -150,7 +160,7 @@ export class GameManager implements ITickable{
 
     public async getQuaffle(): Promise<Quaffle | undefined> {
         if (!this._hideQuaffle) {
-            const quaffles = await this._sceneManager.getActorsByName(ActorNames.quaffle);
+            const quaffles = await this.getActorsByName(ActorNames.quaffle);
             return quaffles.length > 0 ? quaffles[0] as Quaffle : undefined;
         }
     }
@@ -163,7 +173,7 @@ export class GameManager implements ITickable{
                 
                 await gates.setPosition(isLeft?-fieldRadius*0.8:fieldRadius*0.8,(i-1)*fieldRadius*0.1);
                 await gates.setRotation(isLeft?-Math.PI/2:Math.PI/2);
-                this._sceneManager.addTickable(gates);
+                this.addTickable(gates);
                 team.AddMember(gates);
             }
             setTimeout( async()=>{
@@ -183,7 +193,7 @@ export class GameManager implements ITickable{
                         team.AddMember(player);
                         
                         
-                        this._sceneManager.addTickable(player);
+                        this.addTickable(player);
                     }
                 }
                 return res(team);
@@ -234,16 +244,16 @@ export class GameManager implements ITickable{
         
         this._stateWatchActors.push(player);
         const playerController = new QuiditchPlayerController(player); //actor controller
-        this._sceneManager.addTickable(playerController);
+        this.addTickable(playerController);
 
         const targetPointInputController = new TargetPointInputController(playerController);
-        this._sceneManager.addTickable(targetPointInputController);
+        this.addTickable(targetPointInputController);
 
 
         const chaser = new Chaser(zone, targetPointInputController, 0.2, this); //ai
         await player.setPosition(initialPos.x, initialPos.y);
         chaser.setInitialPos(initialPos);
-        this._sceneManager.addTickable(chaser);
+        this.addTickable(chaser);
         
         return chaser;
 
@@ -255,6 +265,51 @@ export class GameManager implements ITickable{
 
     public getChasers():Chaser[]{
     return [...this._chasers];
+    }
+
+    public getActors(): IActor[] {
+        return this._tickers.filter(t => {
+            return (t as IActor).move;
+        }) as IActor[];
+    }
+    public async getActorsByName(name: string): Promise<IActor[]> {
+        const actors = await this.getActors();
+        const result: IActor[] = [];
+        for (const a of actors) {
+            if ((await a.getName()) === name) {
+                result.push(a);
+            }
+        }
+        return result;
+    }
+
+    public async getClosestActor(sourcePos: Vector2d, targetActors: IActor[], zone?: IZone<Vector2d>): Promise<IActor | undefined> {
+        let result: IActor | undefined;
+        
+        let fileredActors: IActor[] = [];
+        if (zone) {
+            for (const a of targetActors) {
+                if (await zone.belongs(await a.getPosition())){
+                    fileredActors.push(a);
+                }
+            }
+
+        } else {
+            fileredActors = targetActors;
+        }
+        let distance: number | undefined;
+        for (let a of targetActors) {
+            const currDist = await sourcePos.distanceTo(await a.getPosition());
+            if (!distance || currDist < distance) {
+                distance = currDist;
+                result = a;
+            }
+        }
+        return result;
+    }
+
+    public getTickers():ITickable[]{
+        return [...this._tickers];
     }
 
 }
