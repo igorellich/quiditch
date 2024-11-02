@@ -73,6 +73,14 @@ export class StateSynchroniser implements ITickable {
     public getActorById(id:string):IActor{
         return this._meshesMap[id];
     }
+    public getActorByName(name:ActorNames):IActor|undefined{
+        for(const id in this._meshesMap){
+            const a = this._meshesMap[id];
+            if(a.getName()===name){
+                return a;
+            }
+        }
+    }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         await this._syncStates();
     }

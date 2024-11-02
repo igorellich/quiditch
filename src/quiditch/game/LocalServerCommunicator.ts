@@ -61,7 +61,7 @@ export class LocalServerCommunicator implements IServerCommunicator{
         
         const freeChaser =  this._gameManager.getChasers().filter(c=>c.getActor()?.getIsControlled()===false)[0];
         if(freeChaser){
-            freeChaser.setIsControlled(true, clientId);
+            this._gameManager.setPlayerChaser(freeChaser, clientId);
             return freeChaser.getActor()?.getId();
         }
        

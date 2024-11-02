@@ -11,7 +11,7 @@ import { RapierDebugRenderer } from "../utils/debugRenderer";
 import { TargetPointInputController } from "./controls/TargetPointInputController";
 import { Vector2d } from "../engine/base/Vector2d";
 import { ThreeStats } from "../utils/threeStats";
-import { GameInputActions } from "./constants";
+import { ActorNames, GameInputActions } from "./constants";
 import { GameManager } from "./game/GameManager";
 import { Team } from "../engine/game/Team";
 import { StateSynchroniser } from "./game/StateSynchroniser";
@@ -24,62 +24,59 @@ let gameManager:GameManager|undefined=undefined;
 
 
 
-const initServer = ():GameManager=>{
-
-    let gravity = { x: 0.0, y: 0.0 };
-    let world = new World(gravity);
-    const bodyFactory = new RapierBodyFactory(world);
-    const physicsManager = new RapierPhysicsManager(world);
-    const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
-    const gameManager = new GameManager(quiditchFactory,  async () => {
-        // score handling
-        const score:any={
-
-        }
-        const teams = gameManager.getTeams();
-        for (const team of teams) {
-            score[team.getId()] = 0;
-        }
-        const setScore = (team?: Team) => {
-            const goalsEl = document.querySelector(".goals");
-            let scoreStr = "";
-            if (team) {
-                const teamId = team.getId();
-                score[teamId]++;
-            }
-            for (let teamId in score) {
-                scoreStr += score[teamId] + ' ';
-            }
-            scoreStr = scoreStr.trim();
-            scoreStr = scoreStr.replace(' ', ':');
-
-
-            if (goalsEl) {
-                goalsEl.innerHTML = scoreStr;
-            }
-        }
-        setScore();
-        gameManager.addOnGoalHandler(setScore);
-
-        // init controls
-        const playerChaser = gameManager.getChasers()[0];
-        playerChaser.setIsControlled(true,"1");
-        const player = playerChaser?.getActor();
-        if (player) {
-            const actorController = playerChaser?.getActorController();
-            if (actorController) {
-                const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] }, actorController);
-            }
+const initServer = async ():Promise<GameManager>=>{
+    return new Promise((res,rej)=>{
+        let gravity = { x: 0.0, y: 0.0 };
+        let world = new World(gravity);
+        const bodyFactory = new RapierBodyFactory(world);
+        const physicsManager = new RapierPhysicsManager(world);
+        const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
+        const gameManager = new GameManager(quiditchFactory,  async () => {
+            // score handling
+            const score:any={
     
-        }
+            }
+            const teams = gameManager.getTeams();
+            for (const team of teams) {
+                score[team.getId()] = 0;
+            }
+            const setScore = (team?: Team) => {
+                const goalsEl = document.querySelector(".goals");
+                let scoreStr = "";
+                if (team) {
+                    const teamId = team.getId();
+                    score[teamId]++;
+                }
+                for (let teamId in score) {
+                    scoreStr += score[teamId] + ' ';
+                }
+                scoreStr = scoreStr.trim();
+                scoreStr = scoreStr.replace(' ', ':');
+    
+    
+                if (goalsEl) {
+                    goalsEl.innerHTML = scoreStr;
+                }
+            }
+            setScore();
+            gameManager.addOnGoalHandler(setScore);
+    
+            // init controls
+            const playerChaser = gameManager.getChasers()[0];
+            
+            const player = playerChaser?.getActor();
+            if (player) {
+                const actorController = playerChaser?.getActorController();
+                if (actorController) {
+                    const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] }, actorController);
+                }
+        
+            }
+            res(gameManager);
+        });
+        physicsManager.init(gameManager);
+    })
 
-    });
-    physicsManager.init(gameManager);
-   
-  
-
- 
-    return gameManager;
 }
 
 
@@ -87,7 +84,7 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     const scene = new Scene();
     const canvas = document.createElement("canvas") as HTMLCanvasElement;
     document.body.appendChild(canvas)
-    const sceneManager = new ThreeSceneManager({ height: 400, width: window.innerWidth }, canvas, scene);
+    const sceneManager = new ThreeSceneManager({ height: window.innerHeight, width: window.innerWidth }, canvas, scene);
     const attackButton = document.createElement("div");
 
     attackButton.className="attack";
@@ -138,9 +135,16 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     sceneManager.addTickable(stats);
     const serverCommunicator:IServerCommunicator = new LocalServerCommunicator(server, stateSync);
     const controlledActorId = serverCommunicator.takeControl(id);
-    if(controlledActorId){
-    const controlledActor = stateSync.getActorById(controlledActorId);
-    sceneManager.setCameraTarget(controlledActor);
+    if (controlledActorId) {
+        setTimeout(() => {
+            const controlledActor = stateSync.getActorById(controlledActorId);
+            sceneManager.setCameraTarget(controlledActor);
+            const quaffle = stateSync.getActorByName(ActorNames.quaffle);
+            if(quaffle){
+            const pointer = meshFactory.createPointer(quaffle ,controlledActor)
+            }
+        }, 2000)
+
     }
     sceneManager.addTickable(serverCommunicator);
     return stateSync;
@@ -149,7 +153,8 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
 
   
 const server =  await initServer();
-const client = await initClient("1");
+const client1 = await initClient("1");
+//const client2 = await initClient("2");
 
 
 //3d models

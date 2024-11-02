@@ -114,7 +114,7 @@ export class GameManager{
     }
 
     setPlayerChaser(chaser:Chaser, playerId:string){
-        const prevChaser = this._playerChasers.filter(p=>p.playerId)[0];
+        const prevChaser = this._playerChasers.filter(p=>p.playerId===playerId)[0];
         if(prevChaser){
             const prevActor = prevChaser.chaser.getActor();
             if(prevActor){

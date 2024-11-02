@@ -72,7 +72,8 @@ export class RapierBasedBody implements IBody{
         this._rigidBody.applyImpulse(directionVector,true);
     }
     async rotate(right: boolean, delta:number): Promise<void> {
-        const rotatingSpeed = right?-this._rotationSpeed*delta*60:this._rotationSpeed*(delta>5/60?5/60:delta)*60;
+       
+        const rotatingSpeed = right?-this._rotationSpeed*(delta>5/60?5/60:delta)*60:this._rotationSpeed*(delta>5/60?5/60:delta)*60;
         const newRotation = await this.getRotation() + rotatingSpeed/2;
         await this.setRotation(newRotation);
     }

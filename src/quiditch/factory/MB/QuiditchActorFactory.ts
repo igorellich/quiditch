@@ -54,7 +54,7 @@ export class QuiditchFactory implements IQuiditchFactory<IActor> {
         
         body.setCollisions([CollisionGroups.ball], [CollisionGroups.character, CollisionGroups.gates, CollisionGroups.wall])
         const id = Math.random().toString();
-        const baseActor = new BodyActor(body, 3, 3, ActorNames.quaffle,id);
+        const baseActor = new BodyActor(body, 1, 1, ActorNames.quaffle,id);
         const ball = new Quaffle(baseActor, this._physicsManager);
        
         return ball;
@@ -65,7 +65,7 @@ export class QuiditchFactory implements IQuiditchFactory<IActor> {
         body.setCollisions([CollisionGroups.character], [CollisionGroups.character, CollisionGroups.ball, CollisionGroups.gates, CollisionGroups.wall])
         
         const id = Math.random().toString();
-        const baseActor = new BodyActor(body, 0.15, 0.25,ActorNames.player,id);
+        const baseActor = new BodyActor(body, 0.05, 0.1,ActorNames.player,id);
         return new PlayerActor(baseActor, this._physicsManager,color);
     }
 
