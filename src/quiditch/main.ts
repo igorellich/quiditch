@@ -93,9 +93,8 @@ const initServer = (sceneManager:SceneManager, attackButton:HTMLElement, joy:nip
         }
         setScore();
         gameManager.addOnGoalHandler(setScore);
-      
-        const playerChaser = await gameManager.getPlayerChaser();
-
+        const playerChaser = gameManager.getChasers()[0];
+        playerChaser.setIsControlled(true,"1");
         const player = playerChaser?.getActor();
         if (player) {
             const actorController = playerChaser?.getActorController();
@@ -106,28 +105,28 @@ const initServer = (sceneManager:SceneManager, attackButton:HTMLElement, joy:nip
 
             const targetPointer = playerChaser?.getTargetPointer();
             if (targetPointer) {
-                 (joy as nipplejs.Joystick).on("move", async (evt, data) => {
-        if(actorController?.isControlled()){
-        const playerPos = await player.getPosition();
-        targetPointer.setTargetPoint(new Vector2d(playerPos.x + data.vector.x * 1000, playerPos.y + data.vector.y * 1000));
-        }
-    });
+                // (joy as nipplejs.Joystick).on("move", async (evt, data) => {
+                //     if (actorController?.isControlled()) {
+                //         const playerPos = await player.getPosition();
+                //         targetPointer.setTargetPoint(new Vector2d(playerPos.x + data.vector.x * 1000, playerPos.y + data.vector.y * 1000));
+                //     }
+                // });
 
-    (joy as nipplejs.Joystick).on("end", async (evt, data) => {
-        if(actorController?.isControlled()){
-        targetPointer.setTargetPoint(undefined);
-        }
-    });
-    attackButton.addEventListener("click", (evt) => {
-        if(actorController?.isControlled()){
-        evt.preventDefault();
-        evt.stopPropagation();
-        (targetPointer as TargetPointInputController)?.attack();
-        }
-    })
+                // (joy as nipplejs.Joystick).on("end", async (evt, data) => {
+                //     if (actorController?.isControlled()) {
+                //         targetPointer.setTargetPoint(undefined);
+                //     }
+                // });
+                // attackButton.addEventListener("click", (evt) => {
+                //     if (actorController?.isControlled()) {
+                //         evt.preventDefault();
+                //         evt.stopPropagation();
+                //         (targetPointer as TargetPointInputController)?.attack();
+                //     }
+                // })
             }
         }
-        
+
     });
     return gameManager;
 }

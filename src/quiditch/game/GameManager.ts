@@ -23,7 +23,7 @@ export class GameManager implements ITickable{
 
     private readonly _onInit?:()=>void;
 
-    private _playerChaser?: Chaser;
+  
     private _chasers:Chaser[]=[];
     private _hideQuaffle: boolean = false;
     private readonly _goalHandlers:((team:Team)=>void)[] = [];
@@ -31,6 +31,11 @@ export class GameManager implements ITickable{
     private _states:ActorState[]=[];
     
     private _stateWatchActors:IActor[]=[];
+
+    private _playerChasers:{
+        playerId:string,
+        chaser:Chaser
+    }[]=[];
 
     public addOnGoalHandler(handler:(team:Team)=>void){
         this._goalHandlers.push(handler);
@@ -87,29 +92,32 @@ export class GameManager implements ITickable{
         const quaffle = await this.getQuaffle();        
         this.setHideQuaffle(true);
         
-         this._playerChaser?.setIsControlled(false);
+         this._playerChasers.forEach(p=>p.chaser?.setIsControlled(false,p.playerId));
          
          await quaffle?.setPosition(75,0);
          setTimeout(async ()=>{
              
              await quaffle?.setPosition(0,0);
-             this._playerChaser?.setIsControlled(true);
+             this._playerChasers.forEach(p=>p.chaser?.setIsControlled(true, p.playerId));
              this.setHideQuaffle(false);
          },10000)
     }
 
-    setPlayerChaser(chaser:Chaser){
-        let actor = this._playerChaser?.getActor();
-        if(this._playerChaser){
-            
-            actor?.setSpeed(actor.getSpeed()*0.5);
-            this._playerChaser.setIsControlled(false);
-
+    setPlayerChaser(chaser:Chaser, playerId:string){
+        const prevChaser = this._playerChasers.filter(p=>p.playerId)[0];
+        if(prevChaser){
+            const prevActor = prevChaser.chaser.getActor();
+            if(prevActor){
+                prevActor?.setSpeed(prevActor.getSpeed()*0.5);
+            }
+           
+            prevChaser.chaser.setIsControlled(false);
+            this._playerChasers.splice(this._playerChasers.indexOf(prevChaser),1);
         }
-        this._playerChaser = chaser;
-        actor = this._playerChaser.getActor();
-        actor?.setSpeed(actor.getSpeed()*2);
-        this._playerChaser.setIsControlled(true);
+        this._playerChasers.push({chaser,playerId});
+        const newActor = chaser.getActor();
+        newActor?.setSpeed(newActor.getSpeed()*2);
+        chaser.setIsControlled(true, playerId);
         
     }
 
@@ -199,13 +207,13 @@ export class GameManager implements ITickable{
            //quaffle?.setSpeed(0);
            this.setHideQuaffle(true);
            
-            this._playerChaser?.setIsControlled(false);
+            this._playerChasers.forEach(p=>p.chaser?.setIsControlled(false, p.playerId));
             
             await quaffle?.setPosition(75,0);
             setTimeout(async ()=>{
                 
                 await quaffle?.setPosition(0,0);
-                this._playerChaser?.setIsControlled(true);
+                this._playerChasers.forEach(p=>p.chaser?.setIsControlled(true, p.playerId));
                 this.setHideQuaffle(false);
             },3000)
             
@@ -244,10 +252,9 @@ export class GameManager implements ITickable{
     public getTeams():Team[]{
         return [...this._teams];
     }
-    public async getPlayerChaser(): Promise<Chaser | undefined> {
-       return this._playerChaser;
-    }
 
-   
+    public getChasers():Chaser[]{
+    return [...this._chasers];
+    }
 
 }

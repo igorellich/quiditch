@@ -48,7 +48,22 @@ export class PlayerActor extends BodyActorDecorator {
         actorState.color = this._color;
         return actorState;
     }
+    private _isControled: boolean = false;
+    private _playerId?: string;
+    public setIsControlled(control: boolean, playerId?:string){
+        this._isControled = control;
+        this._playerId = playerId;
+    }
+    public getPlayerId():string|undefined{
+        return this._playerId;
+    }
+    public getIsControlled():boolean{
+        return this._isControled;
+    }
 }
+
+
+
 export type PlayerState ={
     position: {x:number, y:number};
     rotation: number;

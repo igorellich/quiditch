@@ -146,8 +146,8 @@ export class Chaser extends Patroller<Vector2d> {
         }
     }
 
-    getActor(): IActor | undefined {
-        return this._targetPointer.getActor();
+    getActor(): PlayerActor | undefined {
+        return this._targetPointer.getActor() as PlayerActor;
     }
 
     public getActorController():ActorController<GameInputActions, IActor>{
@@ -157,11 +157,13 @@ export class Chaser extends Patroller<Vector2d> {
         return this._targetPointer;
     }
     private _isControlled:boolean = false;
-    public setIsControlled(control:boolean){
+    public setIsControlled(control:boolean, playerId?: string){
         this._isControlled = control;
         if(this._isControlled){
             this._targetPointer.setTargetPoint(undefined);
         }
-        this.getActorController().setIsControlled(control);
+        this.getActor()?.setIsControlled(control, playerId);
+
     }
+  
 }

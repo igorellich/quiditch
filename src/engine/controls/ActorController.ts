@@ -18,14 +18,9 @@ export abstract class ActorController<TGameActions, TActor extends IActor> imple
         this._actor = actor;
     }
     public getActor():TActor{
-        return this._actor; 
+                return this._actor; 
     }
-    public isControlled():boolean{
-        return this._isControlled;
-    }
-    public setIsControlled(control:boolean){
-        this._isControlled = control;
-    }
+    
 
     public abstract applyAction(actionType: TGameActions, started?: boolean):Promise<void>
 }
