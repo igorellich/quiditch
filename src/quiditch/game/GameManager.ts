@@ -69,16 +69,21 @@ export class GameManager{
         this._teams.push(await this._createQuiditchTeam(70,false));
 
 
-        const ball = await this._quiditchFactory.createQuaffle();
-        ball.setPosition(0, 0);
-        this._stateWatchActors.push(ball);
-        this.addTickable(ball);
+  
 
         const walls = await this._quiditchFactory.createWalls();
         this.addTickable(walls);
         //this._stateWatchActors.push(walls);
-
-        
+        setTimeout(async ()=>{
+            const ball = await this._quiditchFactory.createQuaffle();
+            ball.setPosition(0, 0);
+            this._stateWatchActors.push(ball);
+            this.addTickable(ball);
+            if (this._onInit) {
+                this._onInit();
+            }
+        }, 2000)
+       
       
         this.addOnGoalHandler((team:Team)=>this._onGoal());
         let elapsedTime = 0;
@@ -92,9 +97,7 @@ export class GameManager{
             this._states = newStates;
         }, freq);
 
-        if (this._onInit) {
-            this._onInit();
-        }
+       
 
     }
 

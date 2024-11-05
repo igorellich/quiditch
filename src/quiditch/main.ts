@@ -22,12 +22,12 @@ import { IServerCommunicator } from "./game/IServerCommunicator";
 
 let gameManager:GameManager|undefined=undefined;
 
-
-
+let gravity = { x: 0.0, y: 0.0 };
+let world = new World(gravity);
 const initServer = async ():Promise<GameManager>=>{
     return new Promise((res,rej)=>{
-        let gravity = { x: 0.0, y: 0.0 };
-        let world = new World(gravity);
+      
+       
         const bodyFactory = new RapierBodyFactory(world);
         const physicsManager = new RapierPhysicsManager(world);
         const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
@@ -61,17 +61,8 @@ const initServer = async ():Promise<GameManager>=>{
             setScore();
             gameManager.addOnGoalHandler(setScore);
     
-            // init controls
-            const playerChaser = gameManager.getChasers()[0];
-            
-            const player = playerChaser?.getActor();
-            if (player) {
-                const actorController = playerChaser?.getActorController();
-                if (actorController) {
-                    const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] }, actorController);
-                }
-        
-            }
+           
+      
             res(gameManager);
         });
         physicsManager.init(gameManager);
@@ -100,7 +91,13 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     stickZone.className="stickZone";
     document.body.appendChild(stickZone)
     
-    
+    const debugRenderer = new RapierDebugRenderer(scene, world, 5);
+sceneManager.addTickable(debugRenderer);
+    const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] });
+    keyboardInputController.addOnInputChangeHandler(async (action,started)=>{
+        await serverCommunicator.applyAction(id, action, started);
+    });
+
     //@ts-ignore
     const joy = nipplejs.default.create({
         mode: "semi",
@@ -117,7 +114,7 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
         serverCommunicator.endDirectionMoving(id);
     });
     attackButton.addEventListener("click", (evt) => {
-        serverCommunicator.attack(id);
+        serverCommunicator.applyAction(id, GameInputActions.attack, true);
         evt.preventDefault();
         evt.stopPropagation();
     })
@@ -126,7 +123,7 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     // if (plane) {
     //     sceneManager.addTickable(plane);
     // }
-    const meshWalls = await meshFactory.createWalls();
+    //const meshWalls = await meshFactory.createWalls();
     const stateSync = new StateSynchroniser(meshFactory);
     sceneManager.addTickable(stateSync);
 
@@ -135,13 +132,14 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     sceneManager.addTickable(stats);
     const serverCommunicator:IServerCommunicator = new LocalServerCommunicator(server, stateSync);
     const controlledActorId = serverCommunicator.takeControl(id);
+    serverCommunicator.takeControl("2");
     if (controlledActorId) {
         setTimeout(() => {
             const controlledActor = stateSync.getActorById(controlledActorId);
             sceneManager.setCameraTarget(controlledActor);
             const quaffle = stateSync.getActorByName(ActorNames.quaffle);
             if(quaffle){
-            const pointer = meshFactory.createPointer(quaffle ,controlledActor)
+           // const pointer = meshFactory.createPointer(quaffle ,controlledActor)
             }
         }, 2000)
 
@@ -180,8 +178,7 @@ const client1 = await initClient("1");
 
 
 
-//const debugRenderer = new RapierDebugRenderer(scene, world, 5);
-//sceneManager.addTickable(debugRenderer);
+
 
 
 

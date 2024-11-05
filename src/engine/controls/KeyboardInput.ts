@@ -1,31 +1,30 @@
 import { GameInputActions, KeyboardInputMap } from "../../quiditch/constants";
-import { PlayerActor } from "../../quiditch/factory/MB/components/PlayerActor";
-import { IActor } from "../base/Actor/IActor";
-import { ActorController } from "./ActorController";
 import { InputController } from "./BaseInput";
 
 
     export class KeyboardInputController<TGameActions> extends InputController<GameInputActions> {
 
-        constructor(keyboardInputMap: KeyboardInputMap, actorController: ActorController<TGameActions, IActor>) {
+        constructor(keyboardInputMap: KeyboardInputMap) {
             super();
             document.addEventListener('keydown', (e) => {
-                if ((actorController.getActor() as PlayerActor)?.getIsControlled()) {
+                //if ((actorController.getActor() as PlayerActor)?.getIsControlled()) {
                     const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].includes(e.key))[0];
                     if (action) {
-                        actorController.applyAction(action as unknown as TGameActions, true)
+                        //actorController.applyAction(action as unknown as TGameActions, true)
+                        this._onInputChange(action as unknown as GameInputActions, true);
                     }
-                }
+                //}
             })
 
             document.addEventListener('keyup', (e) => {
-                if ((actorController.getActor() as PlayerActor)?.getIsControlled()) {
+                //if ((actorController.getActor() as PlayerActor)?.getIsControlled()) {
                     const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].includes(e.key))[0];
 
                     if (action) {
-                        actorController.applyAction(action as unknown as TGameActions, false)
+                        //actorController.applyAction(action as unknown as TGameActions, false)
+                        this._onInputChange(action as unknown as GameInputActions, false);
                     }
-                }
+                //}
             })
     }
 }

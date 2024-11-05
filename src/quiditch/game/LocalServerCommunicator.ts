@@ -1,5 +1,6 @@
 import { Vector2d } from "../../engine/base/Vector2d";
 import { Chaser } from "../ai/Chaser";
+import { GameInputActions } from "../constants";
 import { TargetPointInputController } from "../controls/TargetPointInputController";
 import { PlayerActor } from "../factory/MB/components/PlayerActor";
 import { GameManager } from "./GameManager";
@@ -14,19 +15,15 @@ export class LocalServerCommunicator implements IServerCommunicator{
         this._gameManager = gameManager;
         this._stateSync = stateSync;
     }
-    attack(clientId: string): void {
+
+    public async applyAction(clientId: string, action:GameInputActions, started:boolean):Promise<void>{
         const playerChaser = this._getPlayerChaser(clientId);
         if (playerChaser) {
-            const player = playerChaser?.getActor() as PlayerActor;
-            if (player) {
-                const targetPointer = playerChaser?.getTargetPointer();
-                if (player?.getIsControlled()) {
-
-                    (targetPointer as TargetPointInputController)?.attack();
-                }
-            }
+            const actorController = playerChaser.getActorController();
+            await actorController.applyAction(action,started);
         }
     }
+
     endDirectionMoving(clientId: string): void {
         const playerChaser = this._getPlayerChaser(clientId);
         const targetPointer = playerChaser?.getTargetPointer();
