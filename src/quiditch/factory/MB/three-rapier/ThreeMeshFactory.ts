@@ -84,9 +84,9 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
     }
     async createGround(id?:string): Promise<MeshBasedActor> {
 
-        const grassMaterial  = new Grassmaterial();
-        this._sceneManager.addTickable(grassMaterial);
-        const planeMesh = new Mesh(new PlaneGeometry(200, 200, this._zHeight), new MeshBasicMaterial({
+        // const grassMaterial  = new Grassmaterial();
+        // this._sceneManager.addTickable(grassMaterial);
+        const planeMesh = new Mesh(new PlaneGeometry(200, 200, 1,1), new MeshBasicMaterial({
             color:"green"
         }))//grassMaterial.getMaterial());
 
@@ -110,9 +110,9 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
 
     private async _createPlayerMesh(color?:string):Promise<Mesh>{
         
-        let mesh:Mesh = new Mesh(new CapsuleGeometry(0.3,1.1,1), new MeshBasicMaterial({color:color})) 
-        return mesh;
-         //let mesh = this._prototypesMeshesMap["player"];
+        // let mesh:Mesh = new Mesh(new CapsuleGeometry(0.3,1.1,1), new MeshBasicMaterial({color:color})) 
+        // return mesh;
+         let mesh = this._prototypesMeshesMap["player"];
         if(!mesh){
             const model = await this._loadGltfModel('assets/glb/hover_bike/scene.glb');
             model.rotateX(Math.PI/2)

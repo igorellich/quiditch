@@ -1,74 +1,14 @@
-import { World } from "@dimforge/rapier2d";
 import * as nipplejs from "nipplejs";
 import {Scene} from "three";
-import { RapierBodyFactory } from "./factory/MB/three-rapier/RapierBodyFactory";
-import { QuiditchFactory } from "./factory/MB/QuiditchActorFactory";
 import { ThreeMeshFactory } from "./factory/MB/three-rapier/ThreeMeshFactory";
 import { ThreeSceneManager } from "../engine/MB/three/ThreeSceneManager";
 import { KeyboardInputController } from "../engine/controls/KeyboardInput";
-import { RapierPhysicsManager } from "../engine/MB/rapier/RapierPhysicsManager";
-import { RapierDebugRenderer } from "../utils/debugRenderer";
-import { TargetPointInputController } from "./controls/TargetPointInputController";
-import { Vector2d } from "../engine/base/Vector2d";
 import { ThreeStats } from "../utils/threeStats";
-import { ActorNames, GameInputActions } from "./constants";
-import { GameManager } from "./game/GameManager";
-import { Team } from "../engine/game/Team";
+import { GameInputActions } from "./constants";
 import { StateSynchroniser } from "./game/StateSynchroniser";
-import { ActorState } from "../engine/base/Actor/Actor";
-import { LocalServerCommunicator } from "./game/LocalServerCommunicator";
-import { IServerCommunicator } from "./game/IServerCommunicator";
+import { HttpServerCommunicator } from "./game/HttpServerCommunicator";
 
 
-let gameManager:GameManager|undefined=undefined;
-
-let gravity = { x: 0.0, y: 0.0 };
-let world = new World(gravity);
-const initServer = async ():Promise<GameManager>=>{
-    return new Promise((res,rej)=>{
-      
-       
-        const bodyFactory = new RapierBodyFactory(world);
-        const physicsManager = new RapierPhysicsManager(world);
-        const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
-        const gameManager = new GameManager(quiditchFactory,  async () => {
-            // score handling
-            const score:any={
-    
-            }
-            const teams = gameManager.getTeams();
-            for (const team of teams) {
-                score[team.getId()] = 0;
-            }
-            const setScore = (team?: Team) => {
-                const goalsEl = document.querySelector(".goals");
-                let scoreStr = "";
-                if (team) {
-                    const teamId = team.getId();
-                    score[teamId]++;
-                }
-                for (let teamId in score) {
-                    scoreStr += score[teamId] + ' ';
-                }
-                scoreStr = scoreStr.trim();
-                scoreStr = scoreStr.replace(' ', ':');
-    
-    
-                if (goalsEl) {
-                    goalsEl.innerHTML = scoreStr;
-                }
-            }
-            setScore();
-            gameManager.addOnGoalHandler(setScore);
-    
-           
-      
-            res(gameManager);
-        });
-        physicsManager.init(gameManager);
-    })
-
-}
 
 
 const initClient = async (id:string): Promise<StateSynchroniser> => {
@@ -91,8 +31,8 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     stickZone.className="stickZone";
     document.body.appendChild(stickZone)
     
-    const debugRenderer = new RapierDebugRenderer(scene, world, 5);
-sceneManager.addTickable(debugRenderer);
+    //const debugRenderer = new RapierDebugRenderer(scene, world, 5);
+//sceneManager.addTickable(debugRenderer);
     const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] });
     keyboardInputController.addOnInputChangeHandler(async (action,started)=>{
         await serverCommunicator.applyAction(id, action, started);
@@ -123,34 +63,34 @@ sceneManager.addTickable(debugRenderer);
     // if (plane) {
     //     sceneManager.addTickable(plane);
     // }
-    //const meshWalls = await meshFactory.createWalls();
+    const meshWalls = await meshFactory.createWalls();
     const stateSync = new StateSynchroniser(meshFactory);
     sceneManager.addTickable(stateSync);
 
     sceneManager.startTime();
     const stats = new ThreeStats(document.body);
     sceneManager.addTickable(stats);
-    const serverCommunicator:IServerCommunicator = new LocalServerCommunicator(server, stateSync);
+    //const serverCommunicator:IServerCommunicator = new LocalServerCommunicator(server, stateSync);
+    const serverCommunicator = new HttpServerCommunicator(stateSync);
     const controlledActorId = serverCommunicator.takeControl(id);
-    serverCommunicator.takeControl("2");
-    if (controlledActorId) {
-        setTimeout(() => {
-            const controlledActor = stateSync.getActorById(controlledActorId);
-            sceneManager.setCameraTarget(controlledActor);
-            const quaffle = stateSync.getActorByName(ActorNames.quaffle);
-            if(quaffle){
-           // const pointer = meshFactory.createPointer(quaffle ,controlledActor)
-            }
-        }, 2000)
+    //serverCommunicator.takeControl("2");
+    // if (controlledActorId) {
+    //     setTimeout(() => {
+    //         const controlledActor = stateSync.getActorById(controlledActorId);
+    //         sceneManager.setCameraTarget(controlledActor);
+    //         const quaffle = stateSync.getActorByName(ActorNames.quaffle);
+    //         if(quaffle){
+    //        // const pointer = meshFactory.createPointer(quaffle ,controlledActor)
+    //         }
+    //     }, 2000)
 
-    }
+    // }
     sceneManager.addTickable(serverCommunicator);
     return stateSync;
 }
 
 
-  
-const server =  await initServer();
+
 const client1 = await initClient("1");
 //const client2 = await initClient("2");
 

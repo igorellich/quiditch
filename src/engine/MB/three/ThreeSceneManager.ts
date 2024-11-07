@@ -1,6 +1,5 @@
 import { AmbientLight, Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { SceneManager, Size } from "../../base/SceneManager"
-import { IPhysicsManager } from "../../base/IPhysicsManager";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { IActor } from "../../base/Actor/IActor";
 import { PersuingCamera } from "./PersuingCamera";
@@ -30,16 +29,17 @@ export class ThreeSceneManager extends SceneManager {
         this._scene = scene;
         this._renderer = new WebGLRenderer({
             canvas: canvas,
-            antialias: true,
+            // antialias: true,
             alpha: true,
+            powerPreference: 'high-performance'
 
         });
         
         this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this._renderer.setSize(this._size.width, this._size.height);
 
-        const camera = new PerspectiveCamera(75, this._size.width / this._size.height, 0.1, 100);        
-        camera.position.z = 50;
+        const camera = new PerspectiveCamera(75, this._size.width / this._size.height,121, 130);        
+        camera.position.z = 130;
 
         this._persuingCamera = new PersuingCamera(camera, 7);
         this.addTickable(this._persuingCamera);
