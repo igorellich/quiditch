@@ -1,7 +1,7 @@
 import * as nipplejs from "nipplejs";
 import {Scene} from "three";
 
-import { GameInputActions } from "@common/quiditch/constants";
+import { ActorNames, GameInputActions } from "@common/quiditch/constants";
 import { StateSynchroniser } from "./quiditch/game/StateSynchroniser";
 import { HttpServerCommunicator } from "./quiditch/game/HttpServerCommunicator";
 import { ThreeSceneManager } from "./engine/three/ThreeSceneManager";
@@ -73,19 +73,19 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     sceneManager.addTickable(stats);
     //const serverCommunicator:IServerCommunicator = new LocalServerCommunicator(server, stateSync);
     const serverCommunicator = new HttpServerCommunicator(stateSync);
-    const controlledActorId = serverCommunicator.takeControl(id);
+    const controlledActorId = await serverCommunicator.takeControl(id);
     //serverCommunicator.takeControl("2");
-    // if (controlledActorId) {
-    //     setTimeout(() => {
-    //         const controlledActor = stateSync.getActorById(controlledActorId);
-    //         sceneManager.setCameraTarget(controlledActor);
-    //         const quaffle = stateSync.getActorByName(ActorNames.quaffle);
-    //         if(quaffle){
-    //        // const pointer = meshFactory.createPointer(quaffle ,controlledActor)
-    //         }
-    //     }, 2000)
+    if (controlledActorId) {
+        setTimeout(() => {
+            const controlledActor = stateSync.getActorById(controlledActorId);
+            sceneManager.setCameraTarget(controlledActor);
+            const quaffle = stateSync.getActorByName(ActorNames.quaffle);
+            if(quaffle){
+            const pointer = meshFactory.createPointer(quaffle ,controlledActor)
+            }
+        }, 2000)
 
-    // }
+    }
     sceneManager.addTickable(serverCommunicator);
     return stateSync;
 }

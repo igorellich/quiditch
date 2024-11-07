@@ -8,6 +8,7 @@ import {ActorState} from "@common/engine/ActorState"
 import { RapierBodyFactory } from './quiditch/factory/rapier/RapierBodyFactory';
 import { RapierPhysicsManager } from './engine/rapier/RapierPhysicsManager';
 import { QuiditchFactory } from './quiditch/factory/QuiditchActorFactory';
+import { GameInputActions } from '@common/quiditch/constants';
 @Controller()
 export class AppController {
   private readonly _gameManager: GameManager;
@@ -76,4 +77,14 @@ export class AppController {
         }
   }
 
+  @Post('action')
+  async applyAction(@Body() body: ActionDto): Promise<void> {
+
+    const chaser = this._gameManager.getChaserByPlayerId(body.id);
+    if(chaser){
+      chaser.getActorController().applyAction(body.action, body.started);
+    }
+  }
+
 }
+export interface ActionDto{ id: string; action:GameInputActions; started:boolean }

@@ -7,14 +7,18 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tsc":"tsc -watch"
+    "tsc":"tsc -watch",
+    "start-client":"npm run dev",
+    "start-server":"cd ../server && npm run start",
+    "stack":"start npm run start-client && start npm run  start-server"
   },
   "devDependencies": {
     "@types/three": "^0.167.1",
     "lil-gui": "^0.19.2",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
-    "vite-plugin-top-level-await": "^1.4.4"
+    "vite-plugin-top-level-await": "^1.4.4",
+    "concurrently":"latest"
   },
   "dependencies": {
     "@dimforge/rapier2d": "^0.14.0",

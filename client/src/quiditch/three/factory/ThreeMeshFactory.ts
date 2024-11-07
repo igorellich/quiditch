@@ -10,6 +10,9 @@ import { ActorNames } from "@common/quiditch/constants";
 import { ThreeBasedMesh } from "../../../engine/three/ThreeBasedMesh";
 import { MeshBasedActor } from "../../../engine/MeshBasedActor";
 import { ThreeSceneManager } from "../../../engine/three/ThreeSceneManager";
+import { Pointer } from "../../components/Pointer";
+import { IActor } from "@common/engine/IActor";
+import { IObject2D } from "@common/engine/IObject2D";
 
 export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
     private readonly _sceneManager:ThreeSceneManager;
@@ -47,23 +50,23 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
         const threebasedMesh = new ThreeBasedMesh(mesh);
         return new MeshBasedActor(ActorNames.gates,threebasedMesh,id);
     }
-    // async createPointer(targetObject?: IObject2D, sourceActor?:IActor, id?:string): Promise<MeshBasedActor> {
-    //     const mesh = await this._loadGltfModel('assets/gltf/pointer/scene.gltf');
-    //     // /mesh.scale.set(0.003,0.003,0.003)
-    //     mesh.rotateX(Math.PI/2)
-    //     mesh.position.z = this._zHeight;
-    //     mesh.position.y = 2;
-    //     const group = new Group();
-    //     group.add(mesh);
-    //     this._sceneManager.getScene().add(group);
-    //     const threebasedMesh = new ThreeBasedMesh(group);
-    //     const pointer = new Pointer(ActorNames.pointer, threebasedMesh, id as string, targetObject, sourceActor);
-    //     this._sceneManager.addTickable(pointer);
+    async createPointer(targetObject?: IObject2D, sourceActor?:IActor, id?:string): Promise<MeshBasedActor> {
+        const mesh = await this._loadGltfModel('assets/gltf/pointer/scene.gltf');
+        // /mesh.scale.set(0.003,0.003,0.003)
+        mesh.rotateX(Math.PI/2)
+        mesh.position.z = this._zHeight;
+        mesh.position.y = 2;
+        const group = new Group();
+        group.add(mesh);
+        this._sceneManager.getScene().add(group);
+        const threebasedMesh = new ThreeBasedMesh(group);
+        const pointer = new Pointer(ActorNames.pointer, threebasedMesh, id as string, targetObject, sourceActor);
+        this._sceneManager.addTickable(pointer);
         
-    //     return pointer;
+        return pointer;
        
         
-    // }
+    }
     async createWalls( id?:string): Promise<MeshBasedActor> {
         // const buffer = createArenaBuffer32Array3D(20, 50, this._zHeight);
         // const geometry = new BufferGeometry();

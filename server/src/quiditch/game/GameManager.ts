@@ -135,6 +135,10 @@ export class GameManager{
         
     }
 
+    getChaserByPlayerId(id:string):Chaser|undefined{
+        return this._playerChasers.filter(c=>c.playerId===id)[0]?.chaser;
+    }
+
     public async getEnemyGates(player:IActor):Promise<Gates[]>{
         const playerTeam = this.getActorTeam(player);
         let result:Gates[] = [];

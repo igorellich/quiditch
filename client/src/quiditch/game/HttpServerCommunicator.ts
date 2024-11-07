@@ -14,19 +14,26 @@ export class HttpServerCommunicator implements IServerCommunicator{
         //throw new Error("Method not implemented.");
     }
     async applyAction(clientId: string, action: GameInputActions, started: boolean): Promise<void> {
-        //throw new Error("Method not implemented.");
+        return new Promise((res, rej)=>{
+           fetch("http://localhost:3000/action",{
+            method:"POST",
+            headers:{
+                'Content-Type':"application/json;charset=utf-8"
+            },
+            body:JSON.stringify({id:clientId, action, started})
+           }).then(r=>res());
+        })
     }
     takeControl(clientId: string): Promise<string | undefined> {
         return new Promise((res, rej)=>{
-            const req = new XMLHttpRequest();
-            
-            req.open("POST","http://localhost:3000/control");
-            req.onload = ()=>{
-               
-                res(req.response);
-            }
-            req.send(JSON.stringify({id:clientId}));
-        })
+            fetch("http://localhost:3000/control",{
+             method:"POST",
+             headers:{
+                 'Content-Type':"application/json;charset=utf-8"
+             },
+             body:JSON.stringify({id:clientId})
+            }).then(r=>res(r.json()));
+         })
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         return new Promise((res, rej)=>{
