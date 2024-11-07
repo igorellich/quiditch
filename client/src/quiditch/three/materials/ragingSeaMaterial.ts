@@ -1,5 +1,5 @@
 import { Color, ShaderMaterial, Texture, Vector2 } from "three";
-import { ITickable } from "../../../../../engine/base/ITickable";
+import { ITickable } from "@common/engine/ITickable";
 import vertex from "../shaders/water/vertex.glsl";
 import fragment from "../shaders/water/fragment.glsl";
 import GUI from 'lil-gui'

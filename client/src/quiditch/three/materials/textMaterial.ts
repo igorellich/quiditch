@@ -1,5 +1,5 @@
 import { Color, RepeatWrapping, ShaderMaterial, Texture, TextureLoader, Uniform, Vector2 } from "three";
-import { ITickable } from "../../../../../engine/base/ITickable";
+import { ITickable } from "@common/engine/ITickable";
 import vertexGround from "../shaders/text/vertex.glsl";
 import fragmentGrond from "../shaders/text/fragment.glsl";
 import GUI from "lil-gui";

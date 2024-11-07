@@ -1,5 +1,5 @@
 import { Color, Material, MeshBasicMaterial, RepeatWrapping, ShaderMaterial, Texture, TextureLoader, Uniform, Vector2 } from "three";
-import { ITickable } from "../../../../../engine/base/ITickable";
+import { ITickable } from "@common/engine/ITickable";
 import vertexGround from "../shaders/hologram/vertex.glsl";
 import fragmentGrond from "../shaders/hologram/fragment.glsl";
 export class HologramMaterial implements ITickable{

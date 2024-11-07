@@ -1,5 +1,5 @@
 import { Color, RepeatWrapping, ShaderMaterial, Texture, TextureLoader, Uniform, Vector2 } from "three";
-import { ITickable } from "../../../../../engine/base/ITickable";
+import { ITickable } from "@common/engine/ITickable";
 import vertexGround from "../shaders/smoke/vertex.glsl";
 import fragmentGrond from "../shaders/smoke/fragment.glsl";
 export class SmokeMaterial implements ITickable{

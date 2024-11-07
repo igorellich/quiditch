@@ -1,5 +1,5 @@
 import { AdditiveBlending, Color, Material, PointsMaterial, ShaderMaterial, Texture, Vector2 } from "three";
-import { ITickable } from "../../../../../engine/base/ITickable";
+import { ITickable } from "@common/engine/ITickable";
 import vertex from "../shaders/galaxy/vertex.glsl";
 import fragment from "../shaders/galaxy/fragment.glsl";
 export class GalaxyMaterial implements ITickable{

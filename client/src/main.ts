@@ -4,10 +4,10 @@ import {Scene} from "three";
 import { GameInputActions } from "@common/quiditch/constants";
 import { StateSynchroniser } from "./quiditch/game/StateSynchroniser";
 import { HttpServerCommunicator } from "./quiditch/game/HttpServerCommunicator";
-import { ThreeMeshFactory } from "./quiditch/factory/three/ThreeMeshFactory";
 import { ThreeSceneManager } from "./engine/three/ThreeSceneManager";
 import { ThreeStats } from "./engine/three/threeStats";
 import { KeyboardInputController } from "./quiditch/controls/KeyboardInput";
+import { ThreeMeshFactory } from "./quiditch/three/factory/ThreeMeshFactory";
 
 
 
