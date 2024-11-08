@@ -2,12 +2,15 @@ import * as nipplejs from "nipplejs";
 import {Scene} from "three";
 
 import { ActorNames, GameInputActions } from "@common/quiditch/constants";
+
+import { MatchState } from "@common/quiditch/MatchState";
 import { StateSynchroniser } from "./quiditch/game/StateSynchroniser";
 import { HttpServerCommunicator } from "./quiditch/game/HttpServerCommunicator";
 import { ThreeSceneManager } from "./engine/three/ThreeSceneManager";
 import { ThreeStats } from "./engine/three/threeStats";
 import { KeyboardInputController } from "./quiditch/controls/KeyboardInput";
 import { ThreeMeshFactory } from "./quiditch/three/factory/ThreeMeshFactory";
+import { MeshBasedActor } from "./engine/MeshBasedActor";
 
 
 
@@ -67,7 +70,19 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     const meshWalls = await meshFactory.createWalls();
     const stateSync = new StateSynchroniser(meshFactory);
     sceneManager.addTickable(stateSync);
+    setInterval(() => {
+        const matchState: MatchState = stateSync.getStates().filter(s => (s as MatchState).score)[0] as MatchState;
+        if (matchState) {
+            let scoreStr = "";
+            for (let teamId in matchState.score) {
+                scoreStr += matchState.score[teamId] + ' ';
+            }
+            scoreStr = scoreStr.trim();
+            scoreStr = scoreStr.replace(' ', ':');
+            goalsCounter.innerHTML = scoreStr;
+        }
 
+    })
     sceneManager.startTime();
     const stats = new ThreeStats(document.body);
     sceneManager.addTickable(stats);

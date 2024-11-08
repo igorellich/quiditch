@@ -1,4 +1,6 @@
 import {ActorState} from "@common/engine/ActorState"
+import {BaseState} from "@common/engine/BaseState"
+import {MatchState} from "@common/quiditch/MatchState"
 import { IActor } from "@common/engine/IActor";
 import { ITickable } from "@common/engine/ITickable";
 import { Vector2d } from "@common/engine/Vector2d";
@@ -13,6 +15,7 @@ import { TargetPointInputController } from "../controls/TargetPointInputControll
 import { CircleZone } from "src/engine/ai/zone/CircleZone";
 import { IZone } from "src/engine/ai/zone/IZone";
 import { Team } from "src/engine/game/Team";
+import { Score } from "@common/quiditch/Score";
 
 
 export class GameManager{    
@@ -29,7 +32,7 @@ export class GameManager{
     private _hideQuaffle: boolean = false;
     private readonly _goalHandlers:((team:Team)=>void)[] = [];
 
-    private _states:ActorState[]=[];
+    private _actorStates:ActorState[]=[];
     
     private _stateWatchActors:IActor[]=[];
 
@@ -57,20 +60,35 @@ export class GameManager{
     }
 
 
-    public getStates(){
-        return [...this._states];
+    public getStates():BaseState[]{
+        return [...this._actorStates, this._getMatchState()];
     }
 
+    private _getMatchState():MatchState{
+        const matchState = new MatchState();
+        matchState.score = this._score;
+        return matchState;
+    }
     private _tickInterval:any=0;
-
+    private _score:Score={};
     private async _init(){
 
-      
-        this._teams.push(await this._createQuiditchTeam(70,true));
-        this._teams.push(await this._createQuiditchTeam(70,false));
+        
+        this._teams.push(await this._createQuiditchTeam(70, true));
+        this._teams.push(await this._createQuiditchTeam(70, false));
+        for (const team of this._teams) {
+            this._score[team.getId()] = 0;
+        }
+        const setScore = (team?: Team) => {
+            
+            if (team) {
+                const teamId = team.getId();
+                this._score[teamId]++;
+            }
+        }
+        setScore();
+        this.addOnGoalHandler(setScore);
 
-
-  
 
         const walls = await this._quiditchFactory.createWalls();
         this.addTickable(walls);
@@ -95,7 +113,7 @@ export class GameManager{
                 tickable.tick(elapsedTime, freq);
             }
             const newStates = await Promise.all(this._stateWatchActors.map(a => a.getState()));
-            this._states = newStates;
+            this._actorStates = newStates;
         }, freq);
 
        
@@ -186,7 +204,7 @@ export class GameManager{
             }
             setTimeout( async()=>{
                 const zone  = new CircleZone(70,new Vector2d(0,0));
-                for (let i = 0; i < 1; i++) {
+                for (let i = 0; i < 3; i++) {
         
                     // const zone = new RectZone(new Vector2d(
                     //     isLeft ? (-i - 1) * fieldRadius / 3 : i * fieldRadius / 3, fieldRadius), new Vector2d(

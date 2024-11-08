@@ -1,20 +1,22 @@
 import { AmbientLight, Clock, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { IActor } from "@common/engine/IActor";
-import { PersuingCamera } from "../PersuingCamera";
 import { SceneManager, Size } from "../SceneManager";
+import { MeshBasedActor } from "../MeshBasedActor";
+import { ThreeBasedMesh } from "./ThreeBasedMesh";
 
 
 export class ThreeSceneManager extends SceneManager {
     setCameraTarget(target: IActor) {
-        this._persuingCamera.setTarget(target);
+        
+        ((target as MeshBasedActor).getMesh() as ThreeBasedMesh).addCamera(this._camera, this._scene)
     }
 
-    private readonly _persuingCamera: PersuingCamera;
 
     private readonly _renderer: WebGLRenderer;
 
     private _clock: Clock = new Clock();
+    private _camera: PerspectiveCamera ;
 
     private readonly _scene: Scene;
 
@@ -31,22 +33,25 @@ export class ThreeSceneManager extends SceneManager {
             canvas: canvas,
             // antialias: true,
             alpha: true,
-            powerPreference: 'high-performance'
+            powerPreference: 'high-performance',
+            
 
         });
         
         this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this._renderer.setSize(this._size.width, this._size.height);
 
-        const camera = new PerspectiveCamera(75, this._size.width / this._size.height,121, 130);        
-        camera.position.z = 130;
+        this._camera = new PerspectiveCamera(75, this._size.width / this._size.height,25, 50);      
+        this._camera.position.z = 50;
+        // this._camera.rotateZ(Math.PI/2);
+       
+                
 
-        this._persuingCamera = new PersuingCamera(camera, 7);
-        this.addTickable(this._persuingCamera);
 
-        const controls = new OrbitControls(camera, this._renderer.domElement);
-        controls.enableDamping = true;
-        controls.enableRotate=false;
+        // const controls = new OrbitControls( this._camera, this._renderer.domElement);
+        // controls.enableDamping = true;
+        // controls.enableRotate=false;
+        // controls.enabled = false;
 
         const light = new AmbientLight();
         scene.add(light);
@@ -56,8 +61,8 @@ export class ThreeSceneManager extends SceneManager {
             this._size.height = canvas.height;
             this._size.width = canvas.width;
 
-            (this._persuingCamera.getMesh() as PerspectiveCamera).aspect = this._size.width / this._size.height;
-            (this._persuingCamera.getMesh() as PerspectiveCamera).updateProjectionMatrix();
+            ( this._camera).aspect = this._size.width / this._size.height;
+            ( this._camera).updateProjectionMatrix();
 
             this._renderer.setSize(this._size.width, this._size.height);
             this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -85,7 +90,7 @@ export class ThreeSceneManager extends SceneManager {
         }
     }
     protected _draw(): void {
-        this._renderer.render(this._scene, this._persuingCamera.getMesh() as PerspectiveCamera);
+        this._renderer.render(this._scene, this._camera);
     }
     public startTime(): void {
         console.log("start time", Date.now());
@@ -108,7 +113,7 @@ export class ThreeSceneManager extends SceneManager {
     }
 
     public getCamera():PerspectiveCamera{
-        return this._persuingCamera.getMesh() as PerspectiveCamera;
+        return this._camera;
     }
 
     public getScene():Scene{

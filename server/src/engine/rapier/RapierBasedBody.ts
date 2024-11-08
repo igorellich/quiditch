@@ -74,7 +74,7 @@ export class RapierBasedBody implements IBody{
     async rotate(right: boolean, delta:number): Promise<void> {
        
         const rotatingSpeed = right?-this._rotationSpeed*(delta>5/60?5/60:delta)*60:this._rotationSpeed*(delta>5/60?5/60:delta)*60;
-        const newRotation = await this.getRotation() + rotatingSpeed/2;
+        const newRotation = await this.getRotation() + rotatingSpeed;
         await this.setRotation(newRotation);
     }
     async setCollisions<TCollision>(memberGroups: TCollision[], filterGroups: TCollision[]): Promise<void> {
