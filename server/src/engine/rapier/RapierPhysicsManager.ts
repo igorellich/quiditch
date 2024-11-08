@@ -5,41 +5,25 @@ import { IBodiedActor } from "../base/Actor/IBodiedActor";
 import { Collision } from "@common/engine/Collision";
 import { Vector2d } from "@common/engine/Vector2d";
 import { RapierBasedBody } from "./RapierBasedBody";
-import { GameManager } from "src/quiditch/game/GameManager";
-
 
 
 export class RapierPhysicsManager implements IPhysicsManager {
     private readonly _world: World;
     private _collisionInfos: CollisionInfo[] = [];
 
-    private _gameManager:GameManager|undefined;
+   
     constructor(world: World) {
         this._world = world;
         
     }
-    public init(gameManager:GameManager){
-        this._gameManager = gameManager;
-        gameManager.addTickable(this);
+
+    private _paused:boolean=false;
+    setPause(pause: boolean): void {
+        this._paused = pause;
     }
-    async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-            if(this._gameManager){
-            this.step(deltaTime);
-            const collisions = this.getCollisions(this._gameManager.getActors());
-
-            if (collisions.length > 0) {
-                collisions.forEach(c => {
-                    if (c.actorB) {
-                        c.actorA?.onCollision(c, elapsedTime);
-                    }
-                    if (c.actorA) {
-                        c.actorB?.onCollision(c, elapsedTime);
-                    }
-
-                })
-            }
-        }
-        
+   
+    async tick(elapsedTime: number, deltaTime: number): Promise<void> {           
+            this.step(deltaTime);        
     }
     async castRay(origin: Vector2d, dir: Vector2d, rayLength: number, sourceActor?: IBodiedActor, targetActors?: IBodiedActor[]): Promise<RayCastResult> {
         const body = sourceActor?.getBody() as RapierBasedBody;

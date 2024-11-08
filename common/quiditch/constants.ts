@@ -9,7 +9,8 @@ export enum GameInputActions {
     'moveBackward' = 'moveBackward',
     'turnLeft' = 'turnLeft',
     'turnRight' = 'turnRight',
-    'attack' = 'attack'
+    'attack' = 'attack',
+    'pause' = 'pause'
 }
 export enum ActorNames {
     "quaffle" = "quaffle",
@@ -20,5 +21,8 @@ export enum ActorNames {
     ground = "ground"
 }
 export type KeyboardInputMap={
-    [action in GameInputActions]: string[]
+    [action in GameInputActions]: {
+        keys:string[],
+        single?:boolean
+    }
 }

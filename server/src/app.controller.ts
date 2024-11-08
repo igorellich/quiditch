@@ -8,26 +8,20 @@ import { RapierPhysicsManager } from './engine/rapier/RapierPhysicsManager';
 import { QuiditchFactory } from './quiditch/factory/QuiditchActorFactory';
 import { GameInputActions } from '@common/quiditch/constants';
 import { BaseState } from '@common/engine/BaseState';
+import { IPhysicsManager } from './engine/base/IPhysicsManager';
 @Controller()
 export class AppController {
   private readonly _gameManager: GameManager;
+
+  private readonly _physicsManager: IPhysicsManager;
   constructor(private readonly appService: AppService, private readonly gameService: GameService) {
 
-    let gravity = { x: 0.0, y: 0.0 };
-    let world = new World(gravity); const bodyFactory = new RapierBodyFactory(world);
-    const physicsManager = new RapierPhysicsManager(world);
-    const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
-    this._gameManager = new GameManager(quiditchFactory, async () => {
-     
-     
-
-      //this._gameManager.addOnGoalHandler();
-
-
-
-    });
-    
-    physicsManager.init(this._gameManager);
+    const gravity = { x: 0.0, y: 0.0 };
+    const world = new World(gravity); 
+    const bodyFactory = new RapierBodyFactory(world);
+   this._physicsManager = new RapierPhysicsManager(world);
+    const quiditchFactory = new QuiditchFactory(bodyFactory, this._physicsManager);
+    this._gameManager = new GameManager(quiditchFactory, this._physicsManager);
     console.log("inited")
   }
 
@@ -48,29 +42,37 @@ export class AppController {
   @Post('control')
   async takeControl(@Body() body: { id: string }): Promise<string> {
 
-    const controlledChaser = this._gameManager.getChaserByPlayerId(body.id);
-    if(!controlledChaser){
-      const freeChaser =  this._gameManager.getChasers().filter(c=>c.getActor()?.getIsControlled()===false)[0];
+    const controlledChaser = body.id ? this._gameManager.getChaserByPlayerId(body.id) : undefined;
+    if (!controlledChaser) {
+      const freeChaser = this._gameManager.getChasers().filter(c => c.getActor()?.getIsControlled() === false)[0];
 
-      if(freeChaser){
-          this._gameManager.setPlayerChaser(freeChaser, body.id);
-          return freeChaser.getActor()?.getId();
+      if (freeChaser) {
+        this._gameManager.setPlayerChaser(freeChaser, body.id);
+        console.log(freeChaser.getActor()?.getId());
+        return freeChaser.getActor()?.getId();
       }
-    }else{
+    } else {
       return controlledChaser.getActor()?.getId();
     }
-    
-    
+
+
   }
 
   @Post('action')
   async applyAction(@Body() body: ActionDto): Promise<void> {
 
+    if(body.action==="pause"){
+      this._gameManager.setPause(!this._gameManager.getPause());
+    }
+
     const chaser = this._gameManager.getChaserByPlayerId(body.id);
-    if(chaser){
+    if (chaser) {
       chaser.getActorController().applyAction(body.action, body.started);
     }
-  }
+  } 
 
 }
-export interface ActionDto{ id: string; action:GameInputActions; started:boolean }
+
+
+
+export interface ActionDto { id: string; action: GameInputActions; started: boolean }

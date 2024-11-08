@@ -7,6 +7,7 @@ export class HttpServerCommunicator implements IServerCommunicator{
     constructor(stateSync:StateSynchroniser){
         this._stateSync = stateSync;
     }
+
     startDirectionMoving(clientId: string, x: number, y: number): void {
         //throw new Error("Method not implemented.");
     }
@@ -24,14 +25,14 @@ export class HttpServerCommunicator implements IServerCommunicator{
            }).then(r=>res());
         })
     }
-    takeControl(clientId: string): Promise<string | undefined> {
+    takeControl(clientId?: string): Promise<string | undefined> {
         return new Promise((res, rej)=>{
             fetch("http://localhost:3000/control",{
              method:"POST",
              headers:{
                  'Content-Type':"application/json;charset=utf-8"
              },
-             body:JSON.stringify({id:clientId})
+             body:JSON.stringify({id:clientId||""})
             }).then(r=>res(r.json()));
          })
     }

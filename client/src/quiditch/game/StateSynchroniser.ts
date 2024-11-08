@@ -7,16 +7,23 @@ import { PlayerState } from "@common/quiditch/PlayerState";
 
 import { MeshBasedActor } from "../../engine/MeshBasedActor";
 import { ThreeMeshFactory } from "../three/factory/ThreeMeshFactory";
+import { IQuiditchFactory } from "@common/quiditch/IQuiditchActorFactory";
+import { SceneManager } from "../../engine/SceneManager";
+import { MatchState } from "@common/quiditch/MatchState";
 export class StateSynchroniser implements ITickable {
     private _states: BaseState[] = [];
     private _meshesMap: { [id: string]: MeshBasedActor } = {};
 
     private _statesUpdated: boolean = true;
 
-    private readonly _meshFactory: ThreeMeshFactory;
-    constructor(meshFactory: ThreeMeshFactory) {
-        this._meshFactory = meshFactory;
+    private readonly _meshFactory: IQuiditchFactory<MeshBasedActor>;
 
+    private readonly _sceneManager: SceneManager;
+
+    private _paused:boolean=false;
+    constructor(meshFactory: IQuiditchFactory<MeshBasedActor>, sceneManager:SceneManager) {
+        this._meshFactory = meshFactory;
+        this._sceneManager = sceneManager;
     }
     public setStates(states: BaseState[]): void {
 
@@ -32,38 +39,8 @@ export class StateSynchroniser implements ITickable {
 
         if (!this._statesUpdated && !this._syncStarted) {
             this._syncStarted = true;
-            //console.log("sync States");
-            for (const state of this._states) {
-                if ((state as ActorState).id) {
-                    const actorSate = state as ActorState;
-                    let meshActor = this._meshesMap[actorSate.id as string]
-                    if (!meshActor) {
-                        switch (state.name) {
-                            case ActorNames.player:
-                                const playerState = state as PlayerState;
-                                meshActor = await this._meshFactory.createPlayer(playerState.color, actorSate.id);
-                                this._meshesMap[actorSate.id as string] = meshActor;
-                                break;
-
-                            case ActorNames.quaffle:
-                                meshActor = await this._meshFactory.createQuaffle(actorSate.id);
-                                this._meshesMap[actorSate.id as string] = meshActor;
-                                break;
-                            case ActorNames.gates:
-                                meshActor = await this._meshFactory.createGates(2, actorSate.id);
-                                this._meshesMap[actorSate.id as string] = meshActor;
-                                break;
-                            case ActorNames.walls:
-                                meshActor = await this._meshFactory.createWalls(actorSate.id);
-                                this._meshesMap[actorSate.id as string] = meshActor;
-                                break;
-                        }
-                    }
-                    if (meshActor) {
-                        await meshActor.setState(actorSate);
-                    }
-                }
-            }
+            await this._syncActorStates();
+            this._syncMatchState();
             this._statesUpdated = true
             this._syncStarted = false
 
@@ -80,6 +57,57 @@ export class StateSynchroniser implements ITickable {
                 return a;
             }
         }
+    }
+    public getMatchState():MatchState|undefined{
+        return this._states.filter(s=>s.name==="match")[0] as MatchState;
+    }
+
+    public getActorStates():ActorState[]{
+        return this._states.filter(s=> (s as ActorState).id) as ActorState[];
+    }
+
+    private async _syncActorStates(){
+        const actorStates = this.getActorStates();
+        for (const actorSate of actorStates) {              
+                
+                let meshActor = this._meshesMap[actorSate.id as string]
+                if (!meshActor) {
+                    switch (actorSate.name) {
+                        case ActorNames.player:
+                            const playerState = actorSate as PlayerState;
+                            meshActor = await this._meshFactory.createPlayer(playerState.color, actorSate.id);
+                            this._meshesMap[actorSate.id as string] = meshActor;
+                            break;
+
+                        case ActorNames.quaffle:
+                            meshActor = await this._meshFactory.createQuaffle(actorSate.id);
+                            this._meshesMap[actorSate.id as string] = meshActor;
+                            break;
+                        case ActorNames.gates:
+                            meshActor = await this._meshFactory.createGates(2, actorSate.id);
+                            this._meshesMap[actorSate.id as string] = meshActor;
+                            break;
+                        case ActorNames.walls:
+                            meshActor = await this._meshFactory.createWalls(actorSate.id);
+                            this._meshesMap[actorSate.id as string] = meshActor;
+                            break;
+                    }
+                }
+                if (meshActor) {
+                    await meshActor.setState(actorSate);
+                }
+            
+        }
+    }
+
+    private _syncMatchState(){
+        const matchState = this.getMatchState();
+        // if(matchState){
+        //     if(this._paused!=matchState.paused){
+        //         this._paused = matchState.paused;
+        //         this._paused?this._sceneManager.stopTime():this._sceneManager.startTime();
+        //     }
+        // }
     }
 
     public getStates():BaseState[]{

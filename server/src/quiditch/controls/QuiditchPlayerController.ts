@@ -38,6 +38,7 @@ export class QuiditchPlayerController extends ActorController<QuiditchInputActio
 
             case QuiditchInputActions.attack:
                 (this._actor as PlayerActor).attack();
+            
         }
        
     }

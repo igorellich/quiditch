@@ -10,12 +10,14 @@ import { ThreeSceneManager } from "./engine/three/ThreeSceneManager";
 import { ThreeStats } from "./engine/three/threeStats";
 import { KeyboardInputController } from "./quiditch/controls/KeyboardInput";
 import { ThreeMeshFactory } from "./quiditch/three/factory/ThreeMeshFactory";
-import { MeshBasedActor } from "./engine/MeshBasedActor";
 
 
-
-
-const initClient = async (id:string): Promise<StateSynchroniser> => {
+const initClient = async (): Promise<StateSynchroniser> => {
+    let id:string = window.localStorage.getItem("clientId") as string;
+    if (!id) {
+        id = Math.random().toString();
+        window.localStorage.setItem("clientId", id);
+    }
     const scene = new Scene();
     const canvas = document.createElement("canvas") as HTMLCanvasElement;
     document.body.appendChild(canvas)
@@ -37,9 +39,16 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     
     //const debugRenderer = new RapierDebugRenderer(scene, world, 5);
 //sceneManager.addTickable(debugRenderer);
-    const keyboardInputController = new KeyboardInputController<GameInputActions>({ attack: [" "], moveBackward: ["s"], moveForward: ["w"], turnLeft: ["a"], turnRight: ["d"] });
-    keyboardInputController.addOnInputChangeHandler(async (action,started)=>{
-        await serverCommunicator.applyAction(id, action, started);
+    const keyboardInputController = new KeyboardInputController<GameInputActions>({
+        pause: { keys: ['p'], single: true },
+        attack: { keys: [' '], single: true },
+        moveBackward: { keys: ['s'], single: false },
+        moveForward: { keys: ['w'], single: false },
+        turnLeft: { keys: ['a'], single: false },
+        turnRight: { keys: ['d'], single: false }
+    });
+    keyboardInputController.addOnInputChangeHandler(async (action, started) => {
+        await serverCommunicator.applyAction(id, action, started);        
     });
 
     //@ts-ignore
@@ -68,7 +77,7 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     //     sceneManager.addTickable(plane);
     // }
     const meshWalls = await meshFactory.createWalls();
-    const stateSync = new StateSynchroniser(meshFactory);
+    const stateSync = new StateSynchroniser(meshFactory, sceneManager);
     sceneManager.addTickable(stateSync);
     setInterval(() => {
         const matchState: MatchState = stateSync.getStates().filter(s => (s as MatchState).score)[0] as MatchState;
@@ -89,7 +98,7 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
     //const serverCommunicator:IServerCommunicator = new LocalServerCommunicator(server, stateSync);
     const serverCommunicator = new HttpServerCommunicator(stateSync);
     const controlledActorId = await serverCommunicator.takeControl(id);
-    //serverCommunicator.takeControl("2");
+    
     if (controlledActorId) {
         setTimeout(() => {
             const controlledActor = stateSync.getActorById(controlledActorId);
@@ -107,7 +116,7 @@ const initClient = async (id:string): Promise<StateSynchroniser> => {
 
 
 
-const client1 = await initClient("1");
+const client1 = await initClient();
 //const client2 = await initClient("2");
 
 

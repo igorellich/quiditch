@@ -16,6 +16,7 @@ import { CircleZone } from "src/engine/ai/zone/CircleZone";
 import { IZone } from "src/engine/ai/zone/IZone";
 import { Team } from "src/engine/game/Team";
 import { Score } from "@common/quiditch/Score";
+import { IPhysicsManager } from "src/engine/base/IPhysicsManager";
 
 
 export class GameManager{    
@@ -23,8 +24,7 @@ export class GameManager{
 
     private readonly _quiditchFactory:IQuiditchFactory<IActor>;
 
-    private readonly _onInit?:()=>void;
-
+    
     private readonly _tickers:ITickable[]=[];
 
   
@@ -36,6 +36,7 @@ export class GameManager{
     
     private _stateWatchActors:IActor[]=[];
 
+    private readonly _physicsManager:IPhysicsManager;
     private _playerChasers:{
         playerId:string,
         chaser:Chaser
@@ -45,10 +46,10 @@ export class GameManager{
         this._goalHandlers.push(handler);
     }
     
-    constructor(quiditchFactory:IQuiditchFactory<IActor>, onInit?:()=>void){
+    constructor(quiditchFactory:IQuiditchFactory<IActor>, physicsManager:IPhysicsManager){
                
         this._quiditchFactory = quiditchFactory;
-        this._onInit = onInit;
+        this._physicsManager = physicsManager;
         this._init();        
     }
 
@@ -67,13 +68,14 @@ export class GameManager{
     private _getMatchState():MatchState{
         const matchState = new MatchState();
         matchState.score = this._score;
+        matchState.paused = this._pause;
         return matchState;
     }
     private _tickInterval:any=0;
     private _score:Score={};
     private async _init(){
 
-        
+        this.addTickable(this._physicsManager);
         this._teams.push(await this._createQuiditchTeam(70, true));
         this._teams.push(await this._createQuiditchTeam(70, false));
         for (const team of this._teams) {
@@ -97,23 +99,36 @@ export class GameManager{
             const ball = await this._quiditchFactory.createQuaffle();
             ball.setPosition(0, 0);
             this._stateWatchActors.push(ball);
-            this.addTickable(ball);
-            if (this._onInit) {
-                this._onInit();
-            }
+            this.addTickable(ball);          
         }, 2000)
        
       
         this.addOnGoalHandler((team:Team)=>this._onGoal());
         let elapsedTime = 0;
         const freq = (1/60)*1000;
+        
         this._tickInterval = setInterval(async () => {
-            elapsedTime += freq;
-            for (const tickable of this._tickers) {
-                tickable.tick(elapsedTime, freq);
+            if (!this._pause) {
+                elapsedTime += freq;
+                for (const tickable of this._tickers) {
+                    await tickable.tick(elapsedTime, freq);
+                }
+                const collisions = this._physicsManager.getCollisions(this.getActors());
+
+                if (collisions.length > 0) {
+                    collisions.forEach(c => {
+                        if (c.actorB) {
+                            c.actorA?.onCollision(c, elapsedTime);
+                        }
+                        if (c.actorA) {
+                            c.actorB?.onCollision(c, elapsedTime);
+                        }
+
+                    })
+                }
+                const newStates = await Promise.all(this._stateWatchActors.map(a => a.getState()));
+                this._actorStates = newStates;
             }
-            const newStates = await Promise.all(this._stateWatchActors.map(a => a.getState()));
-            this._actorStates = newStates;
         }, freq);
 
        
@@ -337,5 +352,12 @@ export class GameManager{
     public getTickers():ITickable[]{
         return [...this._tickers];
     }
-
+    private _pause:boolean=false;
+    setPause(pause:boolean){
+        this._pause = pause;
+    }
+    
+    getPause():boolean{
+        return this._pause;
+    }
 }

@@ -1,29 +1,25 @@
 import { GameInputActions, KeyboardInputMap } from "@common/quiditch/constants";
 import { InputController } from "../../engine/controls/BaseInput";
 
-    export class KeyboardInputController<TGameActions> extends InputController<GameInputActions> {
+export class KeyboardInputController<TGameActions> extends InputController<GameInputActions> {
 
-        constructor(keyboardInputMap: KeyboardInputMap) {
-            super();
-            document.addEventListener('keydown', (e) => {
-                //if ((actorController.getActor() as PlayerActor)?.getIsControlled()) {
-                    const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].includes(e.key))[0];
-                    if (action) {
-                        //actorController.applyAction(action as unknown as TGameActions, true)
-                        this._onInputChange(action as unknown as GameInputActions, true);
-                    }
-                //}
-            })
+    constructor(keyboardInputMap: KeyboardInputMap) {
+        super();
+        document.addEventListener('keydown', (e) => {
 
-            document.addEventListener('keyup', (e) => {
-                //if ((actorController.getActor() as PlayerActor)?.getIsControlled()) {
-                    const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].includes(e.key))[0];
+            const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].keys.includes(e.key))[0];
+            const actionDesc = keyboardInputMap[action as keyof KeyboardInputMap];
+            if (!actionDesc.single) {
+                this._onInputChange(action as unknown as GameInputActions, true);
+            }
+        })
 
-                    if (action) {
-                        //actorController.applyAction(action as unknown as TGameActions, false)
-                        this._onInputChange(action as unknown as GameInputActions, false);
-                    }
-                //}
-            })
+        document.addEventListener('keyup', (e) => {
+
+            const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].keys.includes(e.key))[0];
+
+            const actionDesc = keyboardInputMap[action as keyof KeyboardInputMap];
+            this._onInputChange(action as unknown as GameInputActions, actionDesc.single ? true : false);
+        })
     }
 }
