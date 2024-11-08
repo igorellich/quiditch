@@ -4,7 +4,7 @@ import { IZone } from "../../engine/ai/zone/IZone";
 import { ITargetPointer } from "../controls/ITargetPointer";
 import { IActor } from "@common/engine/IActor";
 import { normaliseAngle } from "../../engine/utils/geometryUtils";
-import { GameManager } from "../game/GameManager";
+import { QuiditchGameManager } from "../game/QuiditchGameManager";
 import { ActorController } from "../../engine/controls/ActorController";
 import { GameInputActions } from "@common/quiditch/constants";
 import { Patroller } from "src/engine/ai/players/Patroller";
@@ -12,8 +12,8 @@ import { PlayerActor } from "../factory/components/PlayerActor";
 import { Quaffle } from "../factory/components/balls/Quaffle";
 
 export class Chaser extends Patroller<Vector2d> {
-    private readonly _gameManager: GameManager;
-    constructor(zone: IZone<Vector2d>, targetPointer: ITargetPointer<Vector2d, GameInputActions, IActor>, reachInterval: number, gameManager: GameManager) {
+    private readonly _gameManager: QuiditchGameManager;
+    constructor(zone: IZone<Vector2d>, targetPointer: ITargetPointer<Vector2d, GameInputActions, IActor>, reachInterval: number, gameManager: QuiditchGameManager) {
         super(zone, targetPointer, reachInterval);
         this._gameManager = gameManager;
 

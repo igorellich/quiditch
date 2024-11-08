@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { AppService } from './app.service';
 import { GameService } from './game/game.service';
-import { GameManager } from './quiditch/game/GameManager';
+import { QuiditchGameManager } from './quiditch/game/QuiditchGameManager';
 import { World } from "@dimforge/rapier2d-compat"
 import { RapierBodyFactory } from './quiditch/factory/rapier/RapierBodyFactory';
 import { RapierPhysicsManager } from './engine/rapier/RapierPhysicsManager';
@@ -11,7 +11,7 @@ import { BaseState } from '@common/engine/BaseState';
 import { IPhysicsManager } from './engine/base/IPhysicsManager';
 @Controller()
 export class AppController {
-  private readonly _gameManager: GameManager;
+  private readonly _gameManager: QuiditchGameManager;
 
   private readonly _physicsManager: IPhysicsManager;
   constructor(private readonly appService: AppService, private readonly gameService: GameService) {
@@ -21,7 +21,7 @@ export class AppController {
     const bodyFactory = new RapierBodyFactory(world);
    this._physicsManager = new RapierPhysicsManager(world);
     const quiditchFactory = new QuiditchFactory(bodyFactory, this._physicsManager);
-    this._gameManager = new GameManager(quiditchFactory, this._physicsManager);
+    this._gameManager = new QuiditchGameManager(quiditchFactory, this._physicsManager);
     console.log("inited")
   }
 
