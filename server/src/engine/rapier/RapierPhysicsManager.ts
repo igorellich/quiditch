@@ -13,15 +13,9 @@ export class RapierPhysicsManager implements IPhysicsManager {
 
    
     constructor(world: World) {
-        this._world = world;
-        
+        this._world = world;        
     }
-
-    private _paused:boolean=false;
-    setPause(pause: boolean): void {
-        this._paused = pause;
-    }
-   
+  
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {           
             this.step(deltaTime);        
     }
