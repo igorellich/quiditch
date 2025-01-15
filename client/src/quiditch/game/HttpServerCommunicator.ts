@@ -36,17 +36,27 @@ export class HttpServerCommunicator implements IServerCommunicator{
             }).then(r=>res(r.json()));
          })
     }
+    private lastUpdateTime:number=0;
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-        return new Promise((res, rej)=>{
-            const req = new XMLHttpRequest();
-            req.open("GET","http://localhost:3000/state");
-            req.onload = ()=>{
-                this._stateSync.setStates(JSON.parse(req.response));
-                res();
-            }
-            req.send();
-        })
-      
+        if (this.lastUpdateTime > 0.01) {
+            this.lastUpdateTime = 0;
+            return new Promise((res, rej) => {
+                let start = Date.now()
+                const req = new XMLHttpRequest();
+                req.open("GET", "http://localhost:3000/state");
+                req.onload = () => {
+                    //console.log(Date.now() - start);
+                    this._stateSync.setStates(JSON.parse(req.response));
+                    //console.log(Date.now()-start);
+
+                    res();
+                }
+                req.send();
+            })
+        }else{
+            this.lastUpdateTime+=deltaTime;
+        }
+
     }
     
 }

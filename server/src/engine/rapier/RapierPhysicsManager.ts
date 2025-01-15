@@ -13,7 +13,8 @@ export class RapierPhysicsManager implements IPhysicsManager {
 
    
     constructor(world: World) {
-        this._world = world;        
+        this._world = world;    
+        world.takeSnapshot();
     }
   
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {           
