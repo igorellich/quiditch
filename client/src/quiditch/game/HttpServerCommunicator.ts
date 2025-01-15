@@ -4,8 +4,11 @@ import { StateSynchroniser } from "./StateSynchroniser";
 
 export class HttpServerCommunicator implements IServerCommunicator{
     private readonly _stateSync:StateSynchroniser
-    constructor(stateSync:StateSynchroniser){
+
+    private readonly _clientId:string;
+    constructor(stateSync:StateSynchroniser, clientId:string){
         this._stateSync = stateSync;
+        this._clientId = clientId;
     }
 
     startDirectionMoving(clientId: string, x: number, y: number): void {
@@ -40,19 +43,29 @@ export class HttpServerCommunicator implements IServerCommunicator{
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         if (this.lastUpdateTime > 0.01) {
             this.lastUpdateTime = 0;
-            return new Promise((res, rej) => {
-                let start = Date.now()
-                const req = new XMLHttpRequest();
-                req.open("GET", "http://localhost:3000/state");
-                req.onload = () => {
-                    //console.log(Date.now() - start);
-                    this._stateSync.setStates(JSON.parse(req.response));
-                    //console.log(Date.now()-start);
+            // return new Promise((res, rej) => {
+            //     //let start = Date.now()
+            //     const req = new XMLHttpRequest();
+            //     req.open("GET", "http://localhost:3000/state");
+            //     req.onload = () => {
+            //         //console.log(Date.now() - start);
+            //         this._stateSync.setStates(JSON.parse(req.response));
+            //         //console.log(Date.now()-start);
 
-                    res();
-                }
-                req.send();
-            })
+            //         res();
+            //     }
+            //     req.send();
+            // })
+            return new Promise(async (res, rej)=>{
+                const result = await fetch("http://localhost:3000/state",{
+                 method:"POST",
+                 headers:{
+                     'Content-Type':"application/json;charset=utf-8"
+                 },
+                 body:JSON.stringify({id:this._clientId})
+                });//.then(r=>res(r.json()));
+                this._stateSync.setStates(await result.json());
+             })
         }else{
             this.lastUpdateTime+=deltaTime;
         }

@@ -77,7 +77,7 @@ export class SceneComponentController {
 
             //const serverCommunicator:IServerCommunicator = new LocalServerCommunicator(server, stateSync);
 
-            this._serverCommunicator = new HttpServerCommunicator(this._stateSynchroniser);
+            this._serverCommunicator = new HttpServerCommunicator(this._stateSynchroniser, clientId);
 
             this._serverCommunicator.takeControl(clientId).then((controlledActorId) => {
                 this._controlledActorId = controlledActorId;
