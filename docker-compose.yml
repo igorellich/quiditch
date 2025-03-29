@@ -1,0 +1,13 @@
+services:
+  app:
+    build: 
+      context: ./
+      dockerfile: ./server/Dockerfile
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    volumes:
+      - ./server/src:/app/server/src
+      - ./common:/app/common
+  
+    command: npm run start:debug

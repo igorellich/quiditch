@@ -14,9 +14,10 @@ export class AppController {
   
   
   constructor(private readonly appService: AppService, private readonly gameService: GameService) {
-
+    // TODO перенести логику в AppService
    
   }
+
 
   private readonly _gamePlayersMap:Map<string, QuiditchGameManager>=new Map<string, QuiditchGameManager>();
 
@@ -35,7 +36,7 @@ export class AppController {
     return result;
   }
 
-  @Post('greet')
+  @Get('greets')
   async getGreetingMessage(@Body() body: { name: string }): Promise<string> {
     if (await this.gameService.addPlayer(body.name)) {
       return this.appService.getGreetingMessage(body.name);

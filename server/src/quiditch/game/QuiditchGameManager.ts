@@ -33,14 +33,24 @@ export class QuiditchGameManager extends BaseGameManager{
     public addOnGoalHandler(handler:(team:Team)=>void){
         this._goalHandlers.push(handler);
     }
-    
+    debounce(callback, wait, context){
+        let timeoutId = null;
+        return (...args) => {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => {
+            callback.apply(context,...args);
+          }, wait);
+        };
+      }
     constructor(quiditchFactory:IQuiditchFactory<IActor>, physicsManager:IPhysicsManager){
         super(physicsManager); 
         this._quiditchFactory = quiditchFactory;        
-        this._init();        
+        this._init();       
+
     }
 
     public getStates():BaseState[]{
+        this._debouncePause();
         return [...super.getStates(), this._getMatchState()];
     }
 
@@ -80,8 +90,10 @@ export class QuiditchGameManager extends BaseGameManager{
         }, 2000)       
       
         this.addOnGoalHandler((team:Team)=>this._onGoal());
-    }
 
+        this._debouncePause();
+    }
+    private _debouncePause = this.debounce(()=>this.setPause(true),5000,this);
     private async _onGoal():Promise<void>{
         const quaffle = await this.getQuaffle();        
         this.setHideQuaffle(true);
