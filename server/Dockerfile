@@ -11,4 +11,4 @@ COPY server/tsconfig.json .
 COPY server/nest-cli.json .
 RUN npm install
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start:debug"]
