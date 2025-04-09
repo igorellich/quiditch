@@ -36,10 +36,10 @@ export class AppController {
     return result;
   }
 
-  @Get('greets')
+  @Get('greet')
   async getGreetingMessage(@Body() body: { name: string }): Promise<string> {
     if (await this.gameService.addPlayer(body.name)) {
-      return this.appService.getGreetingMessage(body.name);
+      return      this.appService.getGreetingMessage(body.name);
     } else {
       return null;
     }

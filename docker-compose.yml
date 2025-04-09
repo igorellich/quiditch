@@ -11,3 +11,4 @@ services:
       - ./common:/app/common      
   
     command: npm run start:debug
+    
