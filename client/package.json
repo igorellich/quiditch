@@ -4,21 +4,25 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tsc":"tsc -watch",
-    "start-client":"npm run dev",
-    "start-server":"cd ../server && npm run start",
-    "stack":"start npm run start-client && start npm run  start-server"
+    "tsc": "tsc -watch",
+    "start-client": "npm run dev",
+    "start-server": "cd ../server && npm run start",
+    "stack": "start npm run start-client && start npm run  start-server"
   },
   "devDependencies": {
+    "@types/node": "^22.14.1",
+    "@types/react": "^19.1.1",
+    "@types/react-dom": "^19.1.2",
     "@types/three": "^0.167.1",
+    "concurrently": "latest",
     "lil-gui": "^0.19.2",
     "typescript": "^5.2.2",
     "vite": "^5.3.4",
-    "vite-plugin-top-level-await": "^1.4.4",
-    "concurrently":"latest"
+    "vite-plugin-glsl": "^1.4.0",
+    "vite-plugin-top-level-await": "^1.4.4"
   },
   "dependencies": {
     "@dimforge/rapier2d": "^0.14.0",

@@ -1,5 +1,5 @@
 services:
-  app:
+  server:
     build: 
       context: ./
       dockerfile: ./server/Dockerfile
@@ -8,6 +8,33 @@ services:
       - "9229:9229"
     volumes:
       - ./server/src:/app/server/src
-      - ./common:/app/common      
+      - ./common:/app/common  
+    networks:
+      - app-network   
   
     command: npm run start:debug
+  client:
+    build: 
+      context: ./client
+      dockerfile: ./Dockerfile
+    ports:
+      - "5173:5173"
+      # - "9229:9229"
+    depends_on:
+      - server
+      
+    environment:
+      - SERVER_URL=http://server:3000  # Use service name as hostname
+   
+    volumes:
+      - ./src:/app/client/src
+      - ../common:/app/common      
+
+    networks:
+      - app-network
+  
+    command: npm run dev
+
+networks:
+  app-network:
+    driver: bridge

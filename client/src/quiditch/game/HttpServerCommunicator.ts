@@ -4,11 +4,12 @@ import { StateSynchroniser } from "./StateSynchroniser";
 
 export class HttpServerCommunicator implements IServerCommunicator{
     private readonly _stateSync:StateSynchroniser
-
+    private readonly _serverUrl:string;
     private readonly _clientId:string;
     constructor(stateSync:StateSynchroniser, clientId:string){
         this._stateSync = stateSync;
         this._clientId = clientId;
+        this._serverUrl = process.env.SERVER_URL||"http://localhost:3000"
     }
 
     startDirectionMoving(clientId: string, x: number, y: number): void {
@@ -19,7 +20,7 @@ export class HttpServerCommunicator implements IServerCommunicator{
     }
     async applyAction(clientId: string, action: GameInputActions, started: boolean): Promise<void> {
         return new Promise((res, rej)=>{
-           fetch("http://localhost:3000/action",{
+           fetch(`${this._serverUrl}/action`,{
             method:"POST",
             headers:{
                 'Content-Type':"application/json;charset=utf-8"
@@ -30,7 +31,7 @@ export class HttpServerCommunicator implements IServerCommunicator{
     }
     takeControl(clientId?: string): Promise<string | undefined> {
         return new Promise((res, rej)=>{
-            fetch("http://localhost:3000/control",{
+            fetch(`${this._serverUrl}/control`,{
              method:"POST",
              headers:{
                  'Content-Type':"application/json;charset=utf-8"
@@ -57,7 +58,7 @@ export class HttpServerCommunicator implements IServerCommunicator{
             //     req.send();
             // })
             return new Promise(async (res, rej)=>{
-                const result = await fetch("http://localhost:3000/state",{
+                const result = await fetch(`${this._serverUrl}/state`,{
                  method:"POST",
                  headers:{
                      'Content-Type':"application/json;charset=utf-8"
