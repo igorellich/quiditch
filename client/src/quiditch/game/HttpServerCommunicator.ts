@@ -9,7 +9,7 @@ export class HttpServerCommunicator implements IServerCommunicator{
     constructor(stateSync:StateSynchroniser, clientId:string){
         this._stateSync = stateSync;
         this._clientId = clientId;
-        this._serverUrl = process.env.SERVER_URL||"http://localhost:3000"
+        this._serverUrl = "http://localhost:3000"
     }
 
     startDirectionMoving(clientId: string, x: number, y: number): void {

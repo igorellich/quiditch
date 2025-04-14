@@ -2,7 +2,7 @@ import { IActor } from "./IActor";
 import { Vector2d } from "./Vector2d";
 import { IMovable } from "./Imoveable";
 import { Collision } from "./Collision";
-import {normaliseAngle} from "../../server/src/engine/utils/geometryUtils"
+import {normaliseAngle} from "./utils/geometryUtils"
 import {ActorState} from "./ActorState"
 
 export abstract class Actor implements IActor {

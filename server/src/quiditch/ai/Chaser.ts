@@ -3,7 +3,7 @@ import { Vector2d } from "@common/engine/Vector2d";
 import { IZone } from "../../engine/ai/zone/IZone";
 import { ITargetPointer } from "../controls/ITargetPointer";
 import { IActor } from "@common/engine/IActor";
-import { normaliseAngle } from "../../engine/utils/geometryUtils";
+import { normaliseAngle } from "@common/engine/utils/geometryUtils";
 import { QuiditchGameManager } from "../game/QuiditchGameManager";
 import { ActorController } from "../../engine/controls/ActorController";
 import { GameInputActions } from "@common/quiditch/constants";

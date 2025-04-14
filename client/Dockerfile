@@ -1,14 +1,14 @@
 FROM node:22-alpine
 
 
-WORKDIR /app
+WORKDIR /app/client
 EXPOSE 5173
-# EXPOSE 9229
-COPY package.json .
-COPY tsconfig.json .
-COPY vite.config.ts .
-COPY index.html .
-COPY public/ /app/public/
+EXPOSE 9229
+COPY ./client/package.json .
+COPY ./client/tsconfig.json .
+COPY ./client/vite.config.ts .
+COPY ./client/index.html .
+COPY ./client/public/ /app/client/public/
 RUN npm install
 
 CMD ["npm", "run", "dev"]

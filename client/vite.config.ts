@@ -10,8 +10,18 @@ export default defineConfig({
     rollupOptions: {
       treeshake: false,
     },
+    sourcemap: true  // Generate source maps
     
   },
+  server: {
+    host: '0.0.0.0',  // Important for Docker
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      port: 5173,  // Must match the server port
+    }
+  },
+  
   resolve:{
     alias:[{
       find:"@common",replacement:resolve(__dirname,"../common")

@@ -4,17 +4,40 @@
     {
       "type": "node",
       "request": "attach",
-      "name": "Attach to Docker",
+      "name": "Attach to Docker server",
       "address": "localhost",
       "port": 9229,
       "localRoot": "${workspaceFolder}/server",
       "remoteRoot": "/app/server",
       "sourceMaps": true,
-      "outFiles": ["/app/server/dist/**/*.js"],
+      "outFiles": [
+        "/app/server/dist/**/*.js"
+      ],
       "resolveSourceMapLocations": [
         "/app/server/dist/**"
       ],
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Docker client",
+      "address": "localhost",
+      "port": 9230,
+      "localRoot": "${workspaceFolder}/client",
+      "remoteRoot": "/app/client",
+      "sourceMaps": true,
+      "outFiles": [
+        "/app/client/dist/**/*.js"
+      ],
+      "resolveSourceMapLocations": [
+        "/app/client/dist/**"
+      ],
+      "skipFiles": [
+        "<node_internals>/**"
+      ]
     }
   ]
 }

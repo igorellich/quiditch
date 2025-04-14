@@ -10,7 +10,8 @@
     "tsc": "tsc -watch",
     "start-client": "npm run dev",
     "start-server": "cd ../server && npm run start",
-    "stack": "start npm run start-client && start npm run  start-server"
+    "stack": "start npm run start-client && start npm run  start-server",
+    "debug": "node --inspect=0.0.0.0:9229 ./node_modules/vite/bin/vite.js"
   },
   "devDependencies": {
     "@types/node": "^22.14.1",
