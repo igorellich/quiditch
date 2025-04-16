@@ -8,31 +8,32 @@ services:
       - "9229:9229"
     volumes:
       - ./server/src:/app/server/src
-      - ./common:/app/common  
+      - ./common:/app/common
+      - ./server/tsconfig.json:/app/server/tsconfig.json
     
   
     command: npm run start:debug
-  client:
-    build: 
-      context: ./
-      dockerfile: ./client/Dockerfile
-    ports:
-      - "5173:5173"
-      - "9230:9229"
-    depends_on:
-      - server
+  # client:
+  #   build: 
+  #     context: ./
+  #     dockerfile: ./client/Dockerfile
+  #   ports:
+  #     - "5173:5173"
+  #     - "9230:9229"
+  #   depends_on:
+  #     - server
       
-    environment:
-      - SERVER_URL=http://server:3000  # Use service name as hostname
+  #   environment:
+  #     - SERVER_URL=http://server:3000  # Use service name as hostname
    
-    volumes:
-      - ./client/src:/app/client/src
-      - ./common:/app/common      
+  #   volumes:
+  #     - ./client/src:/app/client/src
+  #     - ./common:/app/common      
 
-    # networks:
-    #   - app-network
+  #   # networks:
+  #   #   - app-network
   
-    command: npm run dev
+  #   command: npm run dev
 
 # networks:
 #   app-network:

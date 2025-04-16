@@ -7,7 +7,7 @@
       "name": "Attach to Docker server",
       "address": "localhost",
       "port": 9229,
-      "localRoot": "${workspaceFolder}/server",
+      "localRoot": "${workspaceFolder}",
       "remoteRoot": "/app/server",
       "sourceMaps": true,
       "outFiles": [

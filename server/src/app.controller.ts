@@ -37,11 +37,11 @@ export class AppController {
   }
 
   @Get('greet')
-  async getGreetingMessage(@Body() body: { name: string }): Promise<string> {
+  async getGreetingMessage(@Body() body: { name: string }={name:"Batman"}): Promise<string> {
     if (await this.gameService.addPlayer(body.name)) {
       return      this.appService.getGreetingMessage(body.name);
     } else {
-      return null;
+      return `You are already Greeted, ${body.name}`;
     }
   }
   @Post('state')
