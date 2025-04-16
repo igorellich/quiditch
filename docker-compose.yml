@@ -9,8 +9,7 @@ services:
     volumes:
       - ./server/src:/app/server/src
       - ./common:/app/common  
-    # networks:
-    #   - app-network   
+    
   
     command: npm run start:debug
   client:

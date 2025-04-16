@@ -13,12 +13,12 @@
       "outFiles": [
         "/app/server/dist/**/*.js"
       ],
-      "resolveSourceMapLocations": [
-        "/app/server/dist/**"
-      ],
-      "skipFiles": [
-        "<node_internals>/**"
-      ]
+      // "resolveSourceMapLocations": [
+      //   "/app/server/dist/**"
+      // ],
+      // "skipFiles": [
+      //   "<node_internals>/**"
+      // ]
     },
     {
       "type": "node",
