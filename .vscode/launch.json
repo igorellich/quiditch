@@ -8,13 +8,13 @@
       "address": "localhost",
       "port": 9229,
       "localRoot": "${workspaceFolder}",
-      "remoteRoot": "/app/server",
+      "remoteRoot": "/app",
       "sourceMaps": true,
       "outFiles": [
-        "/app/server/dist/**/*.js"
+        "${workspaceFolder}/server/dist/**/*.js"
       ],
       // "resolveSourceMapLocations": [
-      //   "/app/server/dist/**"
+      //   "${workspaceFolder}/server/dist/**"
       // ],
       // "skipFiles": [
       //   "<node_internals>/**"

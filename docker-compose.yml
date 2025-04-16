@@ -10,7 +10,8 @@ services:
       - ./server/src:/app/server/src
       - ./common:/app/common
       - ./server/tsconfig.json:/app/server/tsconfig.json
-    
+      - /app/server/node_modules
+      - ./:/app
   
     command: npm run start:debug
   # client:
