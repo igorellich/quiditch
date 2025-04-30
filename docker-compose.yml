@@ -37,7 +37,7 @@ services:
     # networks:
     #   - app-network
   
-    command: npm run debug
+    command: npm run dev
 
 # networks:
 #   app-network:

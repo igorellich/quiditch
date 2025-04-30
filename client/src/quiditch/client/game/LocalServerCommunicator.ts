@@ -27,6 +27,9 @@ export class LocalServerCommunicator implements IServerCommunicator{
     }
 
     public async applyAction(clientId: string, action:GameInputActions, started:boolean):Promise<void>{
+        if(action===GameInputActions.pause){
+            this._gameManager.setPause(!this._gameManager.getPause());
+        }
         const playerChaser = this._getPlayerChaser(clientId);
         if (playerChaser) {
             const actorController = playerChaser.getActorController();
@@ -76,6 +79,7 @@ export class LocalServerCommunicator implements IServerCommunicator{
    
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         this._stateSync.setStates(this._gameManager.getStates());
+        
     }
     public async init():Promise<void>{
         await this._gameManager.init();

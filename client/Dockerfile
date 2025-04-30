@@ -12,4 +12,4 @@ COPY ./client/index.html .
 COPY ./client/public/ /app/client/public/
 
 
-CMD ["npm", "run", "debug"]
+CMD ["npm", "run", "dev"]

@@ -19,9 +19,10 @@ export default defineConfig({
     strictPort: true,
     hmr: {
       port: 5173,  // Must match the server port
-    }
+    },
+    watch: { usePolling: true }
   },
-  
+
   resolve:{
     alias:[{
       find:"@common",replacement:resolve(__dirname,"./src/engine/common")
