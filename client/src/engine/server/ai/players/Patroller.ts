@@ -1,8 +1,9 @@
-import { GameInputActions } from "@common/quiditch/constants";
+
 import { ITargetPointer } from "../../../../quiditch/server/controls/ITargetPointer";
 import { IActor } from "@common/IActor";
 import { ITickable } from "@common/ITickable";
 import { IZone } from "../zone/IZone";
+import { GameInputActions } from "../../../../quiditch/common/constants";
 
 export class Patroller<TPoint> implements ITickable{
     protected readonly _targetPointer:ITargetPointer<TPoint, GameInputActions, IActor>;

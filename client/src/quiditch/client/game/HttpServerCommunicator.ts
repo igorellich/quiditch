@@ -11,6 +11,9 @@ export class HttpServerCommunicator implements IServerCommunicator{
         this._clientId = clientId;
         this._serverUrl = "http://localhost:3000"
     }
+    init(): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
 
     startDirectionMoving(clientId: string, x: number, y: number): void {
         //throw new Error("Method not implemented.");

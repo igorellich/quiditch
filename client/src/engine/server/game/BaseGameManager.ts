@@ -3,9 +3,10 @@ import { BaseState } from "@common/BaseState"
 import { IActor } from "@common/IActor";
 import { ITickable } from "@common/ITickable";
 import { Vector2d } from "@common/Vector2d";
-import { IZone } from "src/engine/ai/zone/IZone";
-import { Team } from "src/engine/game/Team";
-import { IPhysicsManager } from "src/engine/base/IPhysicsManager";
+import { IPhysicsManager } from "../base/IPhysicsManager";
+import { Team } from "./Team";
+import { IZone } from "../ai/zone/IZone";
+
 
 
 export class BaseGameManager {

@@ -1,5 +1,6 @@
 import { ITickable } from "@common/ITickable";
-import { GameInputActions } from "@common/quiditch/constants";
+import { GameInputActions } from "../../common/constants";
+
 
 export interface IServerCommunicator extends ITickable{
     startDirectionMoving(clientId:string, x:number, y:number):void;

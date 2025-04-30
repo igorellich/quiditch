@@ -10,7 +10,8 @@ export default defineConfig({
     rollupOptions: {
       treeshake: false,
     },
-    sourcemap: true  // Generate source maps
+    sourcemap: true,  // Generate source maps
+    target: 'esnext' //browsers can handle the latest ES features
     
   },
   server: {
