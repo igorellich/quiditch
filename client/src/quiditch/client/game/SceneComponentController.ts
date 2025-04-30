@@ -77,7 +77,7 @@ export class SceneComponentController {
             threeSceneManager.addTickable(this._stateSynchroniser);
 
             this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser);
-
+            await this._serverCommunicator.init();
             //this._serverCommunicator = new HttpServerCommunicator(this._stateSynchroniser, clientId);
 
             this._serverCommunicator.takeControl(clientId).then((controlledActorId) => {

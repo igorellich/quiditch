@@ -15,7 +15,7 @@ export class LocalServerCommunicator implements IServerCommunicator{
     private readonly _gameManager:QuiditchGameManager;
 
     private readonly _stateSync:StateSynchroniser;
-    constructor(stateSync:StateSynchroniser){
+     constructor(stateSync:StateSynchroniser){
         
         this._stateSync = stateSync;
         const gravity = { x: 0.0, y: 0.0 };
@@ -76,6 +76,9 @@ export class LocalServerCommunicator implements IServerCommunicator{
    
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         this._stateSync.setStates(this._gameManager.getStates());
+    }
+    public async init():Promise<void>{
+        await this._gameManager.init();
     }
   
 

@@ -11,4 +11,5 @@ export interface IServerCommunicator extends ITickable{
     applyAction(clientId: string, action:GameInputActions, started:boolean):Promise<void>;
 
     takeControl(clientId:string):Promise<string|undefined>;
+    init():Promise<void>;
 }

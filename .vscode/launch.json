@@ -25,7 +25,7 @@
       "request": "attach",
       "name": "Attach to Docker client",
       "address": "localhost",
-      "port": 9230,
+      "port": 9229,
       "localRoot": "${workspaceFolder}",
       "remoteRoot": "/app",
       "sourceMaps": true,

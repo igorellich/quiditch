@@ -20,7 +20,7 @@ services:
       dockerfile: ./client/Dockerfile
     ports:
       - "5173:5173"
-      - "9230:9229"
+      - "9229:9229"
     # depends_on:
     #   server:
     #     condition: service_started
@@ -29,7 +29,7 @@ services:
       - SERVER_URL=http://server:3000  # Use service name as hostname
    
     volumes:
-      - ./common:/app/common
+      # - ./common:/app/common
       - /app/client/node_modules
       - ./client:/app/client
             

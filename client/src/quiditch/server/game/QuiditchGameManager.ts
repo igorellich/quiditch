@@ -45,7 +45,7 @@ export class QuiditchGameManager extends BaseGameManager{
     constructor(quiditchFactory:IQuiditchFactory<IActor>, physicsManager:IPhysicsManager){
         super(physicsManager); 
         this._quiditchFactory = quiditchFactory;        
-        this._init();       
+               
 
     }
 
@@ -62,7 +62,7 @@ export class QuiditchGameManager extends BaseGameManager{
     }
   
     private _score:Score={};
-    private async _init(){
+    public async init():Promise<void>{
        
         this._teams.push(await this._createQuiditchTeam(70, true));
         this._teams.push(await this._createQuiditchTeam(70, false));
