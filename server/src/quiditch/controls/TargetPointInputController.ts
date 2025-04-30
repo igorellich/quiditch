@@ -1,8 +1,8 @@
-import { ActorController } from "src/engine/controls/ActorController";
+import { ActorController } from "../../../engine/server/controls/ActorController";
 import { IActor } from "@common/engine/IActor";
 import { ITickable } from "@common/engine/ITickable";
 import { Vector2d } from "@common/engine/Vector2d";
-import { GameInputActions } from "@common/quiditch/constants";
+import { GameInputActions } from "../../common/constants";
 import { ITargetPointer } from "./ITargetPointer";
 
 export class TargetPointInputController implements ITickable, ITargetPointer<Vector2d, GameInputActions, IActor> {

@@ -1,15 +1,15 @@
 import { Vector2d } from "@common/engine/Vector2d";
 
-import { IZone } from "../../engine/ai/zone/IZone";
-import { ITargetPointer } from "../controls/ITargetPointer";
+import { IZone } from "../../../engine/server/ai/zone/IZone";
+import { ITargetPointer } from "../../../../client/src/quiditch/server/controls/ITargetPointerquiditch/controls/ITargetPointer";
 import { IActor } from "@common/engine/IActor";
 import { normaliseAngle } from "@common/engine/utils/geometryUtils";
-import { QuiditchGameManager } from "../game/QuiditchGameManager";
-import { ActorController } from "../../engine/controls/ActorController";
-import { GameInputActions } from "@common/quiditch/constants";
+import { QuiditchGameManager } from "../../../../client/src/quiditch/server/game/QuiditchGameManageruiditch/game/QuiditchGameManager";
+import { ActorController } from "../../../engine/server/controls/ActorController";
+import { GameInputActions } from "../../common/constants";
 import { Patroller } from "src/engine/ai/players/Patroller";
-import { PlayerActor } from "../factory/components/PlayerActor";
-import { Quaffle } from "../factory/components/balls/Quaffle";
+import { PlayerActor } from "../../../../client/src/quiditch/server/factory/components/PlayerActorh/factory/components/PlayerActor";
+import { Quaffle } from "../../../../client/src/quiditch/server/factory/components/balls/Quafflefactory/components/balls/Quaffle";
 
 export class Chaser extends Patroller<Vector2d> {
     private readonly _gameManager: QuiditchGameManager;

@@ -1,8 +1,8 @@
-import { BodyActorDecorator } from "src/engine/base/Actor/BodyActorDecorator";
-import { IBodiedActor } from "src/engine/base/Actor/IBodiedActor";
+import { BodyActorDecorator } from "../../../../engine/server/base/Actor/BodyActorDecorator";
+import { IBodiedActor } from "../../../../engine/server/base/Actor/IBodiedActor";
 import { Collision } from "@common/engine/Collision";
-import { IPhysicsManager } from "src/engine/base/IPhysicsManager";
-import {PlayerState} from "@common/quiditch/PlayerState"
+import { IPhysicsManager } from "../../../../engine/server/base/IPhysicsManager";
+import {PlayerState} from "../../../common/PlayerState"
 
 export class PlayerActor extends BodyActorDecorator {
 

@@ -1,17 +1,19 @@
 services:
-  server:
-    build: 
-      context: ./
-      dockerfile: ./server/Dockerfile
-    ports:
-      - "3000:3000"
-      - "9229:9229"
-    volumes:
-      - ./server/src:/app/server/src
-      - ./common:/app/common  
-    
+  # server:
+  #   build: 
+  #     context: ./
+  #     dockerfile: ./server/Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #     - "9229:9229"
+  #   volumes:
+  #     # - ./server/src:/app/server/src
+  #     - ./common:/app/common
+  #     # - ./server/tsconfig.json:/app/server/tsconfig.json
+  #     - /app/server/node_modules
+  #     - ./server:/app/server
   
-    command: npm run start:debug
+  #   command: npm run start:debug
   client:
     build: 
       context: ./
@@ -19,20 +21,23 @@ services:
     ports:
       - "5173:5173"
       - "9230:9229"
-    depends_on:
-      - server
+    # depends_on:
+    #   server:
+    #     condition: service_started
       
     environment:
       - SERVER_URL=http://server:3000  # Use service name as hostname
    
     volumes:
-      - ./client/src:/app/client/src
-      - ./common:/app/common      
+      - ./common:/app/common
+      - /app/client/node_modules
+      - ./client:/app/client
+            
 
     # networks:
     #   - app-network
   
-    command: npm run dev
+    command: npm run debug
 
 # networks:
 #   app-network:

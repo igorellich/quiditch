@@ -1,8 +1,8 @@
-import { BodyActorDecorator } from "src/engine/base/Actor/BodyActorDecorator";
-import { IBodiedActor } from "src/engine/base/Actor/IBodiedActor";
+import { BodyActorDecorator } from "../../../../engine/server/base/Actor/BodyActorDecorator";
+import { IBodiedActor } from "../../../../engine/server/base/Actor/IBodiedActor";
 import { Collision } from "@common/engine/Collision";
-import { IPhysicsManager } from "src/engine/base/IPhysicsManager";
-import { ActorNames } from "@common/quiditch/constants";
+import { IPhysicsManager } from "../../../../engine/server/base/IPhysicsManager";
+import { ActorNames } from "../../../common/constants";
 
 
 export class Gates extends BodyActorDecorator{

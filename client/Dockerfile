@@ -10,6 +10,6 @@ COPY ./client/tsconfig.json .
 COPY ./client/vite.config.ts .
 COPY ./client/index.html .
 COPY ./client/public/ /app/client/public/
-
+COPY /app/client/node_modules ./client/node_modules
 
 CMD ["npm", "run", "dev"]

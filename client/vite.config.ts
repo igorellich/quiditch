@@ -24,7 +24,7 @@ export default defineConfig({
   
   resolve:{
     alias:[{
-      find:"@common",replacement:resolve(__dirname,"../common")
+      find:"@common",replacement:resolve(__dirname,"./src/engine/common")
     }]
   }
 });

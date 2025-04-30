@@ -1,19 +1,21 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
-    "removeComments": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "removeComments": false,
+     "emitDecoratorMetadata": true,
+     "experimentalDecorators": true,
+     "allowSyntheticDefaultImports": true,
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
     "inlineSources": true,
-    "baseUrl": "./",
+    // "inlineSourceMap":true,    
+    "rootDir":"../",
+    "baseUrl":"./",
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
+     "skipLibCheck": true,
     "paths":{
       "@common/*":["../common/*"]
     }

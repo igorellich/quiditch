@@ -1,5 +1,5 @@
 import { IActor } from "@common/engine/IActor";
-import { ActorController } from "../../engine/controls/ActorController";
+import { ActorController } from "../../../engine/server/controls/ActorController";
 
 export interface ITargetPointer<TPoint, TGameActions, TActor extends IActor>{
     setTargetPoint(point?:TPoint):void;

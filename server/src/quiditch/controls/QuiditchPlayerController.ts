@@ -1,7 +1,7 @@
-import { ActorController } from "../../engine/controls/ActorController";
-import { GameInputActions as QuiditchInputActions } from "@common/quiditch/constants";
+import { ActorController } from "../../../engine/server/controls/ActorController";
+import { GameInputActions as QuiditchInputActions } from "../../common/constants";
 import { IActor } from "@common/engine/IActor";
-import { PlayerActor } from "../factory/components/PlayerActor";
+import { PlayerActor } from "../../../../client/src/quiditch/server/factory/components/PlayerActorh/factory/components/PlayerActor";
 export class QuiditchPlayerController extends ActorController<QuiditchInputActions, IActor>{
     
     

@@ -1,20 +1,20 @@
 import {BaseState} from "@common/engine/BaseState"
-import {MatchState} from "@common/quiditch/MatchState"
+import {MatchState} from "../../common/MatchState"
 import { IActor } from "@common/engine/IActor";
 import { Vector2d } from "@common/engine/Vector2d";
-import { ActorNames } from "@common/quiditch/constants";
-import { IQuiditchFactory } from "@common/quiditch/IQuiditchActorFactory";
-import { Gates } from "../factory/components/Gates";
-import { PlayerActor } from "../factory/components/PlayerActor";
-import { Quaffle } from "../factory/components/balls/Quaffle";
-import { Chaser } from "../ai/Chaser";
-import { QuiditchPlayerController } from "../controls/QuiditchPlayerController";
-import { TargetPointInputController } from "../controls/TargetPointInputController";
+import { ActorNames } from "../../common/constants";
+import { IQuiditchFactory } from "../../common/IQuiditchActorFactory";
+import { Gates } from "../../../../../server/src/quiditch/factory/components/Gatesitch/server/factory/components/Gates";
+import { PlayerActor } from "../../../../../server/src/quiditch/factory/components/PlayerActorerver/factory/components/PlayerActor";
+import { Quaffle } from "../../../../../server/src/quiditch/factory/components/balls/Quafflever/factory/components/balls/Quaffle";
+import { Chaser } from "../../../../../server/src/quiditch/ai/Chaserclient/src/quiditch/server/ai/Chaser";
+import { QuiditchPlayerController } from "../../../../../server/src/quiditch/controls/QuiditchPlayerControllerer/controls/QuiditchPlayerController";
+import { TargetPointInputController } from "../../../../../server/src/quiditch/controls/TargetPointInputController/controls/TargetPointInputController";
 import { CircleZone } from "src/engine/ai/zone/CircleZone";
 import { IZone } from "src/engine/ai/zone/IZone";
 import { Team } from "src/engine/game/Team";
-import { Score } from "@common/quiditch/Score";
-import { IPhysicsManager } from "src/engine/base/IPhysicsManager";
+import { Score } from "../../common/Score";
+import { IPhysicsManager } from "../../../engine/server/base/IPhysicsManager";
 import { BaseGameManager } from "src/engine/game/BaseGameManager";
 
 

@@ -1,5 +1,5 @@
 
-import { BodyActorDecorator } from "src/engine/base/Actor/BodyActorDecorator";
+import { BodyActorDecorator } from "../../../../../engine/server/base/Actor/BodyActorDecorator";
 import { Collision } from "@common/engine/Collision";
 
 export class Quaffle extends BodyActorDecorator {

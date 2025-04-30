@@ -21,7 +21,8 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "paths":{
-      "@common/*":["../common/*"]
+      "@common/*":["./src/engine/common/*"],
+      "@server/*":["../server/src/*"]
     }
   },
  

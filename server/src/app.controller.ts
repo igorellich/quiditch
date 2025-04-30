@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { AppService } from './app.service';
 import { GameService } from './game/game.service';
-import { QuiditchGameManager } from './quiditch/game/QuiditchGameManager';
+import { QuiditchGameManager } from '../../client/src/quiditch/server/game/QuiditchGameManager';
 import { World } from "@dimforge/rapier2d-compat"
-import { RapierBodyFactory } from './quiditch/factory/rapier/RapierBodyFactory';
-import { RapierPhysicsManager } from './engine/rapier/RapierPhysicsManager';
-import { QuiditchFactory } from './quiditch/factory/QuiditchActorFactory';
+import { RapierBodyFactory } from '../../client/src/quiditch/server/factory/rapier/RapierBodyFactory';
+import { RapierPhysicsManager } from '../../client/src/engine/server/rapier/RapierPhysicsManager';
+import { QuiditchFactory } from '../../client/src/quiditch/server/factory/QuiditchActorFactory';
 import { GameInputActions } from '@common/quiditch/constants';
 import { BaseState } from '@common/engine/BaseState';
 
@@ -36,12 +36,12 @@ export class AppController {
     return result;
   }
 
-  @Get('greet')
-  async getGreetingMessage(@Body() body: { name: string }): Promise<string> {
+  @Get('greets')
+  async getGreetingMessage(@Body() body: { name: string }={name:"Batman"}): Promise<string> {
     if (await this.gameService.addPlayer(body.name)) {
       return      this.appService.getGreetingMessage(body.name);
     } else {
-      return null;
+      return `You are already Greeted, ${body.name}`;
     }
   }
   @Post('state')

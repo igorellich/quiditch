@@ -3,8 +3,8 @@ import { CanvasComponent } from "./CanvasComponent";
 import * as React from "react";
 import { JoyControl } from "./JoyControl";
 import { AttackButton } from "./AttackButton";
-import { ScoreComponent } from "../../game/ScoreComponent";
-import { SceneComponentController } from "../controller/SceneComponentController";
+import { ScoreComponent } from "./ScoreComponent";
+import { SceneComponentController } from "../../client/game/SceneComponentController";
 
 export const SceneComponent = (props: {
    
