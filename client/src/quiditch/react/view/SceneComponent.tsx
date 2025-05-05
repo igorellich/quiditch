@@ -27,7 +27,7 @@ export const SceneComponent = (props: {
     return <><CanvasComponent canvasRef={canvasRef}></CanvasComponent>
     {sceneComponentController?(
         <>
-        <JoyControl onEndMove={sceneComponentController.stopMoving} onStartMove={sceneComponentController.startMoving}></JoyControl>
+        <JoyControl onEndMove={()=>sceneComponentController.stopMoving()} onStartMove={(x,y)=>sceneComponentController.startMoving(x,y)}></JoyControl>
         <AttackButton callback={attackHandle}></AttackButton>
         <ScoreComponent matchStateGetter={()=>sceneComponentController.getMatchState()}></ScoreComponent> </>):null}
     </>

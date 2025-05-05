@@ -26,14 +26,16 @@ export class LocalServerCommunicator implements IServerCommunicator{
         this._gameManager = new QuiditchGameManager(quiditchFactory, physicsManager)
     }
 
-    public async applyAction(clientId: string, action:GameInputActions, started:boolean):Promise<void>{
-        if(action===GameInputActions.pause){
+    public async applyAction(clientId: string, action: GameInputActions, started: boolean): Promise<void> {
+        if (action === GameInputActions.pause) {
             this._gameManager.setPause(!this._gameManager.getPause());
-        }
-        const playerChaser = this._getPlayerChaser(clientId);
-        if (playerChaser) {
-            const actorController = playerChaser.getActorController();
-            await actorController.applyAction(action,started);
+        } else {
+            console.log(clientId, action, started)
+            const playerChaser = this._getPlayerChaser(clientId);
+            if (playerChaser) {
+                const actorController = playerChaser.getActorController();
+                await actorController.applyAction(action, started);
+            }
         }
     }
 
@@ -46,6 +48,7 @@ export class LocalServerCommunicator implements IServerCommunicator{
 
     }
     async startDirectionMoving(clientId: string, x: number, y: number): Promise<void> {
+        console.log(clientId)
         const playerChaser = this._getPlayerChaser(clientId)
         if (playerChaser) {
             const player = playerChaser?.getActor() as PlayerActor;

@@ -48,10 +48,10 @@ export class ThreeSceneManager extends SceneManager {
                 
 
 
-        // const controls = new OrbitControls( this._camera, this._renderer.domElement);
-        // controls.enableDamping = true;
-        // controls.enableRotate=false;
-        // controls.enabled = false;
+        const controls = new OrbitControls( this._camera, this._renderer.domElement);
+        controls.enableDamping = true;
+        controls.enableRotate=false;
+        controls.enabled = false;
 
         const light = new AmbientLight();
         scene.add(light);

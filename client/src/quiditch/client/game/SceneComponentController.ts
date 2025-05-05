@@ -20,21 +20,21 @@ export class SceneComponentController {
             }
         });
     }
-    private _controlledActorId?: string;
+   
     private _serverCommunicator?: IServerCommunicator;
     public startMoving(x: number, y: number): void {
-        if (this._controlledActorId) {
-            this._serverCommunicator?.startDirectionMoving(this._controlledActorId, x, y);
+        if (this._clientId) {
+            this._serverCommunicator?.startDirectionMoving(this._clientId, x, y);
         }
     }
     public stopMoving(): void {
-        if (this._controlledActorId) {
-            this._serverCommunicator?.endDirectionMoving(this._controlledActorId);
+        if (this._clientId) {
+            this._serverCommunicator?.endDirectionMoving(this._clientId as string);
         }
     }
     public attack(): void {
-        if (this._controlledActorId) {
-            this._serverCommunicator?.applyAction(this._controlledActorId,GameInputActions.attack,true);
+        if (this._clientId) {
+            this._serverCommunicator?.applyAction(this._clientId as string,GameInputActions.attack,true);
         }
     }
 
@@ -45,11 +45,12 @@ export class SceneComponentController {
             return new MatchState();
         }
     }
+    private _clientId:string|undefined;
     private async _init(canvas: HTMLCanvasElement): Promise<void> {
-        let clientId: string = window.localStorage.getItem("clientId") as string;
-        if (!clientId) {
-            clientId = Math.random().toString();
-            window.localStorage.setItem("clientId", clientId);
+        this._clientId = window.localStorage.getItem("clientId") as string;
+        if (!this._clientId) {
+            this._clientId = Math.random().toString();
+            window.localStorage.setItem("clientId", this._clientId);
         }
         const keyboardInputController = new KeyboardInputController<GameInputActions>({
             pause: { keys: ['p'], single: true },
@@ -80,9 +81,17 @@ export class SceneComponentController {
             await this._serverCommunicator.init();
             //this._serverCommunicator = new HttpServerCommunicator(this._stateSynchroniser, clientId);
 
-            this._serverCommunicator.takeControl(clientId).then((controlledActorId) => {
-                this._controlledActorId = controlledActorId;
-
+            this._serverCommunicator.takeControl(this._clientId).then((controlledActorId) => {
+                
+                setTimeout(()=>{
+                    if (controlledActorId) {
+                        const playerMesh = this._stateSynchroniser?.getActorById(controlledActorId);
+                        if (playerMesh) {
+                            threeSceneManager.setCameraTarget(playerMesh);
+                        }
+                    }
+                },200)
+                
             });
 
 
@@ -90,7 +99,7 @@ export class SceneComponentController {
 
             keyboardInputController.addOnInputChangeHandler(async (action, started) => {
                 if (this._serverCommunicator) {
-                    await this._serverCommunicator.applyAction(clientId, action, started);
+                    await this._serverCommunicator.applyAction(this._clientId as string, action, started);
                 }
             });
         }
