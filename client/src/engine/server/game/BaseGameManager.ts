@@ -13,7 +13,7 @@ export class BaseGameManager {
     protected readonly _teams: Team[] = [];
     protected readonly _tickers: ITickable[] = [];
 
-    protected _actorStates: ActorState[] = [];
+    protected _actorStates: BaseState[] = [];
 
     protected _stateWatchActors: IActor[] = [];
 
@@ -57,6 +57,11 @@ export class BaseGameManager {
             this._tickers.push(tickable);
         }
     }
+
+    public setStates(states:BaseState[]){
+            this._actorStates = states;
+            
+        }
 
     public getStates(): BaseState[] {
         return [...this._actorStates];

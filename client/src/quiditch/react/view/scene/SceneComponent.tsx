@@ -8,7 +8,8 @@ import { SceneComponentController } from "../../../client/game/SceneComponentCon
 import { BaseState } from "@common/BaseState";
 
 export const SceneComponent = (props: {
-   onStatesChange:(states:BaseState[])=>void
+   onStatesChange:(states:BaseState[])=>void,
+   gameStates:BaseState[]
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [sceneComponentController,setSceneComponentController]=useState<SceneComponentController>()
@@ -17,7 +18,7 @@ export const SceneComponent = (props: {
    
     useEffect(() => {
         if(canvasRef.current){
-            setSceneComponentController(new SceneComponentController(canvasRef.current as HTMLCanvasElement, undefined, props.onStatesChange));
+            setSceneComponentController(new SceneComponentController(canvasRef.current as HTMLCanvasElement, undefined, props.onStatesChange, props.gameStates));
         }
     }, [])
     const attackHandle=React.useCallback((evt:any)=>{

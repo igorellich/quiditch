@@ -16,6 +16,7 @@ import { Team } from "../../../engine/server/game/Team";
 import { Score } from "../../common/Score";
 import { IPhysicsManager } from "../../../engine/server/base/IPhysicsManager";
 import { BaseGameManager } from "../../../engine/server/game/BaseGameManager";
+import { PlayerState } from "../../common/PlayerState";
 
 
 export class QuiditchGameManager extends BaseGameManager{    
@@ -53,6 +54,7 @@ export class QuiditchGameManager extends BaseGameManager{
         this._debouncePause();
         return [...super.getStates(), this._getMatchState()];
     }
+    
 
     private _getMatchState():MatchState{
         const matchState = new MatchState();
@@ -160,6 +162,7 @@ export class QuiditchGameManager extends BaseGameManager{
     }
 
     private async _createQuiditchTeam(fieldRadius:number, isLeft:boolean):Promise<Team>{
+        const usedStates:BaseState[] = [];
         return new Promise( async (res, rej)=>{
             const team = new Team(isLeft?"left":"right");
             for(let i = 0; i<3;i++){
@@ -179,9 +182,23 @@ export class QuiditchGameManager extends BaseGameManager{
                     //         isLeft ? -i * fieldRadius / 3 : (i + 1) * fieldRadius / 3, -fieldRadius
                     //     )
                     // );
-                    const pos = new Vector2d(isLeft ? -30 : 30, (i - 1) * 30);
+                    
+                    let pos = new Vector2d(isLeft ? -30 : 30, (i - 1) * 30);
+                    const initStates = this.getStates();
+                   
                     const chaser = await this._createChaser(zone, isLeft, pos);
+                    if (initStates) {
+                        const color = isLeft ? "red" : "blue";
+                        const playerState: PlayerState = initStates.filter(s => s.name === "player")
+                            .filter(s => (s as PlayerState).color === color
+                                && !usedStates.includes(s))[0] as PlayerState;
+                        if (playerState) {
+                            chaser.getActor()?.setState(playerState);
+                        }
+                    }
+
                     this._chasers.push(chaser);
+                    
                     const player = await chaser.getActor();
                     if (player) {
                         team.AddMember(player);
@@ -246,6 +263,7 @@ export class QuiditchGameManager extends BaseGameManager{
 
         const chaser = new Chaser(zone, targetPointInputController, 0.2, this); //ai
         await player.setPosition(initialPos.x, initialPos.y);
+        
         chaser.setInitialPos(initialPos);
         this.addTickable(chaser);
         

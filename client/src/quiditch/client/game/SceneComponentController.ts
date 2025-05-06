@@ -15,7 +15,10 @@ export class SceneComponentController {
     private _stateSynchroniser?: StateSynchroniser;
     private _clientId:string|undefined;
     private _controlledActorId:string|undefined;
-    constructor(canvas: HTMLCanvasElement, onInit?: () => void, onStatesChange?:(states:BaseState[])=>void) {
+
+    private readonly _initStates:BaseState[]|undefined;
+    constructor(canvas: HTMLCanvasElement, onInit?: () => void, onStatesChange?:(states:BaseState[])=>void, initState?:BaseState[]) {
+        this._initStates = initState;
         this._init(canvas).then(() => {
             if (onStatesChange) {
                 this._stateSynchroniser?.addOnStatesChangeHandler((states) => onStatesChange(states))
@@ -86,7 +89,8 @@ export class SceneComponentController {
             //this._serverCommunicator = new HttpServerCommunicator(this._stateSynchroniser, clientId);
 
             
-            await this._serverCommunicator.init();
+            await this._serverCommunicator.init(this._initStates);
+            
             this._controlledActorId = await this._serverCommunicator.takeControl(this._clientId);
             if (this._controlledActorId) {
                 setTimeout(() => {

@@ -11,20 +11,22 @@ import { RapierBodyFactory } from "../../server/factory/rapier/RapierBodyFactory
 import { RapierPhysicsManager } from "../../../engine/server/rapier/RapierPhysicsManager";
 import { QuiditchFactory } from "../../server/factory/QuiditchActorFactory";
 import { QuiditchGameManager } from "../../server/game/QuiditchGameManager";
+import { BaseState } from "@common/BaseState";
 
-export class LocalServerCommunicator implements IServerCommunicator{
-    private readonly _gameManager:QuiditchGameManager;
+export class LocalServerCommunicator implements IServerCommunicator {
+    private readonly _gameManager: QuiditchGameManager;
 
-    private readonly _stateSync:StateSynchroniser;
-     constructor(stateSync:StateSynchroniser){
-        
+    private readonly _stateSync: StateSynchroniser;
+    constructor(stateSync: StateSynchroniser) {
+
         this._stateSync = stateSync;
         const gravity = { x: 0.0, y: 0.0 };
         const world = new World(gravity);
         const bodyFactory = new RapierBodyFactory(world);
         const physicsManager = new RapierPhysicsManager(world);
         const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
-        this._gameManager = new QuiditchGameManager(quiditchFactory, physicsManager)
+        this._gameManager = new QuiditchGameManager(quiditchFactory, physicsManager);
+        
     }
 
     public async applyAction(clientId: string, action: GameInputActions, started: boolean): Promise<void> {
@@ -67,28 +69,37 @@ export class LocalServerCommunicator implements IServerCommunicator{
         }
     }
 
-    private _getPlayerChaser(playerId:string):Chaser{
-       return this._gameManager.getChasers().filter(c => c.getActor()?.getIsControlled() && c.getActor()?.getPlayerId() == playerId)[0];
-       
+    private _getPlayerChaser(playerId: string): Chaser {
+        return this._gameManager.getChasers().filter(c => c.getActor()?.getIsControlled() && c.getActor()?.getPlayerId() == playerId)[0];
+
     }
-    async takeControl(clientId:string):Promise<string|undefined>{
-        
-        const freeChaser =  this._gameManager.getChasers().filter(c=>c.getActor()?.getIsControlled()===false)[0];
-        if(freeChaser){
+    async takeControl(clientId: string): Promise<string | undefined> {
+
+        const freeChaser = this._gameManager.getChasers().filter(c => c.getActor()?.getIsControlled() === false)[0];
+        if (freeChaser) {
             this._gameManager.setPlayerChaser(freeChaser, clientId);
             return freeChaser.getActor()?.getId();
         }
-       
-    }   
-   
+
+    }
+
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
         this._stateSync.setStates(this._gameManager.getStates());
+
+    }
+    public async init(initStates:BaseState[]): Promise<void> {
+        this._gameManager.setPause(true);
+        if (initStates) {
+            this._gameManager.setStates(initStates);
+            
+        }else{
+           
+        }
+        await this._gameManager.init();
+       
+       
         
     }
-    public async init():Promise<void>{
-        await this._gameManager.init();
-        this._gameManager.setPause(true);
-    }
-  
+
 
 }
