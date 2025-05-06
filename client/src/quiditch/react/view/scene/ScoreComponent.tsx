@@ -1,4 +1,4 @@
-import { MatchState } from "../../common/MatchState";
+import { MatchState } from "../../../common/MatchState";
 import * as React from "react"
 
 export const ScoreComponent = (props: {

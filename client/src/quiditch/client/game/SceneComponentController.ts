@@ -9,12 +9,17 @@ import { GameInputActions } from "../../common/constants";
 import { IServerCommunicator } from "./IServerCommunicator";
 import { MatchState } from "../../common/MatchState";
 import { LocalServerCommunicator } from "./LocalServerCommunicator";
+import { BaseState } from "@common/BaseState";
 
 export class SceneComponentController {
     private _stateSynchroniser?: StateSynchroniser;
-
-    constructor(canvas: HTMLCanvasElement, onInit?: () => void) {
+    private _clientId:string|undefined;
+    private _controlledActorId:string|undefined;
+    constructor(canvas: HTMLCanvasElement, onInit?: () => void, onStatesChange?:(states:BaseState[])=>void) {
         this._init(canvas).then(() => {
+            if (onStatesChange) {
+                this._stateSynchroniser?.addOnStatesChangeHandler((states) => onStatesChange(states))
+            }
             if (onInit) {
                 onInit();
             }
@@ -45,7 +50,7 @@ export class SceneComponentController {
             return new MatchState();
         }
     }
-    private _clientId:string|undefined;
+    
     private async _init(canvas: HTMLCanvasElement): Promise<void> {
         this._clientId = window.localStorage.getItem("clientId") as string;
         if (!this._clientId) {
@@ -61,38 +66,42 @@ export class SceneComponentController {
             turnRight: { keys: ['d'], single: false }
         });
         const scene = new Scene();
-        const threeSceneManager = new ThreeSceneManager({ height: window.innerHeight, width: window.innerWidth }, canvas, scene);
+        const threeSceneManager = new ThreeSceneManager({ height: canvas.offsetHeight, width: canvas.offsetWidth }, canvas, scene);
         if (threeSceneManager) {
             threeSceneManager.startTime();
             const stats = new ThreeStats(document.body);
             threeSceneManager.addTickable(stats);
-            const meshFactory = new ThreeMeshFactory(threeSceneManager, 5);
+            const meshFactory = new ThreeMeshFactory(threeSceneManager, 5, 1);
             await meshFactory.createWalls();
-            // meshFactory.createGround().then(plane=>{
-            //     if (plane) {
-            //         threeSceneManager.addTickable(plane);
-            //     }
-            // });
+            meshFactory.createGround().then(plane=>{
+                if (plane) {
+                    threeSceneManager.addTickable(plane);
+                }
+            });
             this._stateSynchroniser = new StateSynchroniser(meshFactory, threeSceneManager);
 
             threeSceneManager.addTickable(this._stateSynchroniser);
 
-              this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser);;
-            await this._serverCommunicator.init();
+            this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser);
             //this._serverCommunicator = new HttpServerCommunicator(this._stateSynchroniser, clientId);
 
-            this._serverCommunicator.takeControl(this._clientId).then((controlledActorId) => {
-                
-                setTimeout(()=>{
-                    if (controlledActorId) {
-                        const playerMesh = this._stateSynchroniser?.getActorById(controlledActorId);
+            
+            await this._serverCommunicator.init();
+            this._controlledActorId = await this._serverCommunicator.takeControl(this._clientId);
+            if (this._controlledActorId) {
+                setTimeout(() => {
+                    if (this._controlledActorId) {
+                        const playerMesh = this._stateSynchroniser?.getActorById(this._controlledActorId);
                         if (playerMesh) {
                             threeSceneManager.setCameraTarget(playerMesh);
                         }
                     }
-                },200)
-                
-            });
+                }, 200)
+
+            }
+
+
+
 
 
             threeSceneManager.addTickable(this._serverCommunicator);

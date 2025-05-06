@@ -3,13 +3,14 @@ import { Chaser } from "../../server/ai/Chaser";
 import { GameInputActions } from "../../common/constants";
 import { TargetPointInputController } from "../../server/controls/TargetPointInputController";
 import { PlayerActor } from "../../server/factory/components/PlayerActor";
-import { QuiditchGameManager } from "../../server/game/QuiditchGameManager";
+
 import { IServerCommunicator } from "./IServerCommunicator";
 import { StateSynchroniser } from "./StateSynchroniser";
 import { World } from "@dimforge/rapier2d-compat";
 import { RapierBodyFactory } from "../../server/factory/rapier/RapierBodyFactory";
 import { RapierPhysicsManager } from "../../../engine/server/rapier/RapierPhysicsManager";
 import { QuiditchFactory } from "../../server/factory/QuiditchActorFactory";
+import { QuiditchGameManager } from "../../server/game/QuiditchGameManager";
 
 export class LocalServerCommunicator implements IServerCommunicator{
     private readonly _gameManager:QuiditchGameManager;
@@ -86,6 +87,7 @@ export class LocalServerCommunicator implements IServerCommunicator{
     }
     public async init():Promise<void>{
         await this._gameManager.init();
+        this._gameManager.setPause(true);
     }
   
 

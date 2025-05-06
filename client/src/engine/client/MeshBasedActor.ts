@@ -4,20 +4,26 @@ import { IMovable } from "@common/Imoveable";
 import { Vector2d } from "@common/Vector2d";
 import { IMesh } from "./IMesh";
 import { Camera } from "three";
+import { ActorState } from "@common/ActorState";
 
 export class MeshBasedActor extends Actor {
     async onCollision(collision: Collision): Promise<void> {
 
     }
-
+    private readonly _scale:number=1;
     private readonly _mesh: IMesh
 
-    constructor(name: string, mesh: IMesh, id: string) {
+    constructor(name: string, mesh: IMesh, id: string, scale?: number) {
         super(name, undefined, undefined, id);
-        this._mesh = mesh;
-
+        this._mesh = mesh;  
+        if(scale){
+        this._scale = scale;
+        }
     }
-
+    public override async setState(state: ActorState): Promise<void> {
+        const scaledState = {...state, position:{x:state.position.x*this._scale, y:state.position.y*this._scale}}
+        await super.setState(scaledState);
+    }
     async unjoin(target: IMovable): Promise<void> {
         //TODO
     }
@@ -48,10 +54,11 @@ export class MeshBasedActor extends Actor {
         return 0;
     }
     async setPosition(x: number, y: number): Promise<void> {
-        this._mesh.setPosition(x, y);
+        this._mesh.setPosition(x*this._scale, y*this._scale);
     }
-    getPosition(): Promise<Vector2d> {
-        return this._mesh.getPosition();
+    async getPosition(): Promise<Vector2d> {
+        const pos = await this._mesh.getPosition();
+        return new Vector2d(pos.x / this._scale, pos.y / this._scale);
     }
     async setRotation(rotation: number): Promise<void> {
         this._mesh.setRotation(rotation);

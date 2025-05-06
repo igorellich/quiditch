@@ -1,15 +1,15 @@
 import * as React from 'react';
 import {createRoot} from "react-dom/client";
 import Rapier from "@dimforge/rapier2d-compat"
-import { SceneComponent } from "./view/SceneComponent";
+import { Game } from './view/Game';
 
 const initClient = async (): Promise<void> => {
     await Rapier.init(); 
-    const root = createRoot(document.getElementById('quiditch') as HTMLElement)
+    const root = createRoot(document.getElementById('app') as HTMLElement)
    
     
   
-   root.render(<SceneComponent/>)
+   root.render(<Game/>)
   
  
    

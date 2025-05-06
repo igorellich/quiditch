@@ -21,10 +21,12 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
     private readonly _gltfLoader:GLTFLoader;
 
     private readonly _prototypesMeshesMap: {[id: string]: Mesh}={};
-    constructor(scene:ThreeSceneManager, zHeight: number){
-        this._sceneManager = scene;
-        this._zHeight = zHeight;
 
+    private readonly _scale: number;
+    constructor(scene:ThreeSceneManager, zHeight: number, scale: number){
+        this._sceneManager = scene;
+        this._zHeight = zHeight*scale;
+        this._scale = scale;
         this._gltfLoader = new GLTFLoader();
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('/examples/jsm/libs/draco/');
@@ -35,7 +37,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
         const material = new MeshBasicMaterial({
             color:'gold'
         });
-        const ringGeom = new TorusGeometry(ringRadius,0.1*ringRadius,12,48);
+        const ringGeom = new TorusGeometry(ringRadius*this._scale,0.1*ringRadius*this._scale,12,48);
         const ringHeight = -ringRadius+this._zHeight;
         const ringMesh = new Mesh(ringGeom,material);
         ringMesh.position.z = ringRadius+ringHeight;
@@ -48,19 +50,19 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
         this._sceneManager.getScene().add(mesh);
         mesh.add(ringMesh,basementMesh)
         const threebasedMesh = new ThreeBasedMesh(mesh);
-        return new MeshBasedActor(ActorNames.gates,threebasedMesh,id);
+        return new MeshBasedActor(ActorNames.gates,threebasedMesh,id, this._scale);
     }
     async createPointer(targetObject?: IObject2D, sourceActor?:IActor, id?:string): Promise<MeshBasedActor> {
         const mesh = await this._loadGltfModel('assets/gltf/pointer/scene.gltf');
         // /mesh.scale.set(0.003,0.003,0.003)
         mesh.rotateX(Math.PI/2)
         mesh.position.z = this._zHeight;
-        mesh.position.y = 2;
+        mesh.position.y = 2*this._scale;
         const group = new Group();
         group.add(mesh);
         this._sceneManager.getScene().add(group);
         const threebasedMesh = new ThreeBasedMesh(group);
-        const pointer = new Pointer(ActorNames.pointer, threebasedMesh, id as string, targetObject, sourceActor);
+        const pointer = new Pointer(ActorNames.pointer, threebasedMesh, id as string, targetObject, sourceActor, this._scale);
         this._sceneManager.addTickable(pointer);
         
         return pointer;
@@ -75,7 +77,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
             color: "blue"
             ,wireframe: true
         });
-        const ringGeom = new TorusGeometry(70,0.1*70,12,48);
+        const ringGeom = new TorusGeometry(70*this._scale,0.1*70*this._scale,12,48);
         
         const mesh = new Mesh(ringGeom, material);
         mesh.position.z = this._zHeight*2;
@@ -86,7 +88,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
 
         // const grassMaterial  = new Grassmaterial();
         // this._sceneManager.addTickable(grassMaterial);
-        const planeMesh = new Mesh(new PlaneGeometry(200, 200, 1,1), new MeshBasicMaterial({
+        const planeMesh = new Mesh(new PlaneGeometry(200*this._scale, 200*this._scale, 1,1), new MeshBasicMaterial({
             color:"green"
         }))//grassMaterial.getMaterial());
 
@@ -99,18 +101,18 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
         const mesh = await this._createBallMesh();
         this._sceneManager.getScene().add(mesh);
         mesh.position.z = this._zHeight;
-        return new MeshBasedActor(ActorNames.quaffle,new ThreeBasedMesh(mesh),id as string);
+        return new MeshBasedActor(ActorNames.quaffle,new ThreeBasedMesh(mesh),id as string, this._scale);
     }
     async createPlayer(color?:string, id?:string): Promise<MeshBasedActor> {
         const mesh = await this._createPlayerMesh(color);
         this._sceneManager.getScene().add(mesh);
         mesh.position.z = this._zHeight;
-        return new MeshBasedActor(ActorNames.player,new ThreeBasedMesh(mesh),id as string);
+        return new MeshBasedActor(ActorNames.player,new ThreeBasedMesh(mesh),id as string, this._scale);
     }
 
     private async _createPlayerMesh(color?:string):Promise<Mesh>{
         
-        let mesh:Mesh = new Mesh(new CapsuleGeometry(0.3,1.1,1), new MeshBasicMaterial({color:color})) 
+        let mesh:Mesh = new Mesh(new CapsuleGeometry(0.3*this._scale,1.1*this._scale,1), new MeshBasicMaterial({color:color})) 
         return mesh;
          //let mesh = this._prototypesMeshesMap["player"];
         if(!mesh){
@@ -144,7 +146,7 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
         let mesh = this._prototypesMeshesMap["quaffle"]
         if (!mesh) {
             const model = await this._loadGltfModel('assets/gltf/magma_ball/scene.gltf');
-            model.scale.set(0.02, 0.02, 0.02);
+            model.scale.set(0.02*this._scale, 0.02*this._scale, 0.02*this._scale);
 
             model.position.z = 1.5;
             model.position.x = -0.24;

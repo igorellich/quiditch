@@ -6,7 +6,6 @@ import { ActorNames } from "../../common/constants";
 import { PlayerState } from "../../common/PlayerState";
 
 import { MeshBasedActor } from "../../../engine/client/MeshBasedActor";
-import { ThreeMeshFactory } from "../three/factory/ThreeMeshFactory";
 import { IQuiditchFactory } from "../../common/IQuiditchActorFactory";
 import { SceneManager } from "../../../engine/client/SceneManager";
 import { MatchState } from "../../common/MatchState";
@@ -25,12 +24,21 @@ export class StateSynchroniser implements ITickable {
         this._meshFactory = meshFactory;
         this._sceneManager = sceneManager;
     }
+
+    private readonly _statesChangeHandlers:((states:BaseState[])=>void)[] = [];
+    public addOnStatesChangeHandler(handler:(states:BaseState[])=>void):void{
+        this._statesChangeHandlers.push(handler);
+    }
+
     public setStates(states: BaseState[]): void {
 
         if (this._statesUpdated && !this._syncStarted) {
-            //console.log("update states");         
+                  
             this._states = states;
             this._statesUpdated = false;
+            for(let handler of this._statesChangeHandlers){
+                handler(this._states);
+            }
 
         }
     }
@@ -100,12 +108,12 @@ export class StateSynchroniser implements ITickable {
         }
     }
 
-    private _syncMatchState(){
+    private _syncMatchState() {
         const matchState = this.getMatchState();
-        // if(matchState){
-        //     if(this._paused!=matchState.paused){
+        // if (matchState) {
+        //     if (this._paused != matchState.paused) {
         //         this._paused = matchState.paused;
-        //         this._paused?this._sceneManager.stopTime():this._sceneManager.startTime();
+        //         this._paused ? this._sceneManager.stopTime() : this._sceneManager.startTime();
         //     }
         // }
     }

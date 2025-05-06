@@ -54,6 +54,6 @@ export abstract class SceneManager {
 
 
 export type Size = {
-    height: number;
-    width: number;
+    height: number|string;
+    width: number|string;
 }
