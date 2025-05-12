@@ -2,14 +2,22 @@ import * as React from 'react';
 import {createRoot} from "react-dom/client";
 import Rapier from "@dimforge/rapier2d-compat"
 import { Game } from './view/Game';
+import { BaseState } from '@common/BaseState';
 
 const initClient = async (): Promise<void> => {
+    const currStatesStr = window.localStorage.getItem("quiditchStates");
+    let clientId = window.localStorage.getItem("clientId") as string;
+    if (!clientId) {
+        clientId = Math.random().toString();
+        window.localStorage.setItem("clientId", clientId);
+    }
+    let currStates: BaseState[] = currStatesStr && currStatesStr != "undefined" ? JSON.parse(currStatesStr) : [];
     await Rapier.init(); 
     const root = createRoot(document.getElementById('app') as HTMLElement)
    
     
   
-   root.render(<Game/>)
+   root.render(<Game savedStates={currStates} clientId={clientId}/>)
   
  
    

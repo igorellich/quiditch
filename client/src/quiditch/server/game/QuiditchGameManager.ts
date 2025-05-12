@@ -17,6 +17,7 @@ import { Score } from "../../common/Score";
 import { IPhysicsManager } from "../../../engine/server/base/IPhysicsManager";
 import { BaseGameManager } from "../../../engine/server/game/BaseGameManager";
 import { PlayerState } from "../../common/PlayerState";
+import { ActorState } from "@common/ActorState";
 
 
 export class QuiditchGameManager extends BaseGameManager{    
@@ -64,10 +65,12 @@ export class QuiditchGameManager extends BaseGameManager{
     }
   
     private _score:Score={};
-    public async init():Promise<void>{
+    public async init(states?:BaseState[]):Promise<void>{
        
-        this._teams.push(await this._createQuiditchTeam(70, true));
-        this._teams.push(await this._createQuiditchTeam(70, false));
+       
+
+        this._teams.push(await this._createQuiditchTeam(70, true, states));
+        this._teams.push(await this._createQuiditchTeam(70, false, states));
         for (const team of this._teams) {
             this._score[team.getId()] = 0;
         }
@@ -79,6 +82,12 @@ export class QuiditchGameManager extends BaseGameManager{
             }
         }
         setScore();
+        if(states){
+            const matchState = states.filter(s=>s.name==="match")[0] as MatchState;
+            if(matchState){
+                this._score = matchState.score;
+            }
+        }
         this.addOnGoalHandler(setScore);
 
         const walls = await this._quiditchFactory.createWalls();
@@ -87,6 +96,12 @@ export class QuiditchGameManager extends BaseGameManager{
         setTimeout(async ()=>{
             const ball = await this._quiditchFactory.createQuaffle();
             ball.setPosition(0, 0);
+            if(states){
+                const quaffleState = states.filter(s=>s.name===ActorNames.quaffle)[0] as ActorState;
+                if(quaffleState){
+                    ball.setState(quaffleState);
+                }
+            }
             this._stateWatchActors.push(ball);
             this.addTickable(ball);          
         }, 2000)       
@@ -161,20 +176,20 @@ export class QuiditchGameManager extends BaseGameManager{
         }
     }
 
-    private async _createQuiditchTeam(fieldRadius:number, isLeft:boolean):Promise<Team>{
-        const usedStates:BaseState[] = [];
-        return new Promise( async (res, rej)=>{
-            const team = new Team(isLeft?"left":"right");
-            for(let i = 0; i<3;i++){
+    private async _createQuiditchTeam(fieldRadius:number, isLeft:boolean, states?:BaseState[]):Promise<Team>{
+        const usedStates: BaseState[] = [];
+        return new Promise(async (res, rej) => {
+            const team = new Team(isLeft ? "red" : "blue");
+            for (let i = 0; i < 3; i++) {
                 const gates = await this._createGates();
-                
-                await gates.setPosition(isLeft?-fieldRadius*0.8:fieldRadius*0.8,(i-1)*fieldRadius*0.1);
-                await gates.setRotation(isLeft?-Math.PI/2:Math.PI/2);
+
+                await gates.setPosition(isLeft ? -fieldRadius * 0.8 : fieldRadius * 0.8, (i - 1) * fieldRadius * 0.1);
+                await gates.setRotation(isLeft ? -Math.PI / 2 : Math.PI / 2);
                 this.addTickable(gates);
                 team.AddMember(gates);
             }
-            setTimeout( async()=>{
-                const zone  = new CircleZone(70,new Vector2d(0,0));
+            setTimeout(async () => {
+                const zone = new CircleZone(70, new Vector2d(0, 0));
                 for (let i = 0; i < 3; i++) {
         
                     // const zone = new RectZone(new Vector2d(
@@ -184,16 +199,17 @@ export class QuiditchGameManager extends BaseGameManager{
                     // );
                     
                     let pos = new Vector2d(isLeft ? -30 : 30, (i - 1) * 30);
-                    const initStates = this.getStates();
+                    
                    
                     const chaser = await this._createChaser(zone, isLeft, pos);
-                    if (initStates) {
+                    if (states) {
                         const color = isLeft ? "red" : "blue";
-                        const playerState: PlayerState = initStates.filter(s => s.name === "player")
+                        const playerState: PlayerState = states.filter(s => s.name === "player")
                             .filter(s => (s as PlayerState).color === color
                                 && !usedStates.includes(s))[0] as PlayerState;
                         if (playerState) {
-                            chaser.getActor()?.setState(playerState);
+                            usedStates.push(playerState);
+                            await chaser.getActor()?.setState(playerState);
                         }
                     }
 
@@ -270,6 +286,8 @@ export class QuiditchGameManager extends BaseGameManager{
         return chaser;
 
     }  
+
+   
 
     public getChasers():Chaser[]{
     return [...this._chasers];

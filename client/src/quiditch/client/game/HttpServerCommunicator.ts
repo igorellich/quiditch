@@ -11,6 +11,12 @@ export class HttpServerCommunicator implements IServerCommunicator{
         this._clientId = clientId;
         this._serverUrl = "http://localhost:3000"
     }
+    setPause(pause: boolean): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    reset(): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
     init(): Promise<void> {
         throw new Error("Method not implemented.");
     }

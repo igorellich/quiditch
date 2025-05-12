@@ -24,6 +24,9 @@ export class QuiditchFactory implements IQuiditchFactory<IActor> {
         this._bodyFactory = bodyFactory;        
         this._physicsManager = physicsManager;
     }
+    remove(child: IActor): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
     async createGates(radius: number): Promise<Gates> {
         //const mesh = await this._meshFactory.createGates(radius);
         const body = await this._bodyFactory.createGates(radius);

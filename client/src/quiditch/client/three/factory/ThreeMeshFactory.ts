@@ -32,6 +32,9 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
         dracoLoader.setDecoderPath('/examples/jsm/libs/draco/');
         this._gltfLoader.setDRACOLoader(dracoLoader);
     }
+    async remove(child: MeshBasedActor): Promise<void> {
+        (child.getMesh() as ThreeBasedMesh).remove(this._sceneManager.getScene());
+    }
     async createGates(ringRadius: number, id:string): Promise<MeshBasedActor> {
         const mesh = new Group();
         const material = new MeshBasicMaterial({

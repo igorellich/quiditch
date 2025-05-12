@@ -11,15 +11,20 @@ import { MatchState } from "../../common/MatchState";
 import { LocalServerCommunicator } from "./LocalServerCommunicator";
 import { BaseState } from "@common/BaseState";
 
-export class SceneComponentController {
+export class SceneController {
+    getServerCommunicator(): IServerCommunicator|undefined {
+        return this._serverCommunicator;
+    }
     private _stateSynchroniser?: StateSynchroniser;
     private _clientId:string|undefined;
     private _controlledActorId:string|undefined;
 
+    private _threeSceneManager:ThreeSceneManager|undefined;
+
     private readonly _initStates:BaseState[]|undefined;
-    constructor(canvas: HTMLCanvasElement, onInit?: () => void, onStatesChange?:(states:BaseState[])=>void, initState?:BaseState[]) {
+    constructor(canvas: HTMLCanvasElement, clientId:string, onInit?: () => void, onStatesChange?:(states:BaseState[])=>void, initState?:BaseState[]) {
         this._initStates = initState;
-        this._init(canvas).then(() => {
+        this._init(canvas, clientId).then(() => {
             if (onStatesChange) {
                 this._stateSynchroniser?.addOnStatesChangeHandler((states) => onStatesChange(states))
             }
@@ -53,13 +58,21 @@ export class SceneComponentController {
             return new MatchState();
         }
     }
+    public async setPause(pause:boolean):Promise<void>{
+        await this._serverCommunicator?.setPause(pause);
+    }
+
+    public async reset():Promise<void>{
+        await this._serverCommunicator?.reset();
+        await this._takeControl();
+    }
     
-    private async _init(canvas: HTMLCanvasElement): Promise<void> {
-        this._clientId = window.localStorage.getItem("clientId") as string;
-        if (!this._clientId) {
-            this._clientId = Math.random().toString();
-            window.localStorage.setItem("clientId", this._clientId);
-        }
+    private async _init(canvas: HTMLCanvasElement, clientId:string): Promise<void> {
+        this._clientId = clientId; // window.localStorage.getItem("clientId") as string;
+        // if (!this._clientId) {
+        //     this._clientId = Math.random().toString();
+        //     window.localStorage.setItem("clientId", this._clientId);
+        // }
         const keyboardInputController = new KeyboardInputController<GameInputActions>({
             pause: { keys: ['p'], single: true },
             attack: { keys: [' '], single: true },
@@ -69,21 +82,21 @@ export class SceneComponentController {
             turnRight: { keys: ['d'], single: false }
         });
         const scene = new Scene();
-        const threeSceneManager = new ThreeSceneManager({ height: canvas.offsetHeight, width: canvas.offsetWidth }, canvas, scene);
-        if (threeSceneManager) {
-            threeSceneManager.startTime();
+        this._threeSceneManager = new ThreeSceneManager({ height: canvas.offsetHeight, width: canvas.offsetWidth }, canvas, scene);
+        if (this._threeSceneManager) {
+            this._threeSceneManager.startTime();
             const stats = new ThreeStats(document.body);
-            threeSceneManager.addTickable(stats);
-            const meshFactory = new ThreeMeshFactory(threeSceneManager, 5, 1);
+            this._threeSceneManager.addTickable(stats);
+            const meshFactory = new ThreeMeshFactory(this._threeSceneManager, 5, 1);
             await meshFactory.createWalls();
             meshFactory.createGround().then(plane=>{
-                if (plane) {
-                    threeSceneManager.addTickable(plane);
+                if (plane && this._threeSceneManager) {
+                    this._threeSceneManager.addTickable(plane);
                 }
             });
-            this._stateSynchroniser = new StateSynchroniser(meshFactory, threeSceneManager);
+            this._stateSynchroniser = new StateSynchroniser(meshFactory, this._threeSceneManager);
 
-            threeSceneManager.addTickable(this._stateSynchroniser);
+            this._threeSceneManager.addTickable(this._stateSynchroniser);
 
             this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser);
             //this._serverCommunicator = new HttpServerCommunicator(this._stateSynchroniser, clientId);
@@ -91,24 +104,9 @@ export class SceneComponentController {
             
             await this._serverCommunicator.init(this._initStates);
             
-            this._controlledActorId = await this._serverCommunicator.takeControl(this._clientId);
-            if (this._controlledActorId) {
-                setTimeout(() => {
-                    if (this._controlledActorId) {
-                        const playerMesh = this._stateSynchroniser?.getActorById(this._controlledActorId);
-                        if (playerMesh) {
-                            threeSceneManager.setCameraTarget(playerMesh);
-                        }
-                    }
-                }, 200)
+            await this._takeControl();
 
-            }
-
-
-
-
-
-            threeSceneManager.addTickable(this._serverCommunicator);
+            this._threeSceneManager.addTickable(this._serverCommunicator);
 
             keyboardInputController.addOnInputChangeHandler(async (action, started) => {
                 if (this._serverCommunicator) {
@@ -116,5 +114,22 @@ export class SceneComponentController {
                 }
             });
         }
+    }
+    private async _takeControl(){
+        if(this._serverCommunicator && this._clientId && this._stateSynchroniser && this._threeSceneManager){
+        this._controlledActorId = await this._serverCommunicator.takeControl(this._clientId);
+        await this._stateSynchroniser.syncStates();
+        if (this._controlledActorId) {
+            setTimeout(() => {
+                if (this._controlledActorId) {
+                    const playerMesh = this._stateSynchroniser?.getActorById(this._controlledActorId);
+                    if (playerMesh && this._threeSceneManager) {
+                        this._threeSceneManager.setCameraTarget(playerMesh);
+                    }
+                }
+            }, 200)
+
+        }
+    }
     }
 }

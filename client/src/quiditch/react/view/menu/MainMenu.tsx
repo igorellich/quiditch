@@ -1,10 +1,23 @@
-//@ts-ignore
 import * as React from 'react';
+import { MenuItem } from './MenuItem';
 
-export const MainMenu = ()=>{
-    return <div className='mainMenu'>
-  
-        <div className='menuItem'>New Game</div>
-        <div className='menuItem'>Continue</div>
+const mainMenuStyle: React.CSSProperties = {
+    height: "100%",
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    position: "absolute",
+    zIndex: 2
+}
+export const MainMenu = (props: {
+    onContinue: () => Promise<void>,
+    onNew: () => Promise<void>
+}) => {
+    return <div style={mainMenuStyle} className='mainMenu'>
+
+        <MenuItem onClick={() => props.onNew()} title='New Game'/>
+        <MenuItem onClick={() => props.onContinue()} title='Continue'/>
     </div>
 }

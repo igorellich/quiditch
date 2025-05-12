@@ -1,24 +1,34 @@
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { CanvasComponent } from "./CanvasComponent";
 import * as React from "react";
 import { JoyControl } from "./JoyControl";
 import { AttackButton } from "./AttackButton";
 import { ScoreComponent } from "./ScoreComponent";
-import { SceneComponentController } from "../../../client/game/SceneComponentController";
+import { SceneController } from "../../../client/game/SceneController";
 import { BaseState } from "@common/BaseState";
+import { SceneControllerContext } from "../Game";
+
 
 export const SceneComponent = (props: {
    onStatesChange:(states:BaseState[])=>void,
-   gameStates:BaseState[]
+   gameStates:BaseState[],
+   clientId: string
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [sceneComponentController,setSceneComponentController]=useState<SceneComponentController>()
-
+    const [sceneComponentController,setSceneComponentController]=useState<SceneController>()
+    const sceneControllerContext = useContext(SceneControllerContext)
   
    
     useEffect(() => {
         if(canvasRef.current){
-            setSceneComponentController(new SceneComponentController(canvasRef.current as HTMLCanvasElement, undefined, props.onStatesChange, props.gameStates));
+            const onInit = () => {
+                if (sceneControllerContext) {
+                    sceneControllerContext.setSceneController(sceneController);
+                }
+            }
+            const sceneController = new SceneController(canvasRef.current as HTMLCanvasElement, props.clientId, onInit, props.onStatesChange, props.gameStates);
+            setSceneComponentController(sceneComponentController);
+           
         }
     }, [])
     const attackHandle=React.useCallback((evt:any)=>{

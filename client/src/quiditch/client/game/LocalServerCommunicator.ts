@@ -14,19 +14,29 @@ import { QuiditchGameManager } from "../../server/game/QuiditchGameManager";
 import { BaseState } from "@common/BaseState";
 
 export class LocalServerCommunicator implements IServerCommunicator {
-    private readonly _gameManager: QuiditchGameManager;
+    private _gameManager: QuiditchGameManager;
 
     private readonly _stateSync: StateSynchroniser;
+
+    private readonly _quiditchFactory:QuiditchFactory;
+    private readonly _physicsManager:RapierPhysicsManager;
     constructor(stateSync: StateSynchroniser) {
 
         this._stateSync = stateSync;
         const gravity = { x: 0.0, y: 0.0 };
         const world = new World(gravity);
         const bodyFactory = new RapierBodyFactory(world);
-        const physicsManager = new RapierPhysicsManager(world);
-        const quiditchFactory = new QuiditchFactory(bodyFactory, physicsManager);
-        this._gameManager = new QuiditchGameManager(quiditchFactory, physicsManager);
+        this._physicsManager = new RapierPhysicsManager(world);
+        this._quiditchFactory = new QuiditchFactory(bodyFactory, this._physicsManager);
+        this._gameManager = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
         
+    }
+    async setPause(pause: boolean): Promise<void> {
+        this._gameManager.setPause(pause);
+    }
+    async reset(): Promise<void> {
+        this._gameManager  = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
+        await this._gameManager.init();
     }
 
     public async applyAction(clientId: string, action: GameInputActions, started: boolean): Promise<void> {
@@ -87,15 +97,19 @@ export class LocalServerCommunicator implements IServerCommunicator {
         this._stateSync.setStates(this._gameManager.getStates());
 
     }
-    public async init(initStates:BaseState[]): Promise<void> {
-        this._gameManager.setPause(true);
-        if (initStates) {
-            this._gameManager.setStates(initStates);
-            
-        }else{
-           
-        }
-        await this._gameManager.init();
+    public init(initStates:BaseState[]): Promise<void> {
+        return new Promise(async res=>{
+            this._gameManager.setPause(true);
+            await this._gameManager.init(initStates);
+            // отрисовываем states
+            this._gameManager.setPause(false);
+            setTimeout(()=>{
+                this._gameManager.setPause(true);
+                res();
+            },10)
+        })
+   
+      
        
        
         

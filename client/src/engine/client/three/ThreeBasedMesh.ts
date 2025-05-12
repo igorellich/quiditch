@@ -32,8 +32,14 @@ export class ThreeBasedMesh implements IMesh{
     async getRotation(): Promise<number> {
         return this._mesh.rotation.z;
     }
-
-    addCamera(camera:Camera, scene:Scene){
+    public remove(scene:Scene){
+        if(this._cameraGroup){
+            scene.remove(this._cameraGroup)
+        }else{
+            scene.remove(this._mesh);
+        }
+    }
+    addCamera(camera:Camera, scene:Scene){        
         this._cameraGroup = new Group();
         this._cameraGroup.add(this._mesh);
         this._cameraGroup.add(camera);

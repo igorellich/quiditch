@@ -4,13 +4,22 @@ import { MainMenu } from './menu/MainMenu';
 import { SceneComponent } from './scene/SceneComponent';
 import { BaseState } from '@common/BaseState';
 import { MatchState } from '../../common/MatchState';
-const currStatesStr = window.localStorage.getItem("quiditchStates");
-let currStates: BaseState[] = currStatesStr && currStatesStr != "undefined" ? JSON.parse(currStatesStr) : [];
-export const Game = () => {
+import { createContext } from 'react';
+import { SceneController } from '../../client/game/SceneController';
+export const SceneControllerContext = createContext<SceneControllerContextType|null>(null);
+interface SceneControllerContextType{
+  sceneController?:SceneController,
+  setSceneController:(s?:SceneController)=>void
+}
+export const Game = (props: {
+    savedStates: BaseState[],
+    clientId: string
+}) => {
 
 
 
-    const [gameStates, setGameStates] = useState(currStates as BaseState[]);
+    const [gameStates, setGameStates] = useState<BaseState[]>([]);
+    const [sceneController, setSceneController] = useState<SceneController>();
     const [showMenu, setShowMenu] = useState(true);
     const [time, setTime] = useState(0);
 
@@ -30,6 +39,8 @@ export const Game = () => {
         }, 2000)
     }, [])
 
+    
+
     useEffect(() => {
         let newShowMenu = true;
         const matchState: MatchState = gameStates.filter(s => s.name === "match")[0] as MatchState;
@@ -39,11 +50,16 @@ export const Game = () => {
         setShowMenu(newShowMenu)
     }, [gameStates])
     return <>
-        {showMenu ? <MainMenu /> : null}
-        <SceneComponent gameStates={gameStates} onStatesChange={(states) => {
+    <SceneControllerContext.Provider value={
+        {sceneController, setSceneController}
+    }>
+        {showMenu ? <MainMenu
+            onContinue={async () => sceneController?sceneController.setPause(false):console.log("onContinue")}
+            onNew={async () => sceneController?sceneController.reset():console.log("onNew")} /> : null}
+        <SceneComponent clientId={props.clientId} gameStates={props.savedStates} onStatesChange={(states) => {
             setGameStates(states)
         }
         } />
-
+</SceneControllerContext.Provider>
     </>
 }

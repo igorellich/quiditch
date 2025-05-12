@@ -43,7 +43,7 @@ export class StateSynchroniser implements ITickable {
         }
     }
     _syncStarted: boolean = false;
-    private async _syncStates(): Promise<void> {
+    public async syncStates(): Promise<void> {
 
         if (!this._statesUpdated && !this._syncStarted) {
             this._syncStarted = true;
@@ -76,6 +76,12 @@ export class StateSynchroniser implements ITickable {
 
     private async _syncActorStates(){
         const actorStates = this.getActorStates();
+        for(let meshId in this._meshesMap){
+            if(actorStates.findIndex(s=>s.id===meshId)<0){
+                this._sceneManager.removeTickable(this._meshesMap[meshId])
+                this._meshFactory.remove(this._meshesMap[meshId]);
+            }
+        }
         for (const actorSate of actorStates) {              
                 
                 let meshActor = this._meshesMap[actorSate.id as string]
@@ -122,6 +128,6 @@ export class StateSynchroniser implements ITickable {
         return [...this._states];
     }
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-        await this._syncStates();
+        await this.syncStates();
     }
 }

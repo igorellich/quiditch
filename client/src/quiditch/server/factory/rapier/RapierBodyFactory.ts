@@ -11,6 +11,9 @@ export class RapierBodyFactory implements IQuiditchFactory<IBody>{
     constructor(world: World) {
         this._world = world;
     }
+    remove(child: IBody): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
     createGround(): Promise<IBody> {
         throw new Error("Method not implemented.");
     }
