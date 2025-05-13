@@ -19,28 +19,29 @@ export class BaseGameManager {
 
     protected readonly _physicsManager: IPhysicsManager;
 
+    protected _elapsedTime: number;
     constructor(physicsManager: IPhysicsManager) {
 
 
         this._physicsManager = physicsManager;
         this.addTickable(this._physicsManager);
-        let elapsedTime = 0;
+        this._elapsedTime = 0;
         const freq = (1 / 60) * 1000;
         this._tickInterval = setInterval(async () => {
             if (!this._pause) {
-                elapsedTime += freq;
+                this._elapsedTime += freq;
                 for (const tickable of this._tickers) {
-                    await tickable.tick(elapsedTime, freq);
+                    await tickable.tick(this._elapsedTime, freq);
                 }
                 const collisions = this._physicsManager.getCollisions(this.getActors());
 
                 if (collisions.length > 0) {
                     collisions.forEach(c => {
                         if (c.actorB) {
-                            c.actorA?.onCollision(c, elapsedTime);
+                            c.actorA?.onCollision(c, this._elapsedTime);
                         }
                         if (c.actorA) {
-                            c.actorB?.onCollision(c, elapsedTime);
+                            c.actorB?.onCollision(c, this._elapsedTime);
                         }
 
                     })

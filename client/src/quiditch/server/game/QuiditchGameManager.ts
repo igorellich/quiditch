@@ -61,6 +61,7 @@ export class QuiditchGameManager extends BaseGameManager{
         const matchState = new MatchState();
         matchState.score = this._score;
         matchState.paused = this.getPause();
+        matchState.time = this._elapsedTime;
         return matchState;
     }
   

@@ -43,7 +43,7 @@ export class LocalServerCommunicator implements IServerCommunicator {
         if (action === GameInputActions.pause) {
             this._gameManager.setPause(!this._gameManager.getPause());
         } else {
-            console.log(clientId, action, started)
+           // console.log(clientId, action, started)
             const playerChaser = this._getPlayerChaser(clientId);
             if (playerChaser) {
                 const actorController = playerChaser.getActorController();

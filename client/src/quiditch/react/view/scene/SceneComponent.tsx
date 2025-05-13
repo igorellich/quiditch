@@ -7,6 +7,8 @@ import { ScoreComponent } from "./ScoreComponent";
 import { SceneController } from "../../../client/game/SceneController";
 import { BaseState } from "@common/BaseState";
 import { SceneControllerContext } from "../Game";
+import { TimeComponent } from "./TimeComponent";
+import { MatchState } from "../../../common/MatchState";
 
 
 export const SceneComponent = (props: {
@@ -17,7 +19,7 @@ export const SceneComponent = (props: {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [sceneComponentController,setSceneComponentController]=useState<SceneController>()
     const sceneControllerContext = useContext(SceneControllerContext)
-  
+    const [time, setTime] = useState<number>(0);
    
     useEffect(() => {
         if(canvasRef.current){
@@ -26,11 +28,18 @@ export const SceneComponent = (props: {
                     sceneControllerContext.setSceneController(sceneController);
                 }
             }
-            const sceneController = new SceneController(canvasRef.current as HTMLCanvasElement, props.clientId, onInit, props.onStatesChange, props.gameStates);
+            const stateChangeHandler = (states:BaseState[])=>{
+                props.onStatesChange(states);
+                sceneController?.getMatchState().then(s=>{                    
+                    setTime(s.time);
+                })
+            }
+            const sceneController = new SceneController(canvasRef.current as HTMLCanvasElement, props.clientId, onInit, stateChangeHandler, props.gameStates);
             setSceneComponentController(sceneController);
            
         }
     }, [])
+    
     const attackHandle=React.useCallback((evt:any)=>{
         sceneComponentController?.attack();
         evt.preventDefault();
@@ -42,5 +51,6 @@ export const SceneComponent = (props: {
         <JoyControl onEndMove={()=>sceneComponentController.stopMoving()} onStartMove={(x,y)=>sceneComponentController.startMoving(x,y)}></JoyControl>
         <AttackButton callback={attackHandle}></AttackButton>
         <ScoreComponent matchStateGetter={()=>sceneComponentController.getMatchState()}></ScoreComponent> </>):null}
+        <TimeComponent duration={100} time={time}/>
     </>
 }
