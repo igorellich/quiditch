@@ -19,12 +19,13 @@ export class Gates extends BodyActorDecorator{
        await super.onCollision(collision, elapsedTime);
        // console.log("Gates collision", elapsedTime, collision)
        const ball = collision.actorB&&collision.actorB.getName()==ActorNames.quaffle?collision.actorB:collision.actorA&&collision.actorA.getName()==ActorNames.quaffle?collision.actorA:null;
-       if(ball && elapsedTime-this._prevTime>1){
+       if(ball && elapsedTime-this._prevTime>5000){
         const ballSensor = ball===collision.actorA?collision.sensorA:collision.sensorB;
         if(!ballSensor){
             this._prevTime = elapsedTime;
            
             if(this._onGoal){
+                console.log("gates on goal", this, elapsedTime, this._prevTime)
                 this._onGoal();
             }
         }

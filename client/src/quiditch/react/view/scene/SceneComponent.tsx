@@ -27,7 +27,7 @@ export const SceneComponent = (props: {
                 }
             }
             const sceneController = new SceneController(canvasRef.current as HTMLCanvasElement, props.clientId, onInit, props.onStatesChange, props.gameStates);
-            setSceneComponentController(sceneComponentController);
+            setSceneComponentController(sceneController);
            
         }
     }, [])

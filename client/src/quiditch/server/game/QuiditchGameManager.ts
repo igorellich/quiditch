@@ -81,7 +81,7 @@ export class QuiditchGameManager extends BaseGameManager{
                 this._score[teamId]++;
             }
         }
-        setScore();
+        
         if(states){
             const matchState = states.filter(s=>s.name==="match")[0] as MatchState;
             if(matchState){
