@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import '@tensorflow/tfjs-node';
+// import '@tensorflow/tfjs-node';
 import { IEnvironment } from './IEnvironment';
 
 // Hyperparameters
@@ -49,7 +49,7 @@ class DQNAgent<TGameState> {
         //     activation: 'relu'
         // }).apply(agentPositionInput) as tf.SymbolicTensor;
 
-        const itemsFlattened = tf.layers.flatten().apply(itemsInput) as tf.SymbolicTensor;
+        const itemsFlattened = itemsInput;// tf.layers.flatten().apply(itemsInput) as tf.SymbolicTensor;
         const itemsProcessed = tf.layers.dense({
             units: 32,
             activation: 'relu'
@@ -62,11 +62,11 @@ class DQNAgent<TGameState> {
         // }).apply(enemiesFlattened) as tf.SymbolicTensor;
 
         // Concatenate all processed inputs
-        const merged = tf.layers.concatenate().apply([
-            //agentPositionProcessed,
-            itemsProcessed,
-           // enemiesProcessed
-        ]) as tf.SymbolicTensor;
+        const merged = itemsProcessed; //tf.layers.concatenate().apply([
+        //     //agentPositionProcessed,
+        //     itemsProcessed,
+        //    // enemiesProcessed
+        // ]) as tf.SymbolicTensor;
 
         // Hidden layers
         const hidden1 = tf.layers.dense({
@@ -215,9 +215,14 @@ class DQNAgent<TGameState> {
 
 
 export class AgentManager<TGameState> {
+    private _env: IEnvironment<TGameState>;
+
+ 
+    
     constructor(env: IEnvironment<TGameState>) {
+        this._env = env;
         // Run the training
-        this.trainAgent(env).then(async agent => {
+        this.trainAgent().then(async agent => {
             console.log('Agent trained successfully!');
 
             // Test the trained agent
@@ -225,7 +230,7 @@ export class AgentManager<TGameState> {
             const testEpisodes = 5;
 
             for (let i = 0; i < testEpisodes; i++) {
-                let state:TGameState = await env.reset();
+                let state:TGameState = await this._env.reset();
                 let done = false;
                 let steps = 0;
                 console.log(`\nTest Episode ${i + 1}`);
@@ -233,7 +238,7 @@ export class AgentManager<TGameState> {
 
                 while (!done && steps < 50) {
                     const action = await agent.act(state);
-                    const { state: nextState, reward, done: episodeDone } = await env.step(action);
+                    const { state: nextState, reward, done: episodeDone } = await this._env.step(action);
                     console.log(`Step ${steps}: Action ${['Up', 'Down', 'Left', 'Right'][action]}, Reward ${reward}`);
                     state = nextState;
                     done = episodeDone;
@@ -248,18 +253,18 @@ export class AgentManager<TGameState> {
     }
 
 
-    async trainAgent<TGameState>(env: IEnvironment<TGameState>) {
-        const agent = new DQNAgent(env);
+    async trainAgent() {
+        const agent = new DQNAgent(this._env);
 
 
         for (let episode = 0; episode < EPISODES; episode++) {
-            let state: TGameState = await env.reset();
+            let state: TGameState = await this._env.reset() as TGameState;
             let totalReward = 0;
             let steps = 0;
 
             for (; steps < MAX_STEPS_PER_EPISODE; steps++) {
                 const action = await agent.act(state);
-                const { state: nextState, reward, done } = await env.step(action);
+                const { state: nextState, reward, done } = await this._env.step(action);
 
                 agent.remember(state, action, reward, nextState, done);
                 await agent.replay();

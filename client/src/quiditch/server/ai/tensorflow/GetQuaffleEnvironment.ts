@@ -17,7 +17,7 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
         this._reset = reset;
     }
     getStateShape(): number {
-        return Object.keys(PlayerState).length + Object.keys(ActorState).length;
+        return 10; // Object.keys(PlayerState).length + Object.keys(ActorState).length;
     }
     async getFlatState(state:GetQuaffleGameState): Promise<any[]> {
         let result: any[] = [];

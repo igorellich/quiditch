@@ -25,11 +25,8 @@ export class SceneController {
     constructor(canvas: HTMLCanvasElement, clientId: string, onInit?: () => void, onStatesChange?: (states: BaseState[]) => void, initState?: BaseState[]) {
         this._initStates = initState;
 
-        this._clientId = clientId; // window.localStorage.getItem("clientId") as string;
-        // if (!this._clientId) {
-        //     this._clientId = Math.random().toString();
-        //     window.localStorage.setItem("clientId", this._clientId);
-        // }
+        this._clientId = clientId; 
+
         const keyboardInputController = new KeyboardInputController<GameInputActions>({
             pause: { keys: ['p'], single: true },
             attack: { keys: [' '], single: true },
@@ -61,10 +58,15 @@ export class SceneController {
 
         this._threeSceneManager.addTickable(this._stateSynchroniser);
 
-        this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser);
+        this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser, "getQuaffle", clientId);
+
+     
+
         //this._serverCommunicator = new HttpServerCommunicator(this._stateSynchroniser, clientId);
 
-        this._init(canvas, clientId).then(() => {
+        this._init().then(async () => {
+
+             
             if (onStatesChange) {
                 this._stateSynchroniser?.addOnStatesChangeHandler((states) => onStatesChange(states))
             }
@@ -107,7 +109,7 @@ export class SceneController {
         await this._takeControl();
     }
 
-    private async _init(canvas: HTMLCanvasElement, clientId: string): Promise<void> {
+    private async _init(): Promise<void> {
 
 
 
