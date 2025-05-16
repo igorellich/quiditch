@@ -9,7 +9,7 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
     private _gameManager: QuiditchGameManager;
     private readonly _clientId: string;
     private readonly _reset:()=>Promise<QuiditchGameManager>;
-    _gameActionsMap: GameInputActions[] = [GameInputActions.attack,
+    _gameActionsMap: GameInputActions[] = [
     GameInputActions.moveBackward, GameInputActions.moveForward, GameInputActions.turnLeft, GameInputActions.turnRight];
     constructor(clientId: string, gameManager: QuiditchGameManager, reset:()=>Promise<QuiditchGameManager>) {
         this._gameManager = gameManager;
@@ -17,7 +17,7 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
         this._reset = reset;
     }
     getStateShape(): number {
-        return 10; // Object.keys(PlayerState).length + Object.keys(ActorState).length;
+        return 12; // Object.keys(PlayerState).length + Object.keys(ActorState).length;
     }
     async getFlatState(state:GetQuaffleGameState): Promise<any[]> {
         let result: any[] = [];
@@ -25,6 +25,8 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
         if (state) {
             result = state.map(o => Object.values(o as object));
         }
+        result = result.flat();
+        result = result.map(o =>typeof(o)==="object"?Object.values(o as object):o);
         return result.flat();
     }
     
@@ -43,30 +45,39 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
             const playerChaser = this._gameManager.getChaserByPlayerId(this._clientId);
             const quaffle = await this._gameManager.getQuaffle();
 
-            let reward = -0.1;
+            let reward = 0;
             let done = false;
             if (playerChaser) {
 
                 const actorController = playerChaser.getActorController();
                 console.log(this._gameActionsMap[action])
-
+                await actorController.applyAction(this._gameActionsMap[action], true);
                 setTimeout(async () => {
                     await actorController.applyAction(this._gameActionsMap[action], false);
-                    const endDistance = (await playerChaser?.getActor()?.getPosition())?.distanceTo(await quaffle?.getPosition() as Vector2d);
-                    if (this._prevDistance !== undefined && endDistance !== undefined) {
-                        console.log(`${this._prevDistance.toFixed(5)}-${endDistance.toFixed(5)}`)
-                        reward = this._prevDistance.toFixed(5) >= endDistance.toFixed(5) ? -1 : 1;
+                    setTimeout(async () => {
+                        const endDistance = (await playerChaser?.getActor()?.getPosition())?.distanceTo(await quaffle?.getPosition() as Vector2d);
+                        if (this._prevDistance !== undefined && endDistance !== undefined) {
+                            console.log(`${this._prevDistance.toFixed(5)}-${endDistance.toFixed(5)}`)
+                            if(this._prevDistance.toFixed(5) > endDistance.toFixed(5)){
+                                reward = 1;
+                            }
+                            if(this._prevDistance.toFixed(5) < endDistance.toFixed(5)){
+                                reward = -1;
+                            }
 
-                    }
-                    this._prevDistance = endDistance;
-                    const playerState = await playerChaser.getActor()?.getState();
-                    if (playerState) {
-                        if (playerState.hasQuaffle) {
-                            done = true;
                         }
-                    }
-                    resolve({ done, reward, state: [await playerChaser?.getActor()?.getState() as PlayerState, await quaffle?.getState() as ActorState] });
-                }, 10)
+                        this._prevDistance = endDistance;
+                        const playerState = await playerChaser.getActor()?.getState();
+                        if (playerState) {
+                            if (playerState.hasQuaffle) {
+                                done = true;
+                            }
+                        }
+                        resolve({ done, reward, state: [await playerChaser?.getActor()?.getState() as PlayerState, await quaffle?.getState() as ActorState] });
+                    }, 30)
+
+                    
+                }, 30)
 
 
 
@@ -78,7 +89,7 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
     }
     async reset(): Promise<GetQuaffleGameState> {
            this._gameManager  = await this._reset();
-           await this._gameManager.initQuaffleEnvironment(this._clientId);
+           // await this._gameManager.initQuaffleEnvironment(this._clientId);
           return this._getState();
        }
 
