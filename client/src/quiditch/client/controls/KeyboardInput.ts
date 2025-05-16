@@ -1,4 +1,4 @@
-import {KeyboardInputMap } from "../../common/constants";
+import { KeyboardInputMap } from "../../common/constants";
 import { InputController } from "../../../engine/client/controls/BaseInput";
 
 export class KeyboardInputController<TGameActions> extends InputController<TGameActions> {
@@ -9,7 +9,7 @@ export class KeyboardInputController<TGameActions> extends InputController<TGame
 
             const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].keys.includes(e.key))[0];
             const actionDesc = keyboardInputMap[action as keyof KeyboardInputMap];
-            if (!actionDesc.single) {
+            if (actionDesc && !actionDesc.single) {
                 this._onInputChange(action as unknown as TGameActions, true);
             }
         })
@@ -17,9 +17,10 @@ export class KeyboardInputController<TGameActions> extends InputController<TGame
         document.addEventListener('keyup', (e) => {
 
             const action = Object.keys(keyboardInputMap).filter(a => keyboardInputMap[a as keyof KeyboardInputMap].keys.includes(e.key))[0];
-
-            const actionDesc = keyboardInputMap[action as keyof KeyboardInputMap];
-            this._onInputChange(action as unknown as TGameActions, actionDesc.single ? true : false);
+            if (action) {
+                const actionDesc = keyboardInputMap[action as keyof KeyboardInputMap];
+                this._onInputChange(action as unknown as TGameActions, actionDesc.single ? true : false);
+            }
         })
     }
 }
