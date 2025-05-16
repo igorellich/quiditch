@@ -9,13 +9,34 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
     private _gameManager: QuiditchGameManager;
     private readonly _clientId: string;
     private readonly _reset:()=>Promise<QuiditchGameManager>;
+    _gameActionsMap: GameInputActions[] = [GameInputActions.attack,
+    GameInputActions.moveBackward, GameInputActions.moveForward, GameInputActions.turnLeft, GameInputActions.turnRight];
     constructor(clientId: string, gameManager: QuiditchGameManager, reset:()=>Promise<QuiditchGameManager>) {
         this._gameManager = gameManager;
         this._clientId = clientId;
         this._reset = reset;
     }
-    _gameActionsMap: GameInputActions[] = [GameInputActions.attack,
-    GameInputActions.moveBackward, GameInputActions.moveForward, GameInputActions.turnLeft, GameInputActions.turnRight];
+    getStateShape(): number {
+        return Object.keys(PlayerState).length + Object.keys(ActorState).length;
+    }
+    async getFlatState(state:GetQuaffleGameState): Promise<any[]> {
+        let result: any[] = [];
+        
+        if (state) {
+            result = state.map(o => Object.values(o as object));
+        }
+        return result;
+    }
+    
+    private async _getState():Promise<GetQuaffleGameState>{
+            const playerChaser = this._gameManager.getChaserByPlayerId(this._clientId);
+            const quaffle = await this._gameManager.getQuaffle();
+           return [await playerChaser?.getActor()?.getState() as PlayerState,await quaffle?.getState() as ActorState];
+    }
+    getActionsCount(): number {
+       return this._gameActionsMap.length;
+    }
+    
 
     async step(action: number): Promise<{ reward: number; done: boolean; state: GetQuaffleGameState; }> {
 
@@ -45,7 +66,7 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
     async reset(): Promise<GetQuaffleGameState> {
            this._gameManager  = await this._reset();
            await this._gameManager.initQuaffleEnvironment(this._clientId);
-           return [undefined, undefined];
+          return this._getState();
        }
 
 }

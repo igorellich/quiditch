@@ -13,16 +13,12 @@ const MEMORY_CAPACITY = 10000;
 const EPISODES = 1000;
 const MAX_STEPS_PER_EPISODE = 200;
 
-// Environment parameters
-const NUM_ITEMS = 3;
-const NUM_ENEMIES = 2;
-const NUM_ACTIONS = 4; // Up, Down, Left, Right
 
 
 class DQNAgent<TGameState> {
     private model: tf.Sequential;
     private targetModel: tf.Sequential;
-    private readonly _environment:IEnvironment<TGameState>;
+    private readonly _environment: IEnvironment<TGameState>;
     private memory: Array<{
         state: TGameState,
         action: number,
@@ -32,7 +28,7 @@ class DQNAgent<TGameState> {
     }> = [];
     private epsilon: number = EPSILON_START;
 
-    constructor(environment:IEnvironment<TGameState>) {
+    constructor(environment: IEnvironment<TGameState>) {
         this._environment = environment;
         this.model = this.buildModel();
         this.targetModel = this.buildModel();
@@ -41,70 +37,70 @@ class DQNAgent<TGameState> {
 
     private buildModel(): tf.Sequential {
         const model = tf.sequential();
-        
+
         // Input layers for each state component
-        const agentPositionInput = tf.input({shape: [2]});
-        const itemsInput = tf.input({shape: [NUM_ITEMS, 2]});
-        const enemiesInput = tf.input({shape: [NUM_ENEMIES, 2]});
-        
+        //const agentPositionInput = tf.input({ shape: [2] });
+        const itemsInput = tf.input({ shape: [this._environment.getStateShape()] });
+        //const enemiesInput = tf.input({ shape: [NUM_ENEMIES, 2] });
+
         // Process each input separately
-        const agentPositionProcessed = tf.layers.dense({
-            units: 16,
-            activation: 'relu'
-        }).apply(agentPositionInput) as tf.SymbolicTensor;
-        
+        // const agentPositionProcessed = tf.layers.dense({
+        //     units: 16,
+        //     activation: 'relu'
+        // }).apply(agentPositionInput) as tf.SymbolicTensor;
+
         const itemsFlattened = tf.layers.flatten().apply(itemsInput) as tf.SymbolicTensor;
         const itemsProcessed = tf.layers.dense({
             units: 32,
             activation: 'relu'
         }).apply(itemsFlattened) as tf.SymbolicTensor;
-        
-        const enemiesFlattened = tf.layers.flatten().apply(enemiesInput) as tf.SymbolicTensor;
-        const enemiesProcessed = tf.layers.dense({
-            units: 32,
-            activation: 'relu'
-        }).apply(enemiesFlattened) as tf.SymbolicTensor;
-        
+
+        // const enemiesFlattened = tf.layers.flatten().apply(enemiesInput) as tf.SymbolicTensor;
+        // const enemiesProcessed = tf.layers.dense({
+        //     units: 32,
+        //     activation: 'relu'
+        // }).apply(enemiesFlattened) as tf.SymbolicTensor;
+
         // Concatenate all processed inputs
         const merged = tf.layers.concatenate().apply([
-            agentPositionProcessed,
+            //agentPositionProcessed,
             itemsProcessed,
-            enemiesProcessed
+           // enemiesProcessed
         ]) as tf.SymbolicTensor;
-        
+
         // Hidden layers
         const hidden1 = tf.layers.dense({
             units: 64,
             activation: 'relu'
         }).apply(merged) as tf.SymbolicTensor;
-        
+
         const hidden2 = tf.layers.dense({
             units: 32,
             activation: 'relu'
         }).apply(hidden1) as tf.SymbolicTensor;
-        
+
         // Output layer
         const output = tf.layers.dense({
-            units: NUM_ACTIONS,
+            units: this._environment.getActionsCount(),
             activation: 'linear'
         }).apply(hidden2) as tf.SymbolicTensor;
-        
+
         // Create model
-        model.add(tf.layers.inputLayer({inputShape: [2]}));
-        model.add(tf.layers.dense({units: 16, activation: 'relu'}));
-        
+        model.add(tf.layers.inputLayer({ inputShape: [2] }));
+        model.add(tf.layers.dense({ units: 16, activation: 'relu' }));
+
         // Final model
         model.compile({
             optimizer: tf.train.adam(LEARNING_RATE),
             loss: 'meanSquaredError'
         });
-        
+
         // Simplified version since tf.Sequential doesn't easily support multiple inputs
         // In practice, you might want to use tf.LayersModel instead for complex inputs
         const simpleModel = tf.sequential();
         simpleModel.add(tf.layers.dense({
             units: 64,
-            inputShape: [2 + NUM_ITEMS * 2 + NUM_ENEMIES * 2],
+            inputShape: [this._environment.getStateShape()],
             activation: 'relu'
         }));
         simpleModel.add(tf.layers.dense({
@@ -112,14 +108,14 @@ class DQNAgent<TGameState> {
             activation: 'relu'
         }));
         simpleModel.add(tf.layers.dense({
-            units: NUM_ACTIONS,
+            units: this._environment.getActionsCount(),
             activation: 'linear'
         }));
         simpleModel.compile({
             optimizer: tf.train.adam(LEARNING_RATE),
             loss: 'meanSquaredError'
         });
-        
+
         return simpleModel;
     }
 
@@ -127,24 +123,22 @@ class DQNAgent<TGameState> {
         this.targetModel.setWeights(this.model.getWeights());
     }
 
-    private stateToTensor(state: TGameState): tf.Tensor {
+    private async stateToTensor(state: TGameState): Promise<tf.Tensor> {
         // Flatten all state arrays into a single tensor
-        const flatState = [
-            ...state.agentPosition,
-            ...state.items.flat(),
-            ...state.enemies.flat()
-        ];
+        const flatState = await this._environment.getFlatState(state);
         return tf.tensor2d([flatState]);
     }
 
-    public act(state: TGameState): number {
+    public async  act(state: TGameState): Promise<number> {
         if (Math.random() < this.epsilon) {
-            return Math.floor(Math.random() * NUM_ACTIONS);
+            return Math.floor(Math.random() * this._environment.getActionsCount());
         }
+        const stateTensor = await this.stateToTensor(state);
         return tf.tidy(() => {
-            const stateTensor = this.stateToTensor(state);
+            
             const qValues = this.model.predict(stateTensor) as tf.Tensor;
             const action = qValues.argMax(1).dataSync()[0];
+            stateTensor.dispose();
             return action;
         });
     }
@@ -178,32 +172,30 @@ class DQNAgent<TGameState> {
         const states = batch.map(exp => exp.state);
         const nextStates = batch.map(exp => exp.nextState);
 
-        const stateTensors = tf.stack(states.map(s => this.stateToTensor(s).squeeze()));
-        const nextStateTensors = tf.stack(nextStates.map(s => this.stateToTensor(s).squeeze()));
+        const stateTensors = tf.stack(await Promise.all(states.map(async s => (await this.stateToTensor(s)).squeeze())));
+        const nextStateTensors = tf.stack(await Promise.all(nextStates.map(async s =>(await this.stateToTensor(s)).squeeze())));
 
-        const currentQs = (await( this.model.predict(stateTensors) as tf.Tensor).array()) as number[][];
+        const currentQs = (await (this.model.predict(stateTensors) as tf.Tensor).array()) as number[][];
         const nextQs = (await (this.targetModel.predict(nextStateTensors) as tf.Tensor).array()) as number[][];
 
         const inputs: number[][] = [];
         const targets: number[][] = [];
 
-        batch.forEach((experience, i) => {
-            const { state, action, reward, done } = experience;
-            
+        for(let i = 0; i<batch.length; i++) {
+            const experience = batch[i];
+              const { state, action, reward, done } = experience;
+
             const target = [...currentQs[i]];
             if (done) {
                 target[action] = reward;
             } else {
                 target[action] = reward + DISCOUNT_FACTOR * Math.max(...nextQs[i]);
             }
-
-            inputs.push([
-                ...state.agentPosition,
-                ...state.items.flat(),
-                ...state.enemies.flat()
-            ]);
+            const flatState = await this._environment.getFlatState(state);
+            inputs.push(flatState);
             targets.push(target);
-        });
+        }
+    
 
         // Train the model
         await this.model.fit(
@@ -221,68 +213,77 @@ class DQNAgent<TGameState> {
 
 
 
-async function trainAgent<TGameState>(env:IEnvironment<TGameState>) {
-    const agent = new DQNAgent(env);
-    
 
-    for (let episode = 0; episode < EPISODES; episode++) {
-        let state: TGameState = await env.reset();
-        let totalReward = 0;
-        let steps = 0;
+export class AgentManager<TGameState> {
+    constructor(env: IEnvironment<TGameState>) {
+        // Run the training
+        this.trainAgent(env).then(async agent => {
+            console.log('Agent trained successfully!');
 
-        for (; steps < MAX_STEPS_PER_EPISODE; steps++) {
-            const action = agent.act(state);
-            const { state: nextState, reward, done } = await env.step(action);
-            
-            agent.remember(state, action, reward, nextState, done);
-            await agent.replay();
+            // Test the trained agent
 
-            state = nextState;
-            totalReward += reward;
+            const testEpisodes = 5;
 
-            if (done) {
-                break;
+            for (let i = 0; i < testEpisodes; i++) {
+                let state:TGameState = await env.reset();
+                let done = false;
+                let steps = 0;
+                console.log(`\nTest Episode ${i + 1}`);
+                // console.log(`Start State: Agent at [${state.agentPosition}], Items at ${state.items}, Enemies at ${state.enemies}`);
+
+                while (!done && steps < 50) {
+                    const action = await agent.act(state);
+                    const { state: nextState, reward, done: episodeDone } = await env.step(action);
+                    console.log(`Step ${steps}: Action ${['Up', 'Down', 'Left', 'Right'][action]}, Reward ${reward}`);
+                    state = nextState;
+                    done = episodeDone;
+                    steps++;
+                }
+
+                // console.log(`Final State: Agent at [${state.agentPosition}], Items left: ${state.items.length}`);
             }
-        }
-
-        // Update target network periodically
-        if (episode % 10 === 0) {
-            agent.updateTargetModel();
-        }
-
-        console.log(`Episode ${episode}, Steps: ${steps}, Total Reward: ${totalReward.toFixed(1)}, Epsilon: ${agent['epsilon'].toFixed(3)}`);
+        }).catch(err => {
+            console.error('Training failed:', err);
+        });
     }
 
-    console.log('Training complete!');
-    return agent;
+
+    async trainAgent<TGameState>(env: IEnvironment<TGameState>) {
+        const agent = new DQNAgent(env);
+
+
+        for (let episode = 0; episode < EPISODES; episode++) {
+            let state: TGameState = await env.reset();
+            let totalReward = 0;
+            let steps = 0;
+
+            for (; steps < MAX_STEPS_PER_EPISODE; steps++) {
+                const action = await agent.act(state);
+                const { state: nextState, reward, done } = await env.step(action);
+
+                agent.remember(state, action, reward, nextState, done);
+                await agent.replay();
+
+                state = nextState;
+                totalReward += reward;
+
+                if (done) {
+                    break;
+                }
+            }
+
+            // Update target network periodically
+            if (episode % 10 === 0) {
+                agent.updateTargetModel();
+            }
+
+            console.log(`Episode ${episode}, Steps: ${steps}, Total Reward: ${totalReward.toFixed(1)}, Epsilon: ${agent['epsilon'].toFixed(3)}`);
+        }
+
+        console.log('Training complete!');
+        return agent;
+    }
+
+
 }
-let env: IEnvironment<{}> = {  };
-// Run the training
-trainAgent(env).then(async agent => {
-    console.log('Agent trained successfully!');
-    
-    // Test the trained agent
-    
-    const testEpisodes = 5;
-    
-    for (let i = 0; i < testEpisodes; i++) {
-        let state = env.reset();
-        let done = false;
-        let steps = 0;
-        console.log(`\nTest Episode ${i + 1}`);
-        // console.log(`Start State: Agent at [${state.agentPosition}], Items at ${state.items}, Enemies at ${state.enemies}`);
-        
-        while (!done && steps < 50) {
-            const action = agent.act(state);
-            const { state: nextState, reward, done: episodeDone } = await env.step(action);
-            console.log(`Step ${steps}: Action ${['Up', 'Down', 'Left', 'Right'][action]}, Reward ${reward}`);
-            state = nextState;
-            done = episodeDone;
-            steps++;
-        }
-        
-        console.log(`Final State: Agent at [${state.agentPosition}], Items left: ${state.items.length}`);
-    }
-}).catch(err => {
-    console.error('Training failed:', err);
-});
+
