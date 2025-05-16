@@ -1,7 +1,6 @@
 import { Vector2d } from "@common/Vector2d";
 import { Chaser } from "../../server/ai/Chaser";
 import { GameInputActions } from "../../common/constants";
-import { TargetPointInputController } from "../../server/controls/TargetPointInputController";
 import { PlayerActor } from "../../server/factory/components/PlayerActor";
 
 import { IServerCommunicator } from "./IServerCommunicator";
@@ -30,6 +29,9 @@ export class LocalServerCommunicator implements IServerCommunicator {
         this._quiditchFactory = new QuiditchFactory(bodyFactory, this._physicsManager);
         this._gameManager = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
         
+    }
+    async getStates(): Promise<BaseState[]> {
+        return this._gameManager.getStates()
     }
     async setPause(pause: boolean): Promise<void> {
         this._gameManager.setPause(pause);
@@ -109,11 +111,5 @@ export class LocalServerCommunicator implements IServerCommunicator {
             },10)
         })
    
-      
-       
-       
-        
     }
-
-
 }

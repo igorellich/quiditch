@@ -1,5 +1,6 @@
 import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-node';
+import { IEnvironment } from './IEnvironment';
 
 // Hyperparameters
 const LEARNING_RATE = 0.001;
@@ -13,30 +14,26 @@ const EPISODES = 1000;
 const MAX_STEPS_PER_EPISODE = 200;
 
 // Environment parameters
-const GRID_SIZE = 5;
 const NUM_ITEMS = 3;
 const NUM_ENEMIES = 2;
 const NUM_ACTIONS = 4; // Up, Down, Left, Right
 
-interface GameState {
-    agentPosition: [number, number];
-    items: Array<[number, number]>;
-    enemies: Array<[number, number]>;
-}
 
-class DQNAgent {
+class DQNAgent<TGameState> {
     private model: tf.Sequential;
     private targetModel: tf.Sequential;
+    private readonly _environment:IEnvironment<TGameState>;
     private memory: Array<{
-        state: GameState,
+        state: TGameState,
         action: number,
         reward: number,
-        nextState: GameState,
+        nextState: TGameState,
         done: boolean
     }> = [];
     private epsilon: number = EPSILON_START;
 
-    constructor() {
+    constructor(environment:IEnvironment<TGameState>) {
+        this._environment = environment;
         this.model = this.buildModel();
         this.targetModel = this.buildModel();
         this.updateTargetModel();
@@ -130,7 +127,7 @@ class DQNAgent {
         this.targetModel.setWeights(this.model.getWeights());
     }
 
-    private stateToTensor(state: GameState): tf.Tensor {
+    private stateToTensor(state: TGameState): tf.Tensor {
         // Flatten all state arrays into a single tensor
         const flatState = [
             ...state.agentPosition,
@@ -140,7 +137,7 @@ class DQNAgent {
         return tf.tensor2d([flatState]);
     }
 
-    public act(state: GameState): number {
+    public act(state: TGameState): number {
         if (Math.random() < this.epsilon) {
             return Math.floor(Math.random() * NUM_ACTIONS);
         }
@@ -153,10 +150,10 @@ class DQNAgent {
     }
 
     public remember(
-        state: GameState,
+        state: TGameState,
         action: number,
         reward: number,
-        nextState: GameState,
+        nextState: TGameState,
         done: boolean
     ): void {
         this.memory.push({ state, action, reward, nextState, done });
@@ -222,112 +219,20 @@ class DQNAgent {
     }
 }
 
-class GridWorldEnvironment {
-    private state: GameState;
 
-    constructor() {
-        this.state = this.generateRandomState();
-    }
 
-    private generateRandomState(): GameState {
-        const positions: Set<string> = new Set();
-        
-        // Generate unique positions
-        const getUniquePosition = (): [number, number] => {
-            let pos: [number, number];
-            do {
-                pos = [
-                    Math.floor(Math.random() * GRID_SIZE),
-                    Math.floor(Math.random() * GRID_SIZE)
-                ];
-            } while (positions.has(pos.join(',')));
-            positions.add(pos.join(','));
-            return pos;
-        };
-
-        const agentPosition = getUniquePosition();
-        const items: Array<[number, number]> = [];
-        const enemies: Array<[number, number]> = [];
-
-        for (let i = 0; i < NUM_ITEMS; i++) {
-            items.push(getUniquePosition());
-        }
-
-        for (let i = 0; i < NUM_ENEMIES; i++) {
-            enemies.push(getUniquePosition());
-        }
-
-        return { agentPosition, items, enemies };
-    }
-
-    reset(): GameState {
-        this.state = this.generateRandomState();
-        return { ...this.state };
-    }
-
-    step(action: number): { state: GameState, reward: number, done: boolean } {
-        const newAgentPosition: [number, number] = [...this.state.agentPosition];
-        
-        // Move agent based on action
-        switch (action) {
-            case 0: newAgentPosition[1] = Math.max(0, newAgentPosition[1] - 1); break; // Up
-            case 1: newAgentPosition[1] = Math.min(GRID_SIZE - 1, newAgentPosition[1] + 1); break; // Down
-            case 2: newAgentPosition[0] = Math.max(0, newAgentPosition[0] - 1); break; // Left
-            case 3: newAgentPosition[0] = Math.min(GRID_SIZE - 1, newAgentPosition[0] + 1); break; // Right
-        }
-
-        // Check for collisions with items
-        let reward = -0.1; // Small penalty for each step to encourage efficiency
-        const remainingItems = this.state.items.filter(item => {
-            const isCollected = item[0] === newAgentPosition[0] && item[1] === newAgentPosition[1];
-            if (isCollected) reward += 10; // Big reward for collecting item
-            return !isCollected;
-        });
-
-        // Check for collisions with enemies
-        let done = false;
-        const hitEnemy = this.state.enemies.some(enemy => 
-            enemy[0] === newAgentPosition[0] && enemy[1] === newAgentPosition[1]
-        );
-        
-        if (hitEnemy) {
-            reward = -20; // Big penalty for hitting enemy
-            done = true;
-        }
-
-        // Check if all items collected
-        if (remainingItems.length === 0) {
-            reward = 20; // Big reward for collecting all items
-            done = true;
-        }
-
-        // Update state
-        this.state = {
-            agentPosition: newAgentPosition,
-            items: remainingItems,
-            enemies: this.state.enemies
-        };
-
-        return {
-            state: { ...this.state },
-            reward,
-            done
-        };
-    }
-}
-
-async function trainAgent() {
-    const agent = new DQNAgent();
-    const env = new GridWorldEnvironment();
+async function trainAgent<TGameState>(env:IEnvironment<TGameState>) {
+    const agent = new DQNAgent(env);
+    
 
     for (let episode = 0; episode < EPISODES; episode++) {
-        let state = env.reset();
+        let state: TGameState = await env.reset();
         let totalReward = 0;
         let steps = 0;
 
         for (; steps < MAX_STEPS_PER_EPISODE; steps++) {
             const action = agent.act(state);
-            const { state: nextState, reward, done } = env.step(action);
+            const { state: nextState, reward, done } = await env.step(action);
             
             agent.remember(state, action, reward, nextState, done);
             await agent.replay();
@@ -351,13 +256,13 @@ async function trainAgent() {
     console.log('Training complete!');
     return agent;
 }
-
+let env: IEnvironment<{}> = {  };
 // Run the training
-trainAgent().then(agent => {
+trainAgent(env).then(async agent => {
     console.log('Agent trained successfully!');
     
     // Test the trained agent
-    const env = new GridWorldEnvironment();
+    
     const testEpisodes = 5;
     
     for (let i = 0; i < testEpisodes; i++) {
@@ -365,11 +270,11 @@ trainAgent().then(agent => {
         let done = false;
         let steps = 0;
         console.log(`\nTest Episode ${i + 1}`);
-        console.log(`Start State: Agent at [${state.agentPosition}], Items at ${state.items}, Enemies at ${state.enemies}`);
+        // console.log(`Start State: Agent at [${state.agentPosition}], Items at ${state.items}, Enemies at ${state.enemies}`);
         
         while (!done && steps < 50) {
             const action = agent.act(state);
-            const { state: nextState, reward, done: episodeDone } = env.step(action);
+            const { state: nextState, reward, done: episodeDone } = await env.step(action);
             console.log(`Step ${steps}: Action ${['Up', 'Down', 'Left', 'Right'][action]}, Reward ${reward}`);
             state = nextState;
             done = episodeDone;
