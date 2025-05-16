@@ -43,7 +43,7 @@ export class LocalServerCommunicator implements IServerCommunicator {
     }
     async reset(): Promise<void> {
         this._gameManager  = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
-        await this._gameManager.init();
+        await this._gameManager.initQuaffleEnvironment(this._clientId);
     }
 
     public async applyAction(clientId: string, action: GameInputActions, started: boolean): Promise<void> {
@@ -123,7 +123,7 @@ export class LocalServerCommunicator implements IServerCommunicator {
                        return this._gameManager;
                   })
                 const agentManager = new AgentManager(getQuaffleEnv);
-                await agentManager.trainAgent();
+                agentManager.trainAgent();
             setTimeout(async ()=>{
                 // this._gameManager.setPause(true);
                 
