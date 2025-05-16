@@ -25,7 +25,7 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
         if (state) {
             result = state.map(o => Object.values(o as object));
         }
-        return result;
+        return result.flat();
     }
     
     private async _getState():Promise<GetQuaffleGameState>{

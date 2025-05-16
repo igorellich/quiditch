@@ -222,38 +222,39 @@ export class AgentManager<TGameState> {
     constructor(env: IEnvironment<TGameState>) {
         this._env = env;
         // Run the training
-        this.trainAgent().then(async agent => {
-            console.log('Agent trained successfully!');
+        // this.trainAgent().then(async agent => {
+        //     console.log('Agent trained successfully!');
 
-            // Test the trained agent
+        //     // Test the trained agent
 
-            const testEpisodes = 5;
+        //     const testEpisodes = 5;
 
-            for (let i = 0; i < testEpisodes; i++) {
-                let state:TGameState = await this._env.reset();
-                let done = false;
-                let steps = 0;
-                console.log(`\nTest Episode ${i + 1}`);
-                // console.log(`Start State: Agent at [${state.agentPosition}], Items at ${state.items}, Enemies at ${state.enemies}`);
+        //     for (let i = 0; i < testEpisodes; i++) {
+        //         let state:TGameState = await this._env.reset();
+        //         let done = false;
+        //         let steps = 0;
+        //         console.log(`\nTest Episode ${i + 1}`);
+        //         // console.log(`Start State: Agent at [${state.agentPosition}], Items at ${state.items}, Enemies at ${state.enemies}`);
 
-                while (!done && steps < 50) {
-                    const action = await agent.act(state);
-                    const { state: nextState, reward, done: episodeDone } = await this._env.step(action);
-                    console.log(`Step ${steps}: Action ${['Up', 'Down', 'Left', 'Right'][action]}, Reward ${reward}`);
-                    state = nextState;
-                    done = episodeDone;
-                    steps++;
-                }
+        //         while (!done && steps < 50) {
+        //             const action = await agent.act(state);
+        //             const { state: nextState, reward, done: episodeDone } = await this._env.step(action);
+        //             console.log(`Step ${steps}: Action ${['Up', 'Down', 'Left', 'Right'][action]}, Reward ${reward}`);
+        //             state = nextState;
+        //             done = episodeDone;
+        //             steps++;
+        //         }
 
-                // console.log(`Final State: Agent at [${state.agentPosition}], Items left: ${state.items.length}`);
-            }
-        }).catch(err => {
-            console.error('Training failed:', err);
-        });
+        //         // console.log(`Final State: Agent at [${state.agentPosition}], Items left: ${state.items.length}`);
+        //     }
+        // }).catch(err => {
+        //     console.error('Training failed:', err);
+        // });
     }
 
 
     async trainAgent() {
+        console.log("start training!");
         const agent = new DQNAgent(this._env);
 
 
@@ -263,6 +264,7 @@ export class AgentManager<TGameState> {
             let steps = 0;
 
             for (; steps < MAX_STEPS_PER_EPISODE; steps++) {
+                console.log(`${steps}-${episode}`)
                 const action = await agent.act(state);
                 const { state: nextState, reward, done } = await this._env.step(action);
 

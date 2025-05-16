@@ -139,7 +139,7 @@ export class QuiditchGameManager extends BaseGameManager {
         let pos = new Vector2d(-30, 0);
         const chaser = await this._createChaser(zone, true, pos);
         this._chasers.push(chaser);
-        chaser.setIsControlled(true, clientId);
+        this.setPlayerChaser(chaser, clientId);
     }
 
     setPlayerChaser(chaser: Chaser, playerId: string) {
