@@ -9,7 +9,7 @@ import { ActorController } from "../../../engine/server/controls/ActorController
 import { GameInputActions } from "../../common/constants";
 import { Patroller } from "../../../engine/server/ai/players/Patroller";
 import { PlayerActor } from "../factory/components/PlayerActor";
-import { Quaffle } from "../factory/components/balls/Quaffle";
+
 
 export class Chaser extends Patroller<Vector2d> {
     private readonly _gameManager: QuiditchGameManager;
@@ -35,15 +35,8 @@ export class Chaser extends Patroller<Vector2d> {
 
             if (actor && actor instanceof PlayerActor) {
                
-                const joints = await actor.getJoints();
-                let hasQuaffle = false;
-                for (const j of joints) {
-                    if (j instanceof Quaffle) {
-                        hasQuaffle = true;  
-                        break;
-                    }
-                }
-                if (!hasQuaffle) {
+              const playerState = await actor.getState();
+                if (!playerState.hasQuaffle) {
                     const closestQuaffle = await this._gameManager.getQuaffle();
                     if (closestQuaffle) {
                         await this._chaseQuaffle(closestQuaffle);

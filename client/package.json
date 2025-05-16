@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@dimforge/rapier2d-compat": "^0.14.0",
+    "@tensorflow/tfjs": "^4.22.0",
     "gsap": "^3.12.5",
     "nipplejs": "^0.10.2",
     "react": "^18.3.1",
