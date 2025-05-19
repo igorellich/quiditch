@@ -52,7 +52,7 @@ export class QuiditchGameManager extends BaseGameManager {
     }
 
     public getStates(): BaseState[] {
-        this._debouncePause();
+        // this._debouncePause();
         return [...super.getStates(), this._getMatchState()];
     }
 
@@ -132,7 +132,17 @@ export class QuiditchGameManager extends BaseGameManager {
         const walls = await this._quiditchFactory.createWalls();
         this.addTickable(walls);
         const ball = await this._quiditchFactory.createQuaffle();
-        ball.setPosition(0, 0);
+        
+         const angle = Math.random() * Math.PI * 2;
+  
+  // Random radius (this approach creates non-uniform distribution)
+  const r = Math.random() * 70;
+  
+  // Convert polar to Cartesian coordinates
+  const x = r * Math.cos(angle);
+  const y = r * Math.sin(angle);
+  ball.setPosition(x, y);
+  
         this._stateWatchActors.push(ball);
         this.addTickable(ball);
         const zone = new CircleZone(70, new Vector2d(0, 0));
@@ -234,9 +244,6 @@ export class QuiditchGameManager extends BaseGameManager {
                     const player = await chaser.getActor();
                     if (player) {
                         team.AddMember(player);
-
-
-                        this.addTickable(player);
                     }
                 }
                 return res(team);
@@ -284,7 +291,7 @@ export class QuiditchGameManager extends BaseGameManager {
         const player = await this._quiditchFactory.createPlayer(isLeft ? "red" : "blue");
         await player.setSpeed(await player.getSpeed() * 0.5);
         await player.setRotationSpeed(await player.getRotationSpeed() * 0.5);
-
+        this.addTickable(player);
         this._stateWatchActors.push(player);
         const playerController = new QuiditchPlayerController(player); //actor controller
         this.addTickable(playerController);

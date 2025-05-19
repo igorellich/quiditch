@@ -15,39 +15,41 @@ import { GetQuaffleEnvironment } from "../../server/ai/tensorflow/GetQuaffleEnvi
 import { AgentManager } from "../../server/ai/tensorflow/test";
 
 export class LocalServerCommunicator implements IServerCommunicator {
-    private _gameManager: QuiditchGameManager;
+    private _gameManager?: QuiditchGameManager;
 
     private readonly _stateSync: StateSynchroniser;
 
-    private readonly _quiditchFactory:QuiditchFactory;
-    private readonly _physicsManager:RapierPhysicsManager;
+    private  _quiditchFactory?:QuiditchFactory;
+    private  _physicsManager?:RapierPhysicsManager;
     private readonly _clientId:string;
     private readonly _mode:string;
     constructor(stateSync: StateSynchroniser, mode:string, clientId: string) {
         this._mode = mode;
         this._clientId = clientId;
         this._stateSync = stateSync;
+        
+        
+    }
+    async getStates(): Promise<BaseState[]> {
+        return this._gameManager?.getStates()||[]
+    }
+    async setPause(pause: boolean): Promise<void> {
+        
+        this._gameManager?.setPause(pause);
+    }
+    async reset(): Promise<void> {
         const gravity = { x: 0.0, y: 0.0 };
         const world = new World(gravity);
+        
         const bodyFactory = new RapierBodyFactory(world);
         this._physicsManager = new RapierPhysicsManager(world);
         this._quiditchFactory = new QuiditchFactory(bodyFactory, this._physicsManager);
         this._gameManager = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
-        
-    }
-    async getStates(): Promise<BaseState[]> {
-        return this._gameManager.getStates()
-    }
-    async setPause(pause: boolean): Promise<void> {
-        this._gameManager.setPause(pause);
-    }
-    async reset(): Promise<void> {
-        this._gameManager  = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
         await this._gameManager.initQuaffleEnvironment(this._clientId);
     }
 
     public async applyAction(clientId: string, action: GameInputActions, started: boolean): Promise<void> {
-        if (action === GameInputActions.pause) {
+        if (this._gameManager && action === GameInputActions.pause) {
             this._gameManager.setPause(!this._gameManager.getPause());
         } else {
            // console.log(clientId, action, started)
@@ -86,41 +88,41 @@ export class LocalServerCommunicator implements IServerCommunicator {
         }
     }
 
-    private _getPlayerChaser(playerId: string): Chaser {
-        return this._gameManager.getChasers().filter(c => c.getActor()?.getIsControlled() && c.getActor()?.getPlayerId() == playerId)[0];
+    private _getPlayerChaser(playerId: string): Chaser|null {
+        return this._gameManager?.getChasers().filter(c => c.getActor()?.getIsControlled() && c.getActor()?.getPlayerId() == playerId)[0]||null;
 
     }
     async takeControl(clientId: string): Promise<string | undefined> {
 
-        const freeChaser = this._gameManager.getChasers().filter(c => c.getActor()?.getIsControlled() === false)[0];
+        const freeChaser = this._gameManager?.getChasers().filter(c => c.getActor()?.getIsControlled() === false)[0];
         if (freeChaser) {
-            this._gameManager.setPlayerChaser(freeChaser, clientId);
+            this._gameManager?.setPlayerChaser(freeChaser, clientId);
             return freeChaser.getActor()?.getId();
         }
 
     }
 
     async tick(elapsedTime: number, deltaTime: number): Promise<void> {
-        this._stateSync.setStates(this._gameManager.getStates());
+        this._stateSync.setStates(this._gameManager?.getStates()||[]);
 
     }
     public init(initStates: BaseState[]): Promise<void> {
         return new Promise(async res => {
-            this._gameManager.setPause(true);
+            this._gameManager?.setPause(true);
             switch (this._mode) {
                 case "getQuaffle":
-                    await this._gameManager.initQuaffleEnvironment(this._clientId);
+                    await this._gameManager?.initQuaffleEnvironment(this._clientId);
                     break;
                 default:
-                    await this._gameManager.init(initStates);
+                    await this._gameManager?.init(initStates);
                     break;
             }
 
             // отрисовываем states
-            this._gameManager.setPause(false);
-              const getQuaffleEnv = new GetQuaffleEnvironment(this._clientId,this._gameManager, async ()=>{
+            this._gameManager?.setPause(false);
+              const getQuaffleEnv = new GetQuaffleEnvironment(this._clientId, async ()=>{
                        await this.reset();
-                       return this._gameManager;
+                       return this._gameManager as QuiditchGameManager;
                   })
                 const agentManager = new AgentManager(getQuaffleEnv);
                 agentManager.trainAgent();

@@ -115,9 +115,9 @@ export class ThreeMeshFactory implements IQuiditchFactory<MeshBasedActor>{
 
     private async _createPlayerMesh(color?:string):Promise<Mesh>{
         
-        let mesh:Mesh = new Mesh(new CapsuleGeometry(0.3*this._scale,1.1*this._scale,1), new MeshBasicMaterial({color:color})) 
-        return mesh;
-         //let mesh = this._prototypesMeshesMap["player"];
+        //let mesh:Mesh = new Mesh(new CapsuleGeometry(0.3*this._scale,1.1*this._scale,1), new MeshBasicMaterial({color:color})) 
+        //return mesh;
+         let mesh = this._prototypesMeshesMap["player"];
         if(!mesh){
             const model = await this._loadGltfModel('assets/glb/hover_bike/scene.glb');
             model.rotateX(Math.PI/2)

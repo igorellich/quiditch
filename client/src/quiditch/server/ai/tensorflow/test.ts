@@ -264,11 +264,12 @@ export class AgentManager<TGameState> {
             let steps = 0;
 
             for (; steps < MAX_STEPS_PER_EPISODE; steps++) {
-                console.log(`${steps}-${episode}`)
+                //console.log(`${steps}-${episode}`)
                 const action = await agent.act(state);
                 const { state: nextState, reward, done } = await this._env.step(action);
 
                 agent.remember(state, action, reward, nextState, done);
+                // console.log(state, reward)
                 await agent.replay();
 
                 state = nextState;

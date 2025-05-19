@@ -41,8 +41,8 @@ export class ThreeSceneManager extends SceneManager {
         this._renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this._renderer.setSize(this._size.width as number, this._size.height as number);
 
-        this._camera = new PerspectiveCamera(75, this._size.width as number / (this._size.height as number),0.1, 60);      
-        this._camera.position.z = 50;
+        this._camera = new PerspectiveCamera(75, this._size.width as number / (this._size.height as number),90, 100);      
+        this._camera.position.z = 100;
         // this._camera.rotateZ(Math.PI/2);
        
                 

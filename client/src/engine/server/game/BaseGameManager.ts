@@ -26,7 +26,7 @@ export class BaseGameManager {
         this._physicsManager = physicsManager;
         this.addTickable(this._physicsManager);
         this._elapsedTime = 0;
-        const freq = (1 / 60) * 1000;
+        const freq = (1 / 600) * 1000;
         this._tickInterval = setInterval(async () => {
             if (!this._pause) {
                 this._elapsedTime += freq;
@@ -59,10 +59,10 @@ export class BaseGameManager {
         }
     }
 
-    public setStates(states:BaseState[]){
-            this._actorStates = states;
-            
-        }
+    public setStates(states: BaseState[]) {
+        this._actorStates = states;
+
+    }
 
     public getStates(): BaseState[] {
         return [...this._actorStates];
@@ -127,6 +127,10 @@ export class BaseGameManager {
         this._pause = pause;
     }
 
+    public dispose() {
+        clearInterval(this._tickInterval);
+        this._tickInterval = null;
+    }
     getPause(): boolean {
         return this._pause;
     }

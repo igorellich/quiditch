@@ -19,7 +19,7 @@ export class QuiditchPlayerController extends ActorController<QuiditchInputActio
     }
     public async applyAction(actionType: QuiditchInputActions, started?: boolean | undefined): Promise<void> {
         
-       console.log(actionType, started)
+       //console.log(actionType, started)
         switch (actionType) {
 
             case QuiditchInputActions.moveForward:
@@ -49,14 +49,14 @@ export class QuiditchPlayerController extends ActorController<QuiditchInputActio
         //if (this._characterController) {
             const rotatingRight = this._rotating ? this._rotating === QuiditchInputActions.turnLeft ? false : true : null;
             if (rotatingRight !== null) {
-                console.log(`rotate ${rotatingRight} ${deltaTime}`)
+                //console.log(`rotate ${rotatingRight} ${deltaTime}`)
                 this._actor.rotate(rotatingRight, deltaTime);
             }
             
             //const rigidBody = body.getRigidBody();
             const movingBackward = this._moving?this._moving===QuiditchInputActions.moveForward?false:true:null;
             if(movingBackward!==null){
-                console.log(`move ${movingBackward} ${deltaTime}`)
+                //console.log(`move ${movingBackward} ${deltaTime}`)
                 this._actor.move(movingBackward,deltaTime);
             }          
             

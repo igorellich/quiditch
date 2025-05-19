@@ -31,13 +31,13 @@ export class PlayerActor extends BodyActorDecorator {
     }
     async onCollision(collision: Collision, elapsedTime: number): Promise<void> {
         await super.onCollision(collision, elapsedTime);
-        const joints = await this.getJoints();
-        if(joints.length>0){
-            for(const j of joints){
-                this.unjoin(j);
-                await j.move(false, 1/600);
-            } 
-        }
+        //const joints = await this.getJoints();
+        // if(joints.length>0){
+        //     for(const j of joints){
+        //         this.unjoin(j);
+        //         await j.move(false, 1/600);
+        //     } 
+        // }
     }
     public async attack():Promise<void>{
         const joints = await this.getJoints();
