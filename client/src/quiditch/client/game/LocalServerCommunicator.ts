@@ -1,7 +1,6 @@
 import { Vector2d } from "@common/Vector2d";
 import { Chaser } from "../../server/ai/Chaser";
 import { GameInputActions } from "../../common/constants";
-import { TargetPointInputController } from "../../server/controls/TargetPointInputController";
 import { PlayerActor } from "../../server/factory/components/PlayerActor";
 
 import { IServerCommunicator } from "./IServerCommunicator";
@@ -12,6 +11,8 @@ import { RapierPhysicsManager } from "../../../engine/server/rapier/RapierPhysic
 import { QuiditchFactory } from "../../server/factory/QuiditchActorFactory";
 import { QuiditchGameManager } from "../../server/game/QuiditchGameManager";
 import { BaseState } from "@common/BaseState";
+import { GetQuaffleEnvironment } from "../../server/ai/tensorflow/GetQuaffleEnvironment";
+import { AgentManager } from "../../server/ai/tensorflow/test";
 
 export class LocalServerCommunicator implements IServerCommunicator {
     private _gameManager: QuiditchGameManager;
@@ -20,8 +21,11 @@ export class LocalServerCommunicator implements IServerCommunicator {
 
     private readonly _quiditchFactory:QuiditchFactory;
     private readonly _physicsManager:RapierPhysicsManager;
-    constructor(stateSync: StateSynchroniser) {
-
+    private readonly _clientId:string;
+    private readonly _mode:string;
+    constructor(stateSync: StateSynchroniser, mode:string, clientId: string) {
+        this._mode = mode;
+        this._clientId = clientId;
         this._stateSync = stateSync;
         const gravity = { x: 0.0, y: 0.0 };
         const world = new World(gravity);
@@ -31,12 +35,15 @@ export class LocalServerCommunicator implements IServerCommunicator {
         this._gameManager = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
         
     }
+    async getStates(): Promise<BaseState[]> {
+        return this._gameManager.getStates()
+    }
     async setPause(pause: boolean): Promise<void> {
         this._gameManager.setPause(pause);
     }
     async reset(): Promise<void> {
         this._gameManager  = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
-        await this._gameManager.init();
+        await this._gameManager.initQuaffleEnvironment(this._clientId);
     }
 
     public async applyAction(clientId: string, action: GameInputActions, started: boolean): Promise<void> {
@@ -97,23 +104,34 @@ export class LocalServerCommunicator implements IServerCommunicator {
         this._stateSync.setStates(this._gameManager.getStates());
 
     }
-    public init(initStates:BaseState[]): Promise<void> {
-        return new Promise(async res=>{
+    public init(initStates: BaseState[]): Promise<void> {
+        return new Promise(async res => {
             this._gameManager.setPause(true);
-            await this._gameManager.init(initStates);
+            switch (this._mode) {
+                case "getQuaffle":
+                    await this._gameManager.initQuaffleEnvironment(this._clientId);
+                    break;
+                default:
+                    await this._gameManager.init(initStates);
+                    break;
+            }
+
             // отрисовываем states
             this._gameManager.setPause(false);
-            setTimeout(()=>{
-                this._gameManager.setPause(true);
+              const getQuaffleEnv = new GetQuaffleEnvironment(this._clientId,this._gameManager, async ()=>{
+                       await this.reset();
+                       return this._gameManager;
+                  })
+                const agentManager = new AgentManager(getQuaffleEnv);
+                agentManager.trainAgent();
+            setTimeout(async ()=>{
+                // this._gameManager.setPause(true);
+                
                 res();
+                 
             },10)
+           
         })
    
-      
-       
-       
-        
     }
-
-
 }

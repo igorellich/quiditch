@@ -57,7 +57,7 @@ export const Game = (props: {
             onContinue={async () => sceneController?sceneController.setPause(false):console.log("onContinue")}
             onNew={async () => sceneController?sceneController.reset():console.log("onNew")} /> : null}
         <SceneComponent clientId={props.clientId} gameStates={props.savedStates} onStatesChange={(states) => {
-            setGameStates(states)
+            // setGameStates(states)
         }
         } />
 </SceneControllerContext.Provider>

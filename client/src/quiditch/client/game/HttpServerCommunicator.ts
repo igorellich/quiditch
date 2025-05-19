@@ -1,3 +1,4 @@
+import { BaseState } from "@common/BaseState";
 import { GameInputActions } from "../../common/constants";
 import { IServerCommunicator } from "./IServerCommunicator";
 import { StateSynchroniser } from "./StateSynchroniser";
@@ -10,6 +11,9 @@ export class HttpServerCommunicator implements IServerCommunicator{
         this._stateSync = stateSync;
         this._clientId = clientId;
         this._serverUrl = "http://localhost:3000"
+    }
+    getStates(): Promise<BaseState[]> {
+        throw new Error("Method not implemented.");
     }
     setPause(pause: boolean): Promise<void> {
         throw new Error("Method not implemented.");
