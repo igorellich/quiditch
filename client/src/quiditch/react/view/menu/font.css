@@ -1,0 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+
+.menuItem {
+  will-change: transform, box-shadow; /* Optimize for animations */
+}
