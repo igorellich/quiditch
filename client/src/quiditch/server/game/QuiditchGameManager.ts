@@ -109,7 +109,7 @@ export class QuiditchGameManager extends BaseGameManager {
 
         this.addOnGoalHandler((team: Team) => this._onGoal());
 
-        this._debouncePause();
+        //this._debouncePause();
     }
     private _debouncePause = this.debounce(() => this.setPause(true), 5000, this);
     private async _onGoal(): Promise<void> {
@@ -133,15 +133,7 @@ export class QuiditchGameManager extends BaseGameManager {
         this.addTickable(walls);
         const ball = await this._quiditchFactory.createQuaffle();
         
-         const angle = Math.random() * Math.PI * 2;
-  
-  // Random radius (this approach creates non-uniform distribution)
-  const r = Math.random() * 70;
-  
-  // Convert polar to Cartesian coordinates
-  const x = r * Math.cos(angle);
-  const y = r * Math.sin(angle);
-  ball.setPosition(x, y);
+         
   
         this._stateWatchActors.push(ball);
         this.addTickable(ball);

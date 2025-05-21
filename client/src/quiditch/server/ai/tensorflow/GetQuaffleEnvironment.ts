@@ -53,9 +53,9 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
     async step(action: number): Promise<{ reward: number; done: boolean; state: GetQuaffleGameState; }> {
         return new Promise(async (resolve, reject) => {
             const playerChaser = this._gameManager?.getChaserByPlayerId(this._clientId);
-            const quaffle = await this._gameManager?.getQuaffle();
+           
 
-            let reward = -0.1;
+            let reward = -0.0;
             let done = false;
             if (playerChaser) {
 
@@ -68,40 +68,41 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
                     setTimeout(async () => {
                         const newState = await this._getState();
                         if (newState[2] < currState[2]) {
-                            reward += 1;
+                            reward += 2;
                         }
 
                         if (newState[2] > currState[2]) {
-                            reward += -1;
+                            reward += -2;
                         }
                         // if (Math.abs(normaliseAngle(newState[3])) < 0.05) {
                         //     reward += 5;
                         // } else {
-                            if (Math.abs(normaliseAngle(newState[3])) < Math.abs(normaliseAngle(currState[3])) || Math.abs(normaliseAngle(newState[3])) < 0.05) {
-                                reward += 0.5;
+                            if (Math.abs(normaliseAngle(newState[3])) != Math.abs(normaliseAngle(currState[3])) ) {
+                                reward += -0.1;
                             }
                             if (Math.abs(normaliseAngle(newState[3]) )> Math.abs(normaliseAngle(currState[3]))) {
-                                reward += -0.5;
+                                reward += -3;
                             }
                         //}
                         if(!this.minAngle||this.minAngle>Math.abs(normaliseAngle(newState[3]))){
                             this.minAngle = Math.abs(normaliseAngle(newState[3]));
                         }
                         //console.log(newState[2],this.minAngle, Math.abs(normaliseAngle(newState[3])), Math.abs(normaliseAngle(currState[3])));
-                        const playerState = await playerChaser.getActor()?.getState();
-                        if (playerState) {
-                            if (playerState.hasQuaffle) {
-                                done = true;
-                            }
-                        }
-                        // if(newState[2]<5){
-                        //     done = true;
+                        //const playerState = await playerChaser.getActor()?.getState();
+                        // if (playerState) {
+                        //     if (playerState.hasQuaffle) {
+                        //         done = true;
+                        //     }
                         // }
+                        if(newState[2]<5){
+                            reward+=10;
+                            done = true;
+                        }
                         resolve({ done, reward, state: await this._getState() });
-                    }, 1/500)
+                    }, 1/50)
 
                     
-                },1/500)
+                },1/50)
 
 
 
@@ -113,7 +114,17 @@ export class GetQuaffleEnvironment implements IEnvironment<GetQuaffleGameState> 
     }
     async reset(): Promise<GetQuaffleGameState> {
            this._gameManager  = await this._reset();
-           // await this._gameManager.initQuaffleEnvironment(this._clientId);
+            const quaffle = await this._gameManager?.getQuaffle();
+            const angle = Math.random() * Math.PI * 2;
+              
+              // Random radius (this approach creates non-uniform distribution)
+              const r = Math.random() * 70;
+              
+              // Convert polar to Cartesian coordinates
+              const x = r * Math.cos(angle);
+              const y = r * Math.sin(angle);
+              quaffle?.setPosition(x, y);
+            
           return this._getState();
        }
 

@@ -27,6 +27,13 @@ export class LocalServerCommunicator implements IServerCommunicator {
         this._mode = mode;
         this._clientId = clientId;
         this._stateSync = stateSync;
+         const gravity = { x: 0.0, y: 0.0 };
+        const world = new World(gravity);
+        
+        const bodyFactory = new RapierBodyFactory(world);
+        this._physicsManager = new RapierPhysicsManager(world);
+        this._quiditchFactory = new QuiditchFactory(bodyFactory, this._physicsManager);
+        this._gameManager = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
         
         
     }
@@ -38,14 +45,7 @@ export class LocalServerCommunicator implements IServerCommunicator {
         this._gameManager?.setPause(pause);
     }
     async reset(): Promise<void> {
-        const gravity = { x: 0.0, y: 0.0 };
-        const world = new World(gravity);
-        
-        const bodyFactory = new RapierBodyFactory(world);
-        this._physicsManager = new RapierPhysicsManager(world);
-        this._quiditchFactory = new QuiditchFactory(bodyFactory, this._physicsManager);
-        this._gameManager = new QuiditchGameManager(this._quiditchFactory, this._physicsManager);
-        await this._gameManager.initQuaffleEnvironment(this._clientId);
+       
     }
 
     public async applyAction(clientId: string, action: GameInputActions, started: boolean): Promise<void> {

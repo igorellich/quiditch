@@ -26,7 +26,7 @@ export class BaseGameManager {
         this._physicsManager = physicsManager;
         this.addTickable(this._physicsManager);
         this._elapsedTime = 0;
-        const freq = (1 / 600) * 1000;
+        const freq = (1 / 60) * 1000;
         this._tickInterval = setInterval(async () => {
             if (!this._pause) {
                 this._elapsedTime += freq;

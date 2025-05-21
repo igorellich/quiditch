@@ -1,7 +1,9 @@
 import * as tf from '@tensorflow/tfjs';
 // import '@tensorflow/tfjs-node';
 import { IEnvironment } from './IEnvironment';
-
+const modelJson = new URL('../tensorflow/models/getQuiditch/model-quiditch.json', import.meta.url).href;
+const modelWeights  = new URL('../tensorflow/models/getQuiditch/model-quiditch.weights.bin', import.meta.url).href;
+console.log(modelJson, modelWeights);
 // Hyperparameters
 const LEARNING_RATE = 0.001;
 const DISCOUNT_FACTOR = 0.95;
@@ -10,14 +12,14 @@ const EPSILON_END = 0.01;
 const EPSILON_DECAY = 0.995;
 const BATCH_SIZE = 64;
 const MEMORY_CAPACITY = 10000;
-const EPISODES = 100;
-const MAX_STEPS_PER_EPISODE = 200;
+const EPISODES = 20;
+const MAX_STEPS_PER_EPISODE = 2000;
 
 
 
 class DQNAgent<TGameState> {
-    private model: tf.Sequential;
-    private targetModel: tf.Sequential;
+    private model: tf.LayersModel|undefined;
+    private targetModel: tf.LayersModel|undefined;
     private readonly _environment: IEnvironment<TGameState>;
     private memory: Array<{
         state: TGameState,
@@ -30,11 +32,22 @@ class DQNAgent<TGameState> {
 
     constructor(environment: IEnvironment<TGameState>) {
         this._environment = environment;
-        this.model = this.buildModel();
-        this.targetModel = this.buildModel();
+       
         this.updateTargetModel();
     }
-
+    async init(){
+         this.model =  this.buildModel()//await tf.loadLayersModel(modelJson); //await tf.loadLayersModel(`indexeddb://quiditch-model-100`) //this.buildModel();
+        this.targetModel = this.buildModel()//await tf.loadLayersModel(modelJson);//this.buildModel();
+        // this.model.compile({
+        //     optimizer: tf.train.adam(LEARNING_RATE),
+        //     loss: 'meanSquaredError'
+        // });
+        //  this.model.compile({
+        //     optimizer: tf.train.adam(LEARNING_RATE),
+        //     loss: 'meanSquaredError'
+        // });
+        console.log(JSON.stringify(this.model.getWeights()));
+    }
     private buildModel(): tf.Sequential {
         const model = tf.sequential();
 
@@ -120,7 +133,9 @@ class DQNAgent<TGameState> {
     }
 
     public updateTargetModel(): void {
-        this.targetModel.setWeights(this.model.getWeights());
+        if(this.model){
+        this.targetModel?.setWeights(this.model?.getWeights());
+        }
     }
 
     private async stateToTensor(state: TGameState): Promise<tf.Tensor> {
@@ -136,7 +151,7 @@ class DQNAgent<TGameState> {
         const stateTensor = await this.stateToTensor(state);
         return tf.tidy(() => {
             
-            const qValues = this.model.predict(stateTensor) as tf.Tensor;
+            const qValues = this.model?.predict(stateTensor) as tf.Tensor;
             const action = qValues.argMax(1).dataSync()[0];
             stateTensor.dispose();
             return action;
@@ -157,7 +172,7 @@ class DQNAgent<TGameState> {
     }
 
     public async replay(): Promise<void> {
-        if (this.memory.length < BATCH_SIZE) {
+        if (this.memory.length < BATCH_SIZE  || !this.model || !this.targetModel) {
             return;
         }
 
@@ -256,7 +271,7 @@ export class AgentManager<TGameState> {
     async trainAgent() {
         console.log("start training!");
         const agent = new DQNAgent(this._env);
-
+        await agent.init();
 
         for (let episode = 0; episode < EPISODES; episode++) {
             let state: TGameState = await this._env.reset() as TGameState;

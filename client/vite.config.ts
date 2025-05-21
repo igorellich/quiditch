@@ -12,8 +12,9 @@ export default defineConfig({
     },
     sourcemap: true,  // Generate source maps
     target: 'esnext' //browsers can handle the latest ES features
-    
+   
   },
+   assetsInclude:['**/*.bin'],
   server: {
     host: '0.0.0.0',  // Important for Docker
     port: 5173,
