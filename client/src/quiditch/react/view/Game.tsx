@@ -17,7 +17,7 @@ export const Game = (props: {
 }) => {
 
 
-
+    
     const [gameStates, setGameStates] = useState<BaseState[]>([]);
     const [sceneController, setSceneController] = useState<SceneController>();
     const [showMenu, setShowMenu] = useState(true);
