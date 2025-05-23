@@ -6,6 +6,8 @@ import { BaseState } from '@common/BaseState';
 import { MatchState } from '../../common/MatchState';
 import { createContext } from 'react';
 import { SceneController } from '../../client/game/SceneController';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 export const SceneControllerContext = createContext<SceneControllerContextType|null>(null);
 interface SceneControllerContextType{
   sceneController?:SceneController,
@@ -17,12 +19,15 @@ export const Game = (props: {
 }) => {
 
 
-    
+    const pause = useSelector((state: RootState) => state.pause);
     const [gameStates, setGameStates] = useState<BaseState[]>([]);
     const [sceneController, setSceneController] = useState<SceneController>();
-    const [showMenu, setShowMenu] = useState(true);
+    
     const [time, setTime] = useState(0);
-
+    const sceneComponent = React.useMemo(() => <SceneComponent clientId={props.clientId} gameStates={props.savedStates} onStatesChange={(states) => {
+            // setGameStates(states)
+    }} />, []);
+        
     useEffect(() => {
 
 
@@ -38,28 +43,15 @@ export const Game = (props: {
             setTime(time + 2000);
         }, 2000)
     }, [])
-
     
-
-    useEffect(() => {
-        let newShowMenu = true;
-        const matchState: MatchState = gameStates.filter(s => s.name === "match")[0] as MatchState;
-        if (matchState) {
-            newShowMenu = matchState.paused;
-        }
-        setShowMenu(newShowMenu)
-    }, [gameStates])
     return <>
     <SceneControllerContext.Provider value={
         {sceneController, setSceneController}
     }>
-        {showMenu ? <MainMenu
+        {pause.isPaused ? <MainMenu
             onContinue={async () => sceneController?sceneController.setPause(false):console.log("onContinue")}
             onNew={async () => sceneController?sceneController.reset():console.log("onNew")} /> : null}
-        <SceneComponent clientId={props.clientId} gameStates={props.savedStates} onStatesChange={(states) => {
-            // setGameStates(states)
-        }
-        } />
+        {sceneComponent}
 </SceneControllerContext.Provider>
     </>
 }

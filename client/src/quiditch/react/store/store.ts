@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import pauseSlice, { PauseState } from './pauseSlice';
 
 // Define the RootState type that includes all slices' states
-interface RootState {
+export interface RootState {
   pause: PauseState;
 }
 

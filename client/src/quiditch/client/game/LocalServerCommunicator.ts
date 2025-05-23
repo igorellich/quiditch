@@ -112,6 +112,12 @@ export class LocalServerCommunicator implements IServerCommunicator {
             switch (this._mode) {
                 case "getQuaffle":
                     await this._gameManager?.initQuaffleEnvironment(this._clientId);
+                          const getQuaffleEnv = new GetQuaffleEnvironment(this._clientId, async ()=>{
+                       await this.reset();
+                       return this._gameManager as QuiditchGameManager;
+                  })
+                const agentManager = new AgentManager(getQuaffleEnv);
+                agentManager.trainAgent();
                     break;
                 default:
                     await this._gameManager?.init(initStates);
@@ -120,14 +126,10 @@ export class LocalServerCommunicator implements IServerCommunicator {
 
             // отрисовываем states
             this._gameManager?.setPause(false);
-              const getQuaffleEnv = new GetQuaffleEnvironment(this._clientId, async ()=>{
-                       await this.reset();
-                       return this._gameManager as QuiditchGameManager;
-                  })
-                const agentManager = new AgentManager(getQuaffleEnv);
-                agentManager.trainAgent();
+        
             setTimeout(async ()=>{
-                // this._gameManager.setPause(true);
+                
+                 this?._gameManager?.setPause(true);
                 
                 res();
                  

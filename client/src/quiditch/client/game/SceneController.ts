@@ -58,7 +58,7 @@ export class SceneController {
 
         this._threeSceneManager.addTickable(this._stateSynchroniser);
 
-        this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser, "getQuaffle", clientId);
+        this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser, "game", clientId);
 
      
 

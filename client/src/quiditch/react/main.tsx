@@ -3,6 +3,8 @@ import {createRoot} from "react-dom/client";
 import Rapier from "@dimforge/rapier2d-compat"
 import { Game } from './view/Game';
 import { BaseState } from '@common/BaseState';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 const initClient = async (): Promise<void> => {
     const currStatesStr = window.localStorage.getItem("quiditchStates");
@@ -17,7 +19,11 @@ const initClient = async (): Promise<void> => {
    
     
   
-   root.render(<Game savedStates={currStates} clientId={clientId}/>)
+   root.render(
+   <Provider store={store}>
+        <Game savedStates={currStates} clientId={clientId}/>
+   </Provider>
+   )
   
  
    

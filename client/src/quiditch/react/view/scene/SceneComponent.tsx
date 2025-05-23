@@ -8,7 +8,6 @@ import { SceneController } from "../../../client/game/SceneController";
 import { BaseState } from "@common/BaseState";
 import { SceneControllerContext } from "../Game";
 import { TimeComponent } from "./TimeComponent";
-import { MatchState } from "../../../common/MatchState";
 
 
 export const SceneComponent = (props: {
