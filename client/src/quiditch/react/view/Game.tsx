@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { MainMenu } from './menu/MainMenu';
 import { SceneComponent } from './scene/SceneComponent';
 import { BaseState } from '@common/BaseState';
-import { MatchState } from '../../common/MatchState';
 import { createContext } from 'react';
 import { SceneController } from '../../client/game/SceneController';
 import { useSelector } from 'react-redux';
