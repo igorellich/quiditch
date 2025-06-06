@@ -39,12 +39,15 @@ export class ThreeBasedMesh implements IMesh{
             scene.remove(this._mesh);
         }
     }
-    addCamera(camera:Camera, scene:Scene){        
+    addCamera(camera:Camera, scene:Scene){      
+        
         this._cameraGroup = new Group();
         this._cameraGroup.add(this._mesh);
         this._cameraGroup.add(camera);
         this._cameraGroup.position.set(this._mesh.position.x, this._mesh.position.y, this._mesh.position.z);
+        camera.position.set(0, 0, 100 -  this._mesh.position.z);
         this._mesh.position.set(0, 0, 0);
+        
         scene.add(this._cameraGroup);
         camera.updateMatrix();
         camera.updateMatrixWorld();

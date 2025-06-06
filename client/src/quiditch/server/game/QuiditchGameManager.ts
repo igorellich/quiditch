@@ -27,6 +27,8 @@ export class QuiditchGameManager extends BaseGameManager {
     private _hideQuaffle: boolean = false;
     private readonly _goalHandlers: ((team: Team) => void)[] = [];
 
+    private readonly _duration?:number
+
     private _playerChasers: {
         playerId: string,
         chaser: Chaser
@@ -44,10 +46,10 @@ export class QuiditchGameManager extends BaseGameManager {
             }, wait);
         };
     }
-    constructor(quiditchFactory: IQuiditchFactory<IActor>, physicsManager: IPhysicsManager) {
+    constructor(quiditchFactory: IQuiditchFactory<IActor>, physicsManager: IPhysicsManager, gameDuration?: number) {
         super(physicsManager);
         this._quiditchFactory = quiditchFactory;
-
+        this._duration = gameDuration;
 
     }
 
@@ -59,17 +61,18 @@ export class QuiditchGameManager extends BaseGameManager {
 
     private _getMatchState(): MatchState {
         const matchState = new MatchState();
-        matchState.score = this._score;
+        matchState.score = {...this._score};
         matchState.paused = this.getPause();
         matchState.time = this._elapsedTime;
+        matchState.duration = this._duration;
         return matchState;
     }
 
     private _score: Score = {};
     public async init(states?: BaseState[]): Promise<void> {
 
-
-
+        this._teams = [];
+        this._score= {};
         this._teams.push(await this._createQuiditchTeam(70, true, states));
         this._teams.push(await this._createQuiditchTeam(70, false, states));
         for (const team of this._teams) {
@@ -86,7 +89,7 @@ export class QuiditchGameManager extends BaseGameManager {
         if (states) {
             const matchState = states.filter(s => s.name === "match")[0] as MatchState;
             if (matchState) {
-                this._score = matchState.score;
+                this._score = {...matchState.score};
             }
         }
         this.addOnGoalHandler(setScore);

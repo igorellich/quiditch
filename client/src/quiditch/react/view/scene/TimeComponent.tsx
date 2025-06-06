@@ -12,6 +12,7 @@ export const TimeComponent=(props:{
     duration: number
 })=>{
     const timeLeft = Math.round((props.duration*1000 - props.time)/1000);
+   
     const minutesLeft = Math.floor(timeLeft/60);
     const secondsLeft = timeLeft - minutesLeft*60;
     return <label style={style} >{minutesLeft}:{secondsLeft}</label>

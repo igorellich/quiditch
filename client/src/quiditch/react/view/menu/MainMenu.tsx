@@ -12,12 +12,13 @@ const mainMenuStyle: React.CSSProperties = {
     zIndex: 2
 }
 export const MainMenu = (props: {
-    onContinue: () => Promise<void>,
+    onContinue?: () => Promise<void>,
     onNew: () => Promise<void>
 }) => {
     return <div style={mainMenuStyle} className='mainMenu'>
 
         <MenuItem onClick={() => props.onNew()} title='New Game'/>
-        <MenuItem onClick={() => props.onContinue()} title='Continue'/>
+        {props.onContinue && <MenuItem onClick={ props.onContinue} title='Continue'/>}
+        
     </div>
 }

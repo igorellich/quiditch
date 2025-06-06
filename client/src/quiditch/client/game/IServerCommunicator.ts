@@ -14,7 +14,7 @@ export interface IServerCommunicator extends ITickable{
     takeControl(clientId:string):Promise<string|undefined>;
     init(states?:BaseState[]):Promise<void>;
 
-    reset():Promise<void>
+    reset(duration?:number):Promise<void>
     setPause(pause:boolean):Promise<void>;
 
     getStates():Promise<BaseState[]>;

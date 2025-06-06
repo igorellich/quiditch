@@ -22,4 +22,4 @@ export const pauseSlice = createSlice({
 });
 export const { startPause, stopPause } = pauseSlice.actions;
 
-export default pauseSlice.reducer;
+export const pauseReducer = pauseSlice.reducer;

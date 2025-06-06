@@ -1,55 +1,79 @@
-import { useContext, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { CanvasComponent } from "./CanvasComponent";
 import * as React from "react";
 import { JoyControl } from "./JoyControl";
 import { AttackButton } from "./AttackButton";
 import { ScoreComponent } from "./ScoreComponent";
-import { SceneController } from "../../../client/game/SceneController";
 import { BaseState } from "@common/BaseState";
-import { SceneControllerContext } from "../Game";
-import { TimeComponent } from "./TimeComponent";
 
+import { TimeComponent } from "./TimeComponent";
+import { useDispatch } from "react-redux";
+import { tick } from "../../store/gameSlice";
+import { startPause, stopPause } from "../../store/pauseSlice";
+import { useSelector } from "react-redux";
+import { RootStateType } from "../../store/store";
+import { resetEnded } from "../../store/gameSlice";
+import { MatchState } from "../../../common/MatchState";
+import { useSceneController } from "./useSceneControler";
+import { setGameEnd } from "../../store/gameEndSlice";
 
 export const SceneComponent = (props: {
-   onStatesChange:(states:BaseState[])=>void,
-   gameStates:BaseState[],
-   clientId: string
+    gameStates: BaseState[],
+    clientId: string
 }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [sceneComponentController,setSceneComponentController]=useState<SceneController>()
-    const sceneControllerContext = useContext(SceneControllerContext)
-    const [time, setTime] = useState<number>(0);
-   
-    useEffect(() => {
-        if(canvasRef.current){
-            const onInit = () => {
-                if (sceneControllerContext) {
-                    sceneControllerContext.setSceneController(sceneController);
-                }
-            }
-            const stateChangeHandler = (states:BaseState[])=>{
-                props.onStatesChange(states);
-                sceneController?.getMatchState().then(s=>{                    
-                    setTime(s.time);
-                })
-            }
-            const sceneController = new SceneController(canvasRef.current as HTMLCanvasElement, props.clientId, onInit, stateChangeHandler, props.gameStates);
-            setSceneComponentController(sceneController);
-           
-        }
+
+    const stateChangeHandler = React.useCallback((states: BaseState[]) => {
+        const payload = { gameStates: states.map(s=>{return {...s}}) };
+        dispatch(tick(payload));
     }, [])
-    
-    const attackHandle=React.useCallback((evt:any)=>{
+
+    const sceneComponentController = useSceneController(canvasRef as React.RefObject<HTMLCanvasElement>, stateChangeHandler, props.clientId, props.gameStates);
+    const duration = useSelector((s: RootStateType) => s.gameStates.duration);
+    const [time, setTime] = useState<number>(0);
+    const dispatch = useDispatch();
+
+    const gameStates = useSelector((s: RootStateType) => s.gameStates.gameStates);
+    useEffect(() => {
+        const matchState: MatchState = gameStates.filter(s => s.name === "match")[0] as MatchState;
+        if (matchState && matchState.paused !== pause) {
+            dispatch(matchState.paused ? startPause() : stopPause());            
+        }
+        setTime(matchState.time);
+    }, [gameStates])
+    const pause = useSelector((s: RootStateType) => s.pause.isPaused);
+    useEffect(() => {
+
+        if (duration && time / 1000 >= duration) {
+            sceneComponentController?.setPause(true);
+            dispatch(setGameEnd(true))
+        } else {
+            sceneComponentController?.setPause(pause);
+        }
+    }, [pause, time])
+
+    const reseting = useSelector((s: RootStateType) => s.gameStates.reseting);
+
+    useEffect(() => {
+        if (reseting) {
+            dispatch(resetEnded());
+            sceneComponentController?.reset(duration).then(() => {
+                dispatch(startPause());
+            });
+        }
+    }, [reseting]);
+
+    const attackHandle = React.useCallback((evt: any) => {
         sceneComponentController?.attack();
         evt.preventDefault();
         evt.stopPropagation();
-    },[sceneComponentController] )
+    }, [sceneComponentController])
     return <><CanvasComponent canvasRef={canvasRef}></CanvasComponent>
-    {sceneComponentController?(
-        <>
-        <JoyControl onEndMove={()=>sceneComponentController.stopMoving()} onStartMove={(x,y)=>sceneComponentController.startMoving(x,y)}></JoyControl>
-        <AttackButton callback={attackHandle}></AttackButton>
-        <ScoreComponent matchStateGetter={()=>sceneComponentController.getMatchState()}></ScoreComponent> </>):null}
-        <TimeComponent duration={100} time={time}/>
+        {sceneComponentController ? (
+            <>
+                <JoyControl onEndMove={() => sceneComponentController.stopMoving()} onStartMove={(x, y) => sceneComponentController.startMoving(x, y)}></JoyControl>
+                <AttackButton callback={attackHandle}></AttackButton>
+                <ScoreComponent matchStateGetter={() => sceneComponentController.getMatchState()}></ScoreComponent> </>) : null}
+        <TimeComponent duration={duration} time={time} />
     </>
 }

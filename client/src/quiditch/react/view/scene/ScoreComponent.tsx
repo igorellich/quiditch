@@ -1,29 +1,39 @@
 import { MatchState } from "../../../common/MatchState";
 import * as React from "react"
 
+
+const PointsComponent=(props: {
+    points: string;
+    color: string;
+})=>{
+    return <label style={{color:props.color}}>{props.points}</label>
+}
+
 export const ScoreComponent = (props: {
     matchStateGetter: ()=>Promise<MatchState>
 }) => {
-    const [score, setScore] = React.useState<string>("");
+    const [points, setPoints] = React.useState<React.JSX.Element[]>([]);
     React.useEffect(() => {
         const intervalId = setInterval(async () => {
             //const matchState: MatchState = props.stateSynchroniser.getStates().filter(s => (s as MatchState).score)[0] as MatchState;
             const matchState = await props.matchStateGetter();
             if (matchState) {              
-                    let scoreStr = "";
+                    
+                    const pointComponents:React.JSX.Element[] = [];
                     for (let teamId in matchState.score) {
-                        scoreStr += matchState.score[teamId] + ' ';
+                        pointComponents.push(<PointsComponent key={teamId} color={teamId} points={matchState.score[teamId].toString()}/>)
                     }
-                    scoreStr = scoreStr.trim();
-                    scoreStr = scoreStr.replace(' ', ':');
-                    setScore(scoreStr);
+                    
+                    setPoints(pointComponents);
                 
-            } else {
-                //clearInterval(intervalId);
+            } 
+            return ()=>{
+                clearInterval(intervalId);
             }
-
         }, 300)
     }, [])
 
-    return <div className="goals">{score}</div>
+    return <div className="goals">{points.map((p,i)=>{
+        return <span key={i}>{p}{(i+1==points.length?"":":")}</span>
+    })}</div>
 }

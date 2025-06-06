@@ -5,4 +5,5 @@ export class MatchState extends BaseState {
     name: string = "match";
     time: number=0;
     paused:boolean = false;
+    duration?:number;
 }

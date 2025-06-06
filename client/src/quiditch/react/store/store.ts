@@ -1,19 +1,23 @@
 import { configureStore } from '@reduxjs/toolkit';
-import pauseSlice, { PauseState } from './pauseSlice';
+import { PauseState, pauseReducer } from './pauseSlice';
+import { gameReducer } from './gameSlice';
+import { BaseState } from '@common/BaseState';
+import { gameEndReducer } from './gameEndSlice';
 
 // Define the RootState type that includes all slices' states
-export interface RootState {
+interface RootState {
   pause: PauseState;
+  gameStates: BaseState[]
 }
 
-const store = configureStore({
+export const store = configureStore({
     reducer: {
-      pause: pauseSlice,
+      pause: pauseReducer,
+      gameStates: gameReducer,
+      gameEnded: gameEndReducer
     },
   });       
 
-
-export default store;
 
 // Export RootState for use in components or other parts of the app
 export type AppDispatch = typeof store.dispatch;

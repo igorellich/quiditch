@@ -22,7 +22,7 @@ export class SceneController {
     private _threeSceneManager: ThreeSceneManager;
 
     private readonly _initStates: BaseState[] | undefined;
-    constructor(canvas: HTMLCanvasElement, clientId: string, onInit?: () => void, onStatesChange?: (states: BaseState[]) => void, initState?: BaseState[]) {
+    constructor(canvas: HTMLCanvasElement, clientId: string, onStatesChange?: (states: BaseState[]) => void, initState?: BaseState[]) {
         this._initStates = initState;
 
         this._clientId = clientId; 
@@ -58,7 +58,7 @@ export class SceneController {
 
         this._threeSceneManager.addTickable(this._stateSynchroniser);
 
-        this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser, "game", clientId);
+        this._serverCommunicator = new LocalServerCommunicator(this._stateSynchroniser, "default", clientId);
 
      
 
@@ -69,10 +69,7 @@ export class SceneController {
              
             if (onStatesChange) {
                 this._stateSynchroniser?.addOnStatesChangeHandler((states) => onStatesChange(states))
-            }
-            if (onInit) {
-                onInit();
-            }
+            }            
         });
     }
 
@@ -104,8 +101,8 @@ export class SceneController {
         await this._serverCommunicator?.setPause(pause);
     }
 
-    public async reset(): Promise<void> {
-        await this._serverCommunicator?.reset();
+    public async reset(duration: number): Promise<void> {
+        await this._serverCommunicator?.reset(duration);
         await this._takeControl();
     }
 
@@ -138,5 +135,9 @@ export class SceneController {
 
             }
         }
+    }
+
+    public getStates():BaseState[]|undefined{
+        return this._stateSynchroniser?.getStates();
     }
 }

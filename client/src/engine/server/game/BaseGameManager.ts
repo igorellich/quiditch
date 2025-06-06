@@ -10,7 +10,7 @@ import { IZone } from "../ai/zone/IZone";
 
 
 export class BaseGameManager {
-    protected readonly _teams: Team[] = [];
+    protected _teams: Team[] = [];
     protected readonly _tickers: ITickable[] = [];
 
     protected _actorStates: BaseState[] = [];
@@ -27,9 +27,13 @@ export class BaseGameManager {
         this.addTickable(this._physicsManager);
         this._elapsedTime = 0;
         const freq = (1 / 60) * 1000;
+        let lastTime = Date.now();
         this._tickInterval = setInterval(async () => {
+            let newTime = Date.now();
             if (!this._pause) {
-                this._elapsedTime += freq;
+                
+                this._elapsedTime += newTime-lastTime;
+             
                 for (const tickable of this._tickers) {
                     await tickable.tick(this._elapsedTime, freq);
                 }
@@ -49,6 +53,7 @@ export class BaseGameManager {
                 const newStates = await Promise.all(this._stateWatchActors.map(a => a.getState()));
                 this._actorStates = newStates;
             }
+            lastTime = newTime;
         }, freq);
 
     }
