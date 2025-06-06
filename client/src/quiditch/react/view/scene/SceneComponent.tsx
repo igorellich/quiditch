@@ -39,7 +39,7 @@ export const SceneComponent = (props: {
         if (matchState && matchState.paused !== pause) {
             dispatch(matchState.paused ? startPause() : stopPause());            
         }
-        setTime(matchState.time);
+        setTime(matchState?.time||0);
     }, [gameStates])
     const pause = useSelector((s: RootStateType) => s.pause.isPaused);
     useEffect(() => {
